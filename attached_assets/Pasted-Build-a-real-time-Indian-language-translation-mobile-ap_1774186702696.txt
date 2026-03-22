@@ -1,0 +1,205 @@
+Build a real-time Indian language translation mobile app using React Native (Expo). 
+The app must use the Sarvam AI REST API as the sole translation backend.
+
+---
+
+## APP NAME
+"BhaashAI" — Real-Time Indian Language Translator
+
+---
+
+## SARVAM AI API DETAILS
+
+Base URL: https://api.sarvam.ai
+Authentication: Header → "api-subscription-key": "<USER_SARVAM_API_KEY>"
+
+### Endpoints to integrate:
+
+1. **Text Translation** (Primary)
+   POST https://api.sarvam.ai/translate
+   Body:
+   {
+     "input": "<text to translate>",
+     "source_language_code": "<source_lang or 'auto'>",
+     "target_language_code": "<target_lang>",
+     "speaker_gender": "Male",
+     "mode": "formal",
+     "model": "sarvam-translate:v1",
+     "enable_preprocessing": true
+   }
+   Response field: translated_text
+
+2. **Language Detection**
+   POST https://api.sarvam.ai/detect-language
+   Body: { "input": "<text>" }
+
+3. **Transliteration** (script conversion, optional toggle)
+   POST https://api.sarvam.ai/transliterate
+
+---
+
+## SUPPORTED LANGUAGES (all 22 official Indian languages + English)
+
+Display as a scrollable picker. Language codes:
+- en-IN: English
+- hi-IN: Hindi
+- bn-IN: Bengali
+- gu-IN: Gujarati
+- kn-IN: Kannada
+- ml-IN: Malayalam
+- mr-IN: Marathi
+- od-IN: Odia
+- pa-IN: Punjabi
+- ta-IN: Tamil
+- te-IN: Telugu
+- as-IN: Assamese
+- brx-IN: Bodo
+- doi-IN: Dogri
+- kok-IN: Konkani
+- ks-IN: Kashmiri
+- mai-IN: Maithili
+- mni-IN: Manipuri
+- ne-IN: Nepali
+- sa-IN: Sanskrit
+- sat-IN: Santali
+- sd-IN: Sindhi
+- ur-IN: Urdu
+
+---
+
+## SCREENS & ARCHITECTURE
+
+### Screen 1: Home / Translator Screen
+- Top bar: App name "BhaashAI" + Settings icon
+- Language selector row:
+  - Left pill: Source language (default: "Auto Detect")
+  - Center: Swap languages button (↔)
+  - Right pill: Target language (default: hi-IN Hindi)
+- Input text area (large, multiline):
+  - Placeholder: "Type or paste text here..."
+  - Character counter (max 1000 chars)
+  - Clear (✕) button inside input
+  - Mic icon for voice input (reserved for future)
+- Real-time translation behavior:
+  - Debounce API call by 600ms after user stops typing
+  - Show loading spinner inside output box while fetching
+  - Display translated text in output card below input
+- Output card:
+  - Shows translated text in large readable font
+  - Copy to clipboard button
+  - Share button (native share sheet)
+  - If transliteration toggle is ON, show romanized version below translated text
+- Bottom toggle strip:
+  - "Formal / Colloquial" mode toggle
+  - "Transliteration" toggle (show roman script of output)
+  - "Auto Detect Source" toggle
+
+### Screen 2: Language Picker Modal
+- Full screen modal with search bar at top
+- Grouped list: "Recently Used" section + all 23 languages alphabetically
+- Each row: Language name in English + native script name + language code
+- Tap to select and close modal
+
+### Screen 3: History Screen (tab)
+- List of past translations (stored locally with AsyncStorage)
+- Each card: source text snippet, translated snippet, language pair, timestamp
+- Swipe to delete individual entries
+- "Clear All" button in header
+
+### Screen 4: Settings Screen (tab)
+- API Key input field (stored in SecureStore, never in plain AsyncStorage)
+- Default source/target language preferences
+- Translation mode preference (formal/colloquial)
+- App theme toggle (Light / Dark)
+- About section: API credits link, Sarvam AI attribution
+
+---
+
+## NAVIGATION
+Bottom tab navigator with 3 tabs:
+1. 🌐 Translate (Home)
+2. 🕓 History
+3. ⚙️ Settings
+
+---
+
+## REAL-TIME TRANSLATION LOGIC
+```javascript
+// Pseudocode for debounced real-time translation
+const handleTextChange = (text) => {
+  setInputText(text);
+  clearTimeout(debounceTimer);
+  if (text.trim().length > 2) {
+    debounceTimer = setTimeout(() => {
+      callSarvamTranslate(text);
+    }, 600);
+  }
+};
+
+const callSarvamTranslate = async (text) => {
+  setLoading(true);
+  const response = await fetch("https://api.sarvam.ai/translate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-subscription-key": apiKey
+    },
+    body: JSON.stringify({
+      input: text,
+      source_language_code: autoDetect ? "auto" : sourceLang,
+      target_language_code: targetLang,
+      speaker_gender: "Male",
+      mode: formalMode ? "formal" : "modern-colloquial",
+      model: "sarvam-translate:v1",
+      enable_preprocessing: true
+    })
+  });
+  const data = await response.json();
+  setTranslatedText(data.translated_text);
+  setDetectedLang(data.source_language_code);
+  setLoading(false);
+};
+```
+
+---
+
+## UI/UX DESIGN REQUIREMENTS
+
+- Color palette: Deep saffron (#FF6B00) primary, white/light grey backgrounds, dark navy text
+- Typography: Use system fonts, source text in 16px, translated text in 18px bold
+- Native Indian feel: Subtle lotus or chakra watermark in background
+- Smooth animations: Language swap with flip animation, loading skeleton for output
+- Haptic feedback on language swap and copy actions
+- Fully accessible: Support large font sizes, RTL languages (Urdu, Sindhi, Kashmiri)
+- Dark mode fully supported
+
+---
+
+## ERROR HANDLING
+- If API key missing → redirect to Settings with "Add your Sarvam API key to begin"
+- If API rate limit hit → show toast "Translation limit reached, please wait"
+- If network error → show retry button with last attempted text cached
+- If text too long (>1000 chars) → truncate with warning banner
+
+---
+
+## DEPENDENCIES TO USE
+- expo-clipboard (copy to clipboard)
+- expo-sharing (share translated text)
+- expo-secure-store (store API key securely)
+- @react-native-async-storage/async-storage (history)
+- expo-haptics (haptic feedback)
+- react-native-reanimated (animations)
+
+---
+
+## WHAT NOT TO BUILD (out of scope for v1)
+- No voice input / speech-to-text (reserved for v2)
+- No text-to-speech output (reserved for v2)
+- No user accounts or cloud sync
+- No PDF translation
+
+---
+
+Generate all screens, navigation, API integration, and state management. 
+Make it production-ready, clean, and deploy-ready via Expo Go.
