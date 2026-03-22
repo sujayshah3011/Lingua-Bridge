@@ -129,9 +129,9 @@ const MicButton: React.FC<MicButtonProps> = ({
         style={[
           styles.ring,
           {
-            width: size * pulse2,
-            height: size * pulse2,
-            borderRadius: (size * pulse2) / 2,
+            width: Animated.multiply(pulse2, size),
+            height: Animated.multiply(pulse2, size),
+            borderRadius: Animated.divide(Animated.multiply(pulse2, size), 2),
             borderColor: ringColor,
             opacity: opacity2,
           },
@@ -142,9 +142,9 @@ const MicButton: React.FC<MicButtonProps> = ({
         style={[
           styles.ring,
           {
-            width: size * pulse1,
-            height: size * pulse1,
-            borderRadius: (size * pulse1) / 2,
+            width: Animated.multiply(pulse1, size),
+            height: Animated.multiply(pulse1, size),
+            borderRadius: Animated.divide(Animated.multiply(pulse1, size), 2),
             borderColor: ringColor,
             opacity: opacity1,
           },

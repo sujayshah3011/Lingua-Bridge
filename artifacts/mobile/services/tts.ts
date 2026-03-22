@@ -6,7 +6,9 @@
  * that expo-av can load and play.
  */
 
-import * as FileSystem from "expo-file-system";
+// expo-file-system 17+ moved legacy helpers (cacheDirectory, writeAsStringAsync, EncodingType)
+// to the /legacy subpath — import from there for backwards-compatible usage.
+import * as FileSystem from "expo-file-system/legacy";
 
 const SARVAM_BASE = "https://api.sarvam.ai";
 

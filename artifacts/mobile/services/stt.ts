@@ -1,10 +1,8 @@
 /**
  * Sarvam AI — Speech-to-Text Service
  *
- * Uses the `/speech-to-text-translate` REST endpoint for reliable
- * cross-platform audio transcription. The WebSocket streaming version
- * requires raw PCM capture (not available in Expo Go) and is intended
- * for EAS native builds — see the comments below for that implementation.
+ * Uses the `/speech-to-text-translate` REST endpoint.
+ * Accepted formats: WAV, MP3, M4A, OGG (up to 25 MB).
  */
 
 const SARVAM_BASE = "https://api.sarvam.ai";
@@ -14,40 +12,64 @@ export interface STTResult {
   languageCode?: string;
 }
 
+/** Derive the correct MIME type and a clean filename from the recorded URI. */
+function audioMeta(uri: string): { mimeType: string; filename: string } {
+  const ext = uri.split(".").pop()?.toLowerCase() ?? "";
+  switch (ext) {
+    case "wav":
+      return { mimeType: "audio/wav", filename: "recording.wav" };
+    case "mp3":
+      return { mimeType: "audio/mpeg", filename: "recording.mp3" };
+    case "ogg":
+      return { mimeType: "audio/ogg", filename: "recording.ogg" };
+    case "m4a":
+    case "aac":
+      return { mimeType: "audio/m4a", filename: "recording.m4a" };
+    case "caf":
+      // Core Audio Format from iOS — re-label so the API recognises it.
+      // The audio is AAC-encoded inside a CAF container which many APIs handle.
+      return { mimeType: "audio/x-caf", filename: "recording.caf" };
+    default:
+      return { mimeType: "audio/m4a", filename: "recording.m4a" };
+  }
+}
+
 /**
  * Transcribe a recorded audio file URI via the Sarvam REST API.
- * Accepts WAV, M4A, MP3, and OGG files up to 25MB.
+ * Accepts WAV, MP3, M4A, OGG files up to 25 MB.
  */
 export async function transcribeAudio(
   fileUri: string,
   apiKey: string,
   languageCode: string = "unknown"
 ): Promise<STTResult> {
-  // Build multipart form data — React Native requires the file object shape
+  const { mimeType, filename } = audioMeta(fileUri);
+
   const formData = new FormData();
   formData.append("file", {
     uri: fileUri,
-    type: "audio/wav",
-    name: "recording.wav",
+    type: mimeType,
+    name: filename,
   } as unknown as Blob);
-  formData.append("model", "saaras:v3");
-  formData.append("language_code", languageCode);
-  formData.append("mode", "transcribe");
+  formData.append("model", "saaras:v2");
+  formData.append("language_code", languageCode === "unknown" ? "unknown" : languageCode);
   formData.append("with_timestamps", "false");
 
   const res = await fetch(`${SARVAM_BASE}/speech-to-text-translate`, {
     method: "POST",
     headers: {
       "api-subscription-key": apiKey,
-      // NOTE: Do NOT set Content-Type manually — fetch sets it with the
-      // correct boundary when body is FormData.
+      // Do NOT set Content-Type — fetch adds it with the correct boundary.
     },
     body: formData,
   });
 
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (res.status === 401) throw new Error("INVALID_KEY");
-  if (!res.ok) throw new Error(`STT_ERROR_${res.status}`);
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `STT_ERROR_${res.status}`);
+  }
 
   const data = await res.json();
   return {
@@ -61,11 +83,6 @@ export async function transcribeAudio(
  *
  * In a native build with raw PCM capture (e.g. via react-native-audio-record),
  * this gives real-time partial transcripts with < 300ms latency.
- *
- * Usage:
- *   const ws = openStreamingSTT(apiKey, onPartial, onFinal, onError);
- *   // Send audio chunks: ws.sendAudioChunk(base64PcmChunk)
- *   // Stop: ws.close()
  */
 export function openStreamingSTT(
   apiKey: string,
@@ -73,21 +90,27 @@ export function openStreamingSTT(
   onFinalTranscript: (text: string) => void,
   onError: (err: Error) => void
 ) {
-  const ws = new WebSocket(
+  // React Native extends WebSocket with an optional options arg for headers,
+  // but the standard TS lib doesn't include it — cast to bypass that check.
+  const WSClass = WebSocket as new (
+    url: string,
+    protocols?: string[],
+    options?: { headers?: Record<string, string> }
+  ) => WebSocket;
+  const ws = new WSClass(
     "wss://api.sarvam.ai/speech-to-text-translate/streaming",
     [],
-    { headers: { "api-subscription-key": apiKey } } as unknown as string[]
+    { headers: { "api-subscription-key": apiKey } }
   );
 
   ws.onopen = () => {
-    // Send configuration as the first message
     ws.send(
       JSON.stringify({
         type: "config",
         data: {
           sample_rate: 16000,
           encoding: "pcm_s16le",
-          model: "saaras:v3",
+          model: "saaras:v2",
           language_code: "unknown",
           mode: "transcribe",
           vad_signals: true,
@@ -107,11 +130,6 @@ export function openStreamingSTT(
         case "final_transcript":
           onFinalTranscript(msg.transcript ?? "");
           break;
-        case "vad_speech_start":
-        case "vad_speech_end":
-        case "end_of_utterance":
-          // VAD signals — handle in caller if needed
-          break;
       }
     } catch {}
   };
@@ -120,19 +138,16 @@ export function openStreamingSTT(
   ws.onclose = () => {};
 
   return {
-    /** Send a base64-encoded 16kHz mono 16-bit PCM chunk */
     sendAudioChunk: (base64Chunk: string) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: "audio", data: base64Chunk }));
       }
     },
-    /** Force the server to finalize the current utterance */
     flush: () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: "flush" }));
       }
     },
-    /** Gracefully close the session */
     close: () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: "end" }));

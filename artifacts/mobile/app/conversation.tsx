@@ -13,6 +13,7 @@ import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+
 import {
   ActivityIndicator,
   Alert,
@@ -38,6 +39,30 @@ import { translateText } from "@/services/sarvam";
 
 type Speaker = "A" | "B";
 type SpeakerState = "idle" | "recording" | "processing";
+
+/** WAV on iOS (Sarvam STT accepts WAV/M4A/MP3/OGG — not CAF), M4A on Android */
+const STT_RECORDING_OPTIONS: Audio.RecordingOptions = {
+  ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
+  ios: {
+    extension: ".wav",
+    outputFormat: Audio.IOSOutputFormat.LINEARPCM,
+    audioQuality: Audio.IOSAudioQuality.HIGH,
+    sampleRate: 16000,
+    numberOfChannels: 1,
+    bitRate: 128000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+  android: {
+    extension: ".m4a",
+    outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+    audioEncoder: Audio.AndroidAudioEncoder.AAC,
+    sampleRate: 16000,
+    numberOfChannels: 1,
+    bitRate: 128000,
+  },
+};
 
 export default function ConversationScreen() {
   const { apiKey, isDark } = useApp();
@@ -112,9 +137,7 @@ export default function ConversationScreen() {
           playsInSilentModeIOS: true,
         });
         const recording = new Audio.Recording();
-        await recording.prepareToRecordAsync(
-          Audio.RecordingOptionsPresets.HIGH_QUALITY
-        );
+        await recording.prepareToRecordAsync(STT_RECORDING_OPTIONS);
         await recording.startAsync();
         recordingRef.current = recording;
 
