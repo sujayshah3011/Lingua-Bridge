@@ -42,9 +42,8 @@ export async function translateText(
     body: JSON.stringify(body),
   });
 
-  if (res.status === 429) {
-    throw new Error("RATE_LIMIT");
-  }
+  if (res.status === 401) throw new Error("INVALID_KEY");
+  if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `HTTP ${res.status}`);

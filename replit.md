@@ -41,26 +41,75 @@ artifacts-monorepo/
 Real-Time Indian Language Translator using Sarvam AI REST API.
 
 ### Features
-- **23 Indian languages + English** supported (all 22 official Indian languages)
-- **Real-time translation** with 600ms debounce via Sarvam AI API
-- **Language auto-detection** toggle
-- **Formal / Colloquial** mode toggle
-- **Transliteration** toggle (romanized script)
-- **Translation history** persisted via AsyncStorage (swipe to delete)
-- **Secure API key storage** via expo-secure-store
-- **Dark mode** fully supported
-- **iOS Liquid Glass tabs** (iOS 26+)
+
+**V1 — Text Translation**
+- 23 Indian languages + English (all 22 official Indian languages)
+- Real-time translation with 600ms debounce via Sarvam AI API
+- Language auto-detection toggle
+- Formal / Colloquial mode toggle
+- Transliteration toggle (romanized script)
+- Translation history persisted via AsyncStorage (swipe to delete)
+- Secure API key storage via expo-secure-store (web fallback to AsyncStorage)
+- Dark mode fully supported
+- iOS Liquid Glass tabs (iOS 26+)
+
+**V2 — Voice Translation (Voice tab)**
+- Record audio with expo-av (HIGH_QUALITY preset → m4a/caf)
+- Send to Sarvam `/speech-to-text-translate` REST API for transcription (saaras:v3)
+- Auto-translate transcript via `/translate`
+- TTS playback via `/text-to-speech` (bulbul:v3) with per-language voice map
+- Language-specific voice map (meera/arjun/valli/pavithra/shreya/sobha etc.)
+- Audio written to device cache and played via expo-av Sound
+- Web: informational message (voice capture not supported on web)
+
+**V3 — Conversation Mode (`/conversation` stack screen)**
+- Dual-speaker interface (top half Speaker A, bottom half Speaker B flipped 180°)
+- Each speaker taps their mic → records → STT → translate → TTS plays for opposite speaker
+- Chat bubble UI with original + translation, timestamps
+- Speaker A bubbles: saffron, Speaker B: navy
+- Language picker for each speaker independently
+- Navigate from Voice tab header button
+
+**V4 — Production Polish**
+- Onboarding carousel (3 slides, first-launch only, AsyncStorage flag)
+  - Slide 1: Speak any Indian language
+  - Slide 2: Instant real-time translation
+  - Slide 3: Enter Sarvam API key (inline input)
+- Phrasebook tab: 30 pre-loaded phrases × 6 categories × 8 major languages (offline, no API)
+  - Categories: Greetings, Food, Travel, Emergency, Numbers, Shopping
+  - Star/favourite phrases, copy to clipboard, per-language display
+- Usage dashboard in Settings: chars translated, audio seconds, estimated cost (₹30/10K chars)
+  - Reset counters button
+- app.json: bundle identifiers, mic permissions, Android RECORD_AUDIO
+
+### Tab Structure (5 tabs)
+| Tab | Screen |
+|-----|--------|
+| Translate | Text translator (index.tsx) |
+| Voice | Voice recording + TTS (voice.tsx) |
+| Phrases | Offline phrasebook (phrasebook.tsx) |
+| History | Translation history (history.tsx) |
+| Settings | API key, theme, usage, about (settings.tsx) |
 
 ### Key Files
-- `app/_layout.tsx` — Root layout with AppProvider, QueryClient, fonts
-- `app/(tabs)/_layout.tsx` — 3-tab nav (Translate, History, Settings) with NativeTabs/ClassicTabs
-- `app/(tabs)/index.tsx` — Main translate screen
-- `app/(tabs)/history.tsx` — Translation history with swipe-to-delete
-- `app/(tabs)/settings.tsx` — API key, theme, preferences
-- `context/AppContext.tsx` — Global app state (API key, languages, history, theme)
+- `app/_layout.tsx` — Root layout; checks onboarding, registers conversation route
+- `app/(tabs)/_layout.tsx` — 5-tab nav with NativeTabs (iOS 26+) / ClassicTabs fallback
+- `app/(tabs)/index.tsx` — Text translate screen
+- `app/(tabs)/voice.tsx` — Voice tab (mic + STT + TTS)
+- `app/(tabs)/phrasebook.tsx` — Offline phrasebook
+- `app/(tabs)/history.tsx` — Translation history
+- `app/(tabs)/settings.tsx` — Settings + usage dashboard
+- `app/onboarding.tsx` — First-launch onboarding carousel (stack screen)
+- `app/conversation.tsx` — Dual-speaker conversation mode (stack modal)
+- `context/AppContext.tsx` — Global state (API key, languages, history, theme, usage)
 - `services/sarvam.ts` — Sarvam AI API client (translate, detect, transliterate)
+- `services/stt.ts` — Speech-to-text (REST + WebSocket streaming implementation)
+- `services/tts.ts` — Text-to-speech (REST, writes WAV to cache, returns URI)
+- `data/phrases.ts` — 30 pre-loaded phrases in 8 languages across 6 categories
+- `components/MicButton.tsx` — Animated pulsing mic button with dual ring effect
+- `components/ConversationBubble.tsx` — Chat bubble for conversation mode
 - `constants/languages.ts` — All 23 language definitions with native scripts
-- `constants/colors.ts` — Saffron (#FF6B00) primary, navy text, light/dark themes
+- `constants/colors.ts` — COLORS token + Colors.light/dark theme objects
 
 ### Color Palette
 - Primary: `#FF6B00` (deep saffron orange)
@@ -68,10 +117,21 @@ Real-Time Indian Language Translator using Sarvam AI REST API.
 - Background dark: `#0A0F18` (deep navy)
 - Text dark: `#0D1B2A`
 
-### API
+### Sarvam AI API
 - Base URL: `https://api.sarvam.ai`
 - Auth: `api-subscription-key` header
-- Endpoints: `/translate`, `/detect-language`, `/transliterate`
+- Endpoints: `/translate`, `/detect-language`, `/transliterate`, `/speech-to-text-translate`, `/text-to-speech`
+- STT model: `saaras:v3`
+- TTS model: `bulbul:v3`
+- Translate model: `sarvam-translate:v1`
+
+### Storage Keys
+- `bhaashai_history` — AsyncStorage: translation history (max 200)
+- `bhaashai_prefs` — AsyncStorage: source/target lang, theme, formal mode, recents
+- `bhaashai_usage` — AsyncStorage: chars translated, audio seconds
+- `bhaashai_starred_phrases` — AsyncStorage: starred phrase IDs
+- `onboarding_completed` — AsyncStorage: boolean flag
+- `sarvam_api_key` — SecureStore (web: AsyncStorage with `__secure_` prefix)
 
 ## TypeScript & Composite Projects
 

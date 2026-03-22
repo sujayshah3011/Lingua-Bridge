@@ -32,11 +32,11 @@ import { Feather } from "@expo/vector-icons";
 import { useApp } from "@/context/AppContext";
 import { LANGUAGES } from "@/constants/languages";
 import { Colors } from "@/constants/colors";
-import LanguagePickerModal from "@/components/LanguagePickerModal";
+import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import MicButton from "@/components/MicButton";
 import { transcribeAudio } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
-import { callSarvamTranslate } from "@/services/sarvam";
+import { translateText } from "@/services/sarvam";
 
 type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
@@ -178,25 +178,25 @@ export default function VoiceScreen() {
       if (result.languageCode) setDetectedLang(result.languageCode);
       setStatusText("Translating…");
 
-      const translated = await callSarvamTranslate({
-        sourceText: result.transcript,
-        sourceLang: result.languageCode ?? "auto",
-        targetLang,
-        mode: "formal",
+      const { translatedText } = await translateText({
+        input: result.transcript,
+        sourceLanguageCode: result.languageCode ?? "unknown",
+        targetLanguageCode: targetLang,
+        formalMode: true,
         apiKey,
       });
 
-      setTranslation(translated || "Translation unavailable.");
+      setTranslation(translatedText || "Translation unavailable.");
       setStatusText("");
 
       // Track characters and save to history
       incrementUsage(
         "charsTranslated",
-        result.transcript.length + (translated?.length ?? 0)
+        result.transcript.length + (translatedText?.length ?? 0)
       );
       addToHistory({
         sourceText: result.transcript,
-        translatedText: translated ?? "",
+        translatedText: translatedText ?? "",
         sourceLang: result.languageCode ?? "auto",
         targetLang,
         mode: "formal",
@@ -480,22 +480,23 @@ export default function VoiceScreen() {
       <LanguagePickerModal
         visible={showSourcePicker}
         onClose={() => setShowSourcePicker(false)}
-        onSelect={(code) => {
-          setVoiceSourceLang(code);
-          addRecentLang(code);
+        onSelect={(lang) => {
+          setVoiceSourceLang(lang.code);
+          addRecentLang(lang.code);
           setShowSourcePicker(false);
         }}
+        mode="source"
         selectedCode={voiceSourceLang}
-        showAutoDetect
       />
       <LanguagePickerModal
         visible={showTargetPicker}
         onClose={() => setShowTargetPicker(false)}
-        onSelect={(code) => {
-          setTargetLang(code);
-          addRecentLang(code);
+        onSelect={(lang) => {
+          setTargetLang(lang.code);
+          addRecentLang(lang.code);
           setShowTargetPicker(false);
         }}
+        mode="target"
         selectedCode={targetLang}
       />
     </SafeAreaView>

@@ -1,6 +1,7 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Linking,
@@ -16,6 +17,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/hooks/useTheme";
+
+const USAGE_KEY = "bhaashai_usage";
+
+interface UsageData {
+  charsTranslated: number;
+  audioSeconds: number;
+}
 
 type ThemeOption = "system" | "light" | "dark";
 
@@ -37,6 +45,28 @@ export default function SettingsScreen() {
   const [keyInput, setKeyInput] = useState(apiKey);
   const [showKey, setShowKey] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [usage, setUsage] = useState<UsageData>({ charsTranslated: 0, audioSeconds: 0 });
+
+  useEffect(() => {
+    AsyncStorage.getItem(USAGE_KEY).then((raw) => {
+      if (raw) setUsage(JSON.parse(raw));
+    });
+  }, []);
+
+  const resetUsage = () => {
+    Alert.alert("Reset Usage", "Clear all usage counters?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Reset",
+        style: "destructive",
+        onPress: async () => {
+          const empty: UsageData = { charsTranslated: 0, audioSeconds: 0 };
+          await AsyncStorage.setItem(USAGE_KEY, JSON.stringify(empty));
+          setUsage(empty);
+        },
+      },
+    ]);
+  };
 
   const handleSaveKey = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -286,6 +316,61 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
 
+        {/* Usage */}
+        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
+          USAGE
+        </Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <View style={styles.usageRow}>
+            <View style={styles.usageStat}>
+              <Feather name="type" size={16} color={theme.primary} />
+              <Text style={[styles.usageValue, { color: theme.text }]}>
+                {usage.charsTranslated.toLocaleString()}
+              </Text>
+              <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
+                Characters translated
+              </Text>
+            </View>
+            <View style={[styles.usageDivider, { backgroundColor: theme.border }]} />
+            <View style={styles.usageStat}>
+              <Feather name="mic" size={16} color={theme.primary} />
+              <Text style={[styles.usageValue, { color: theme.text }]}>
+                {Math.round(usage.audioSeconds)}s
+              </Text>
+              <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
+                Audio transcribed
+              </Text>
+            </View>
+            <View style={[styles.usageDivider, { backgroundColor: theme.border }]} />
+            <View style={styles.usageStat}>
+              <Feather name="credit-card" size={16} color={theme.primary} />
+              <Text style={[styles.usageValue, { color: theme.text }]}>
+                ~₹{((usage.charsTranslated / 10000) * 30).toFixed(2)}
+              </Text>
+              <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
+                Est. API cost
+              </Text>
+            </View>
+          </View>
+          <Pressable
+            onPress={resetUsage}
+            style={({ pressed }) => [
+              styles.resetBtn,
+              { borderColor: theme.border, opacity: pressed ? 0.6 : 1 },
+            ]}
+          >
+            <Feather name="rotate-ccw" size={13} color={theme.textMuted} />
+            <Text style={[styles.resetBtnText, { color: theme.textMuted }]}>
+              Reset counters
+            </Text>
+          </Pressable>
+        </View>
+
         {/* About */}
         <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
           ABOUT
@@ -473,5 +558,41 @@ const styles = StyleSheet.create({
   aboutLinkText: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
+  },
+  usageRow: {
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+  usageStat: {
+    flex: 1,
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: 4,
+  },
+  usageDivider: {
+    width: StyleSheet.hairlineWidth,
+    marginVertical: 4,
+  },
+  usageValue: {
+    fontSize: 18,
+    fontFamily: "Inter_700Bold",
+  },
+  usageLabel: {
+    fontSize: 10,
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+  },
+  resetBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  resetBtnText: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
   },
 });

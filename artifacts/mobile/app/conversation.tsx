@@ -31,10 +31,10 @@ import { LANGUAGES } from "@/constants/languages";
 import { Colors } from "@/constants/colors";
 import ConversationBubble, { Message } from "@/components/ConversationBubble";
 import MicButton from "@/components/MicButton";
-import LanguagePickerModal from "@/components/LanguagePickerModal";
+import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import { transcribeAudio } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
-import { callSarvamTranslate } from "@/services/sarvam";
+import { translateText } from "@/services/sarvam";
 
 type Speaker = "A" | "B";
 type SpeakerState = "idle" | "recording" | "processing";
@@ -179,11 +179,11 @@ export default function ConversationScreen() {
           return;
         }
 
-        const translated = await callSarvamTranslate({
-          sourceText: result.transcript,
-          sourceLang: result.languageCode ?? sourceLang,
-          targetLang: targetLangCode,
-          mode: "formal",
+        const { translatedText: translated } = await translateText({
+          input: result.transcript,
+          sourceLanguageCode: result.languageCode ?? sourceLang,
+          targetLanguageCode: targetLangCode,
+          formalMode: true,
           apiKey,
         });
 
@@ -390,19 +390,21 @@ export default function ConversationScreen() {
       <LanguagePickerModal
         visible={showPickerA}
         onClose={() => setShowPickerA(false)}
-        onSelect={(code) => {
-          setLangA(code);
+        onSelect={(lang) => {
+          setLangA(lang.code);
           setShowPickerA(false);
         }}
+        mode="source"
         selectedCode={langA}
       />
       <LanguagePickerModal
         visible={showPickerB}
         onClose={() => setShowPickerB(false)}
-        onSelect={(code) => {
-          setLangB(code);
+        onSelect={(lang) => {
+          setLangB(lang.code);
           setShowPickerB(false);
         }}
+        mode="target"
         selectedCode={langB}
       />
     </SafeAreaView>

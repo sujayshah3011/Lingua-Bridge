@@ -33,7 +33,7 @@ import {
   PHRASES,
   getPhrasesByCategory,
 } from "@/data/phrases";
-import LanguagePickerModal from "@/components/LanguagePickerModal";
+import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 
 const STARRED_KEY = "bhaashai_starred_phrases";
 
@@ -236,10 +236,11 @@ export default function PhrasebookScreen() {
       <LanguagePickerModal
         visible={showLangPicker}
         onClose={() => setShowLangPicker(false)}
-        onSelect={(code) => {
-          setDisplayLang(code);
+        onSelect={(lang) => {
+          setDisplayLang(lang.code);
           setShowLangPicker(false);
         }}
+        mode="target"
         selectedCode={displayLang}
       />
     </SafeAreaView>

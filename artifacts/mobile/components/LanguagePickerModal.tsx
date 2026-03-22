@@ -204,10 +204,10 @@ export function LanguagePickerModal({
           data={sections}
           keyExtractor={(item, idx) =>
             item.type === "lang"
-              ? item.data.code
+              ? `lang-${idx}-${item.data.code}`
               : item.type === "header"
                 ? `h-${item.title}-${idx}`
-                : "auto"
+                : `auto-${idx}`
           }
           contentContainerStyle={{
             paddingBottom: insets.bottom + 16,
