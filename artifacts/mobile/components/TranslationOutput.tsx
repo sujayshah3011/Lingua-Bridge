@@ -27,6 +27,8 @@ interface TranslationOutputProps {
   showTransliteration: boolean;
   targetLang: string;
   onCopy?: () => void;
+  onSpeak?: () => void;
+  isSpeaking?: boolean;
 }
 
 export function TranslationOutput({
@@ -37,6 +39,8 @@ export function TranslationOutput({
   showTransliteration,
   targetLang,
   onCopy,
+  onSpeak,
+  isSpeaking = false,
 }: TranslationOutputProps) {
   const { theme, isDark } = useTheme();
   const [copied, setCopied] = useState(false);
@@ -65,6 +69,12 @@ export function TranslationOutput({
     }
   };
 
+  const handleSpeak = async () => {
+    if (!translatedText || !onSpeak) return;
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onSpeak();
+  };
+
   return (
     <View
       style={[
@@ -90,6 +100,29 @@ export function TranslationOutput({
           )}
         </View>
         <View style={styles.actions}>
+          {/* Speak button — hidden on web where file system TTS isn't available */}
+          {Platform.OS !== "web" && !!translatedText && !!onSpeak && (
+            <Pressable
+              onPress={handleSpeak}
+              hitSlop={12}
+              disabled={isSpeaking}
+              style={({ pressed }) => [
+                styles.actionBtn,
+                {
+                  backgroundColor: isSpeaking
+                    ? theme.primary + "20"
+                    : theme.surfaceSecondary,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              {isSpeaking ? (
+                <ActivityIndicator size={14} color={theme.primary} />
+              ) : (
+                <Feather name="volume-2" size={15} color={theme.primary} />
+              )}
+            </Pressable>
+          )}
           <Pressable
             onPress={handleCopy}
             hitSlop={12}

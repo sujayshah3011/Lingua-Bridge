@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -27,6 +28,7 @@ import {
   translateText,
   transliterateText,
 } from "@/services/sarvam";
+import { synthesizeSpeech } from "@/services/tts";
 
 export default function TranslateScreen() {
   const {
@@ -58,9 +60,11 @@ export default function TranslateScreen() {
     visible: boolean;
   }>({ msg: "", type: "info", visible: false });
   const [hasShownCopyToast, setHasShownCopyToast] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTranslatedRef = useRef<string>("");
+  const soundRef = useRef<Audio.Sound | null>(null);
 
   const showToast = useCallback(
     (msg: string, type: "info" | "error" | "success" = "info") => {
@@ -198,6 +202,53 @@ export default function TranslateScreen() {
     }
   };
 
+  const handleSpeak = useCallback(async () => {
+    if (!translatedText || !apiKey || isSpeaking) return;
+    try {
+      setIsSpeaking(true);
+      // Unload any previously playing sound
+      if (soundRef.current) {
+        await soundRef.current.stopAsync().catch(() => {});
+        await soundRef.current.unloadAsync().catch(() => {});
+        soundRef.current = null;
+      }
+      await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+      const uri = await synthesizeSpeech(translatedText, targetLang, apiKey);
+      const { sound } = await Audio.Sound.createAsync(
+        { uri },
+        { shouldPlay: true }
+      );
+      soundRef.current = sound;
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (!status.isLoaded || status.didJustFinish) {
+          setIsSpeaking(false);
+          sound.unloadAsync().catch(() => {});
+          soundRef.current = null;
+        }
+      });
+    } catch (err: unknown) {
+      setIsSpeaking(false);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg === "INVALID_KEY") {
+        showToast("Invalid API key — check Settings", "error");
+      } else if (msg === "RATE_LIMIT") {
+        showToast("Rate limit reached, please wait", "error");
+      } else {
+        showToast("Could not play audio", "error");
+      }
+    }
+  }, [translatedText, targetLang, apiKey, isSpeaking, showToast]);
+
+  // Clean up audio when translated text changes or screen unmounts
+  useEffect(() => {
+    return () => {
+      soundRef.current?.stopAsync().catch(() => {});
+      soundRef.current?.unloadAsync().catch(() => {});
+      soundRef.current = null;
+      setIsSpeaking(false);
+    };
+  }, [translatedText]);
+
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
 
   return (
@@ -269,6 +320,8 @@ export default function TranslateScreen() {
             showTransliteration={transliteration}
             targetLang={targetLang}
             onCopy={handleCopy}
+            onSpeak={handleSpeak}
+            isSpeaking={isSpeaking}
           />
           <View style={styles.gap} />
           <ToggleStrip />
