@@ -1,0 +1,321 @@
+You already built the base BhaashAI translation app (v1) with text translation,
+language picker, history, and settings. Now COMPLETE the app to full production 
+across ALL versions: v2 (Voice), v3 (Conversation Mode), and v4 (Polish & Deploy).
+
+Do NOT rebuild what already exists. Only ADD the following.
+
+---
+
+## ═══════════════════════════════
+## V2: REAL-TIME VOICE TRANSLATION
+## ═══════════════════════════════
+
+### FEATURE 1 — Live Mic → Real-Time Transcription (STT via WebSocket)
+
+Use Sarvam's WebSocket Streaming STT endpoint:
+wss://api.sarvam.ai/speech-to-text-translate/streaming
+
+Model: saaras:v3 (do NOT use saarika — it's being deprecated)
+Audio format: PCM raw, 16kHz, mono, 16-bit little-endian
+Auth header on WS connect: { "api-subscription-key": "<USER_API_KEY>" }
+
+### WebSocket Init Config (send as first message after connect):
+```json
+{
+  "type": "config",
+  "data": {
+    "sample_rate": 16000,
+    "encoding": "pcm_s16le",
+    "model": "saaras:v3",
+    "language_code": "unknown",
+    "mode": "transcribe",
+    "vad_signals": true,
+    "high_vad_sensitivity": false
+  }
+}
+```
+
+### Live Audio Pipeline (React Native):
+1. Use `expo-av` or `react-native-audio-record` to capture raw PCM audio
+2. Capture in 100ms chunks → convert to base64 → send to WebSocket as:
+   { "type": "audio", "data": "<base64_pcm_chunk>" }
+3. Receive partial + final transcripts from server:
+   - { "type": "partial_transcript", "transcript": "..." } → show in gray italics
+   - { "type": "final_transcript", "transcript": "..." } → show in full black text
+4. On "final_transcript" → immediately pipe the text into callSarvamTranslate()
+5. Show translation in output card LIVE as user speaks
+
+### VAD Events to handle:
+- { "type": "vad_speech_start" } → show pulsing mic animation
+- { "type": "vad_speech_end" } → show "Processing..." state
+- { "type": "end_of_utterance" } → finalize and send flush signal
+
+### Send flush signal to force finalize:
+{ "type": "flush" }
+
+### Send end signal when stopping:
+{ "type": "end" }
+
+---
+
+### FEATURE 2 — Speak Output (TTS via REST then WebSocket)
+
+#### TTS REST API (for translated text up to 500 chars):
+POST https://api.sarvam.ai/text-to-speech
+Headers: { "api-subscription-key": "<API_KEY>", "Content-Type": "application/json" }
+
+Body:
+```json
+{
+  "inputs": ["<translated_text>"],
+  "target_language_code": "<target_lang_code>",
+  "speaker": "meera",
+  "model": "bulbul:v3",
+  "pitch": 0,
+  "pace": 1.0,
+  "loudness": 1.5,
+  "speech_sample_rate": 22050,
+  "enable_preprocessing": true,
+  "eng_interpolation_wt": 123
+}
+```
+Response: { "audios": ["<base64_wav>"] }
+→ Decode base64 → play with expo-av Audio.Sound
+
+#### TTS WebSocket (for long text >500 chars or streaming voice agents):
+wss://api.sarvam.ai/text-to-speech/streaming
+
+Send config first:
+```json
+{
+  "type": "config",
+  "data": {
+    "target_language_code": "<lang>",
+    "speaker": "meera",
+    "model": "bulbul:v3",
+    "min_buffer_size": 150
+  }
+}
+```
+Then send: { "type": "text", "data": "<chunk of text>" }
+Receive: base64 audio chunks → buffer → play progressively with expo-av
+
+#### Speaker Voice Map (use these voices per language):
+- hi-IN → meera (female) or arjun (male)  
+- ta-IN → valli (female) or arjun (male)
+- te-IN → pavithra (female)
+- kn-IN → shreya (female)
+- ml-IN → sobha (female)
+- bn-IN → diya (female)
+- gu-IN → neel (male)
+- mr-IN → madhur (male)
+- pa-IN → amol (male)
+- od-IN → indira (female)
+- en-IN → ritu (female)
+
+---
+
+### FEATURE 3 — Voice Translator Screen (new tab)
+
+Add a 4th tab: 🎙️ Voice
+
+Screen layout:
+- Top: Source → Target language selector (same as Home tab)
+- Center: Large circular MIC BUTTON (80px diameter, pulsing red when active)
+  - Tap once → START recording → WebSocket connect → stream audio
+  - Tap again → STOP recording → flush → close WebSocket
+- Below mic: Real-time transcript card
+  - Shows partial transcript in gray italic
+  - Finalizes to black bold when utterance ends
+- Below transcript: Translation card (same as Home tab output)
+  - Translation appears automatically after each finalized utterance
+  - 🔊 SPEAK button: tap to play TTS of translated text
+- Bottom: "Conversation Mode" toggle (routes to Conversation Screen)
+
+---
+
+## ═══════════════════════════════════
+## V3: CONVERSATION MODE (LIVE 2-WAY)
+## ═══════════════════════════════════
+
+### FEATURE 4 — Dual-Speaker Conversation Screen
+
+New screen: /conversation (accessible from Voice tab toggle)
+
+Layout — split vertically:
+- TOP HALF (Speaker A):
+  - Language label: e.g., "हिंदी (Hindi)"
+  - Bubble feed: Speaker A's speech transcripts + translations
+  - MIC BUTTON A (tap and hold to speak, release to finalize)
+  
+- BOTTOM HALF (Speaker B, visually flipped 180°):
+  - Language label: e.g., "தமிழ் (Tamil)"
+  - Bubble feed: Speaker B's speech transcripts + translations
+  - MIC BUTTON B
+
+### Conversation Flow:
+1. A taps mic → WebSocket STT opens → A speaks in Language A
+2. Transcript fires → callSarvamTranslate(transcript, sourceA, targetB) → B sees translation
+3. TTS plays translated text aloud in Language B's voice
+4. B taps their mic → same reverse process
+
+### Bubble UI:
+- Speaker A bubbles: right-aligned, saffron (#FF6B00) background
+- Speaker B bubbles: left-aligned, deep navy background
+- Each bubble shows: [original text] + [translated text in smaller italic below]
+- Timestamp on each bubble
+
+### State management for conversation:
+```javascript
+const [messages, setMessages] = useState([]);
+// Each message: { id, speaker, original, translated, sourceLang, targetLang, timestamp }
+```
+
+---
+
+## ══════════════════════════════
+## V4: PRODUCTION POLISH & DEPLOY
+## ══════════════════════════════
+
+### FEATURE 5 — Speech-to-Text-Translate (Direct, No 2-step)
+
+For the Voice tab, add a toggle: "Direct Translate Mode"
+When ON, use Sarvam's STTT endpoint for one-shot speech→translation:
+
+POST https://api.sarvam.ai/speech-to-text-translate
+(multipart/form-data)
+- file: <audio.wav>
+- model: saaras:v3
+- mode: translate  ← directly translates to English or target lang
+
+WebSocket for streaming STTT:
+wss://api.sarvam.ai/speech-to-text-translate/streaming
+
+Config: same as STT WebSocket but set mode: "translate"
+
+---
+
+### FEATURE 6 — Phrase Book (Offline-first)
+
+New tab: 📚 Phrasebook
+
+- Pre-loaded with 100 essential Indian travel/daily phrases in all 22 languages
+- User can star/save any translation from History into Phrasebook
+- Offline access: stored in AsyncStorage, no API call needed
+- Categories: Greetings, Food, Travel, Emergency, Numbers, Shopping
+
+---
+
+### FEATURE 7 — Onboarding Flow (First Launch)
+
+3-screen onboarding carousel on first app launch:
+- Screen 1: "Speak any Indian language" — animated mic illustration
+- Screen 2: "Instant real-time translation" — split phone mockup illustration
+- Screen 3: "Enter your Sarvam API key to begin" — inline API key input + Save button
+
+Store onboarding_completed flag in AsyncStorage.
+Skip onboarding if flag is true.
+
+---
+
+### FEATURE 8 — Usage Dashboard (in Settings)
+
+Add a "Usage" card in Settings screen:
+- Characters translated (text API): counter stored locally
+- Seconds of audio transcribed (STT): counter stored locally
+- Estimated API credits used (approximate, based on Sarvam pricing):
+  - TTS: ₹30 per 10K characters
+  - STT: per second of audio
+- "Reset counters" button
+
+---
+
+### FEATURE 9 — Production Error Handling (complete all gaps)
+
+Handle ALL these states gracefully:
+
+| Scenario | UX Response |
+|---|---|
+| WebSocket STT drops mid-speech | Auto-reconnect once, show "Reconnecting..." |
+| TTS audio decode fails | Toast "Playback failed, try again" |
+| Translation returns empty string | Show "Translation unavailable" in output |
+| Mic permission denied | Full-screen modal: "Microphone access needed" + link to settings |
+| Device has no mic | Hide Voice tab entirely, show info toast |
+| API key invalid (401) | Banner: "Invalid API key — update in Settings" |
+| Network offline | Show offline banner + disable all API buttons |
+| Text input > 1000 chars | Truncate at 1000 with "Text too long" warning |
+
+---
+
+### FEATURE 10 — Accessibility & RTL Complete
+
+- RTL text rendering for Urdu (ur-IN), Sindhi (sd-IN), Kashmiri (ks-IN):
+  - Use `writingDirection: 'rtl'` on text inputs and output cards
+  - Detect RTL from target_language_code and flip dynamically
+- Dynamic font scaling: all text must scale properly from 12px to 24px
+- Screen reader labels on all icon buttons (mic, swap, speak, copy)
+- VoiceOver / TalkBack tested patterns on all interactive elements
+
+---
+
+### FEATURE 11 — App Config & Deployment Ready
+
+app.json config:
+```json
+{
+  "expo": {
+    "name": "BhaashAI",
+    "slug": "bhaashai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#FF6B00"
+    },
+    "ios": {
+      "bundleIdentifier": "com.bhaashai.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "BhaashAI needs mic access for voice translation"
+      }
+    },
+    "android": {
+      "package": "com.bhaashai.app",
+      "permissions": ["RECORD_AUDIO", "INTERNET"]
+    }
+  }
+}
+```
+
+---
+
+## COMPLETE DEPENDENCIES LIST (add to package.json)
+```json
+{
+  "expo-av": "~14.0.0",
+  "expo-clipboard": "~6.0.0",
+  "expo-sharing": "~12.0.0",
+  "expo-secure-store": "~13.0.0",
+  "@react-native-async-storage/async-storage": "2.0.0",
+  "expo-haptics": "~13.0.0",
+  "react-native-reanimated": "~3.10.0",
+  "react-native-audio-record": "^0.2.2",
+  "react-native-webrtc": "^118.0.0",
+  "ws": "^8.16.0"
+}
+```
+
+---
+
+## FINAL APP TAB STRUCTURE (5 tabs total)
+
+| Tab | Icon | Screen |
+|---|---|---|
+| Translate | 🌐 | Text translator (Home) — v1 |
+| Voice | 🎙️ | Real-time voice translator — v2 |
+| Conversation | 💬 | Dual-speaker live mode — v3 |
+| Phrasebook | 📚 | Saved phrases + offline — v4 |
+| Settings | ⚙️ | API key, usage, preferences — v1+v4 |
+
+---
+
+## SARVAM API PIPELINE SUMMARY

@@ -17,6 +17,14 @@ function NativeTabLayout() {
         <Icon sf={{ default: "globe", selected: "globe.fill" }} />
         <Label>Translate</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="voice">
+        <Icon sf={{ default: "mic", selected: "mic.fill" }} />
+        <Label>Voice</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="phrasebook">
+        <Icon sf={{ default: "book", selected: "book.fill" }} />
+        <Label>Phrases</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="history">
         <Icon sf={{ default: "clock", selected: "clock.fill" }} />
         <Label>History</Label>
@@ -84,6 +92,30 @@ function ClassicTabLayout() {
               <SymbolView name="globe" tintColor={color} size={24} />
             ) : (
               <Feather name="globe" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="voice"
+        options={{
+          title: "Voice",
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="mic" tintColor={color} size={24} />
+            ) : (
+              <Feather name="mic" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="phrasebook"
+        options={{
+          title: "Phrases",
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="book" tintColor={color} size={24} />
+            ) : (
+              <Feather name="book-open" size={22} color={color} />
             ),
         }}
       />

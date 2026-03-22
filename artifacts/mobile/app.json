@@ -1,22 +1,30 @@
 {
   "expo": {
     "name": "BhaashAI",
-    "slug": "mobile",
+    "slug": "bhaashai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "bhaashai",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0D1B2A"
+      "backgroundColor": "#FF6B00"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.bhaashai.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "BhaashAI needs microphone access to translate your speech in real time.",
+        "NSSpeechRecognitionUsageDescription": "BhaashAI uses speech recognition to transcribe your voice."
+      }
     },
-    "android": {},
+    "android": {
+      "package": "com.bhaashai.app",
+      "permissions": ["RECORD_AUDIO", "INTERNET", "MODIFY_AUDIO_SETTINGS"]
+    },
     "web": {
       "favicon": "./assets/images/icon.png"
     },
@@ -28,7 +36,13 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "BhaashAI needs microphone access to translate your speech."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

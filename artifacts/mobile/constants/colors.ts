@@ -1,3 +1,15 @@
+/** Quick-access color tokens for non-themed components */
+export const COLORS = {
+  primary: "#FF6B00",
+  primaryLight: "#FF8C33",
+  navy: "#0D1B2A",
+  navyMid: "#1A2D42",
+  border: "#E2E8F0",
+  error: "#E53E3E",
+  success: "#38A169",
+  textMuted: "#9AA5B1",
+};
+
 const primary = "#FF6B00";
 const primaryLight = "#FF8C33";
 const primaryDark = "#CC5500";
