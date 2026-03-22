@@ -1,6 +1,5 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
   Alert,
@@ -55,7 +54,6 @@ export default function SettingsScreen() {
         onPress: async () => {
           setKeyInput("");
           await setApiKey("");
-          await SecureStore.deleteItemAsync("sarvam_api_key");
         },
       },
     ]);

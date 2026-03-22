@@ -8,7 +8,28 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useColorScheme } from "react-native";
+import { Platform, useColorScheme } from "react-native";
+
+const secureGet = async (key: string): Promise<string | null> => {
+  if (Platform.OS === "web") return AsyncStorage.getItem(`__secure_${key}`);
+  return SecureStore.getItemAsync(key);
+};
+
+const secureSet = async (key: string, value: string): Promise<void> => {
+  if (Platform.OS === "web") {
+    await AsyncStorage.setItem(`__secure_${key}`, value);
+    return;
+  }
+  await SecureStore.setItemAsync(key, value);
+};
+
+const secureDelete = async (key: string): Promise<void> => {
+  if (Platform.OS === "web") {
+    await AsyncStorage.removeItem(`__secure_${key}`);
+    return;
+  }
+  await SecureStore.deleteItemAsync(key);
+};
 
 export interface TranslationRecord {
   id: string;
@@ -74,7 +95,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const key = await SecureStore.getItemAsync(API_KEY_STORE);
+        const key = await secureGet(API_KEY_STORE);
         if (key) setApiKeyState(key);
 
         const historyJson = await AsyncStorage.getItem(HISTORY_KEY);
@@ -126,7 +147,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setApiKey = useCallback(async (key: string) => {
     setApiKeyState(key);
-    await SecureStore.setItemAsync(API_KEY_STORE, key);
+    if (key) {
+      await secureSet(API_KEY_STORE, key);
+    } else {
+      await secureDelete(API_KEY_STORE);
+    }
   }, []);
 
   const setThemeMode = useCallback(
