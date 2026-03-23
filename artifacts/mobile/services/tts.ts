@@ -67,12 +67,9 @@ export async function synthesizeSpeech(
     target_language_code: targetLanguageCode,
     speaker,
     model: "bulbul:v3",
-    pitch: 0,
     pace: 1.0,
-    loudness: 1.5,
     speech_sample_rate: 22050,
     enable_preprocessing: true,
-    eng_interpolation_wt: 123,
   };
   console.log("[TTS] request →", JSON.stringify(requestBody));
 

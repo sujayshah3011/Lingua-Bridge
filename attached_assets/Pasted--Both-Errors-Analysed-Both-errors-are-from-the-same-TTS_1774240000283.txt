@@ -1,0 +1,104 @@
+## Both Errors Analysed
+
+Both errors are from the **same TTS API call** in `tts.ts → synthesizeSpeech`. Two logs, one root cause.
+
+---
+
+### Error 1 (Log 1) — The Actual Cause
+```
+"Pitch and loudness parameters are currently not supported 
+for the Bulbul V3 model. Please do not pass these values."
+```
+
+**What happened:** The `synthesizeSpeech` function is sending `pitch` and `loudness` fields in the request body to `bulbul:v3` — but Bulbul V3 **does not accept those parameters**. They were valid in older Bulbul versions but were removed in V3.
+
+### Error 2 (Log 2) — The Downstream Effect
+```
+[TTS] speakTranslation error: TTS_ERROR_400
+```
+This is just the caught re-throw from Error 1. The `speakTranslation` caller caught the `TTS_ERROR_400` thrown by `synthesizeSpeech` and logged it. **Not a separate bug** — same failure, two log lines.
+
+---
+
+## The Exact Bad Request Body
+
+```javascript
+// What the app is currently sending ❌
+{
+  "inputs": ["translated text here"],
+  "target_language_code": "hi-IN",
+  "speaker": "meera",
+  "model": "bulbul:v3",
+  "pitch": 0,          // ← REJECTED by bulbul:v3
+  "loudness": 1.5,     // ← REJECTED by bulbul:v3
+  "pace": 1.0,
+  "speech_sample_rate": 22050,
+  "enable_preprocessing": true
+}
+```
+
+---
+
+## Fix — Paste into Rork
+
+```
+Fix the TTS 400 error in tts.ts inside the synthesizeSpeech function.
+
+Sarvam's bulbul:v3 model returns:
+"Pitch and loudness parameters are currently not supported 
+for the Bulbul V3 model. Please do not pass these values."
+
+In tts.ts, find the TTS API request body and REMOVE pitch and loudness entirely.
+
+Change FROM:
+  const requestBody = {
+    inputs: [text],
+    target_language_code: languageCode,
+    speaker: speaker,
+    model: "bulbul:v3",
+    pitch: 0,
+    pace: 1.0,
+    loudness: 1.5,
+    speech_sample_rate: 22050,
+    enable_preprocessing: true,
+    eng_interpolation_wt: 123,
+  };
+
+Change TO:
+  const requestBody = {
+    inputs: [text],
+    target_language_code: languageCode,
+    speaker: speaker,
+    model: "bulbul:v3",
+    pace: 1.0,
+    speech_sample_rate: 22050,
+    enable_preprocessing: true,
+  };
+
+Rules:
+- DELETE pitch completely (not supported in bulbul:v3)
+- DELETE loudness completely (not supported in bulbul:v3)  
+- DELETE eng_interpolation_wt (unnecessary, causes noise)
+- KEEP pace (still supported)
+- KEEP speech_sample_rate as 22050
+- KEEP enable_preprocessing as true
+
+Also search the entire codebase for any other place where 
+pitch or loudness is passed to the TTS API and remove those too.
+```
+
+---
+
+## Root Cause Summary
+
+```
+Our V2 prompt specified:          Bulbul V3 actually supports:
+─────────────────────────         ──────────────────────────────
+"pitch": 0           ❌  ──────►  NOT supported (removed in V3)
+"loudness": 1.5      ❌  ──────►  NOT supported (removed in V3)
+"pace": 1.0          ✅  ──────►  supported
+"speech_sample_rate" ✅  ──────►  supported
+"enable_preprocessing"✅ ──────►  supported
+```
+
+The original prompt was written against older Bulbul docs. Sarvam silently removed `pitch` and `loudness` in V3. Two-line fix.
