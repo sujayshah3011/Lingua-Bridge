@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import { Platform, useColorScheme } from "react-native";
+import { VoiceGender } from "@/services/tts";
 
 const secureGet = async (key: string): Promise<string | null> => {
   if (Platform.OS === "web") return AsyncStorage.getItem(`__secure_${key}`);
@@ -63,6 +64,8 @@ interface AppContextValue {
   isDark: boolean;
   recentLangs: string[];
   addRecentLang: (code: string) => void;
+  voiceGender: VoiceGender;
+  setVoiceGender: (gender: VoiceGender) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -88,6 +91,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     "en-IN",
     "ta-IN",
   ]);
+  const [voiceGender, setVoiceGenderState] = useState<VoiceGender>("female");
 
   const isDark =
     themeMode === "system" ? systemScheme === "dark" : themeMode === "dark";
@@ -112,6 +116,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (prefs.autoDetect !== undefined) setAutoDetect(prefs.autoDetect);
           if (prefs.transliteration !== undefined)
             setTransliteration(prefs.transliteration);
+          if (prefs.voiceGender) setVoiceGenderState(prefs.voiceGender);
         }
       } catch {}
     };
@@ -129,6 +134,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           recentLangs,
           autoDetect,
           transliteration,
+          voiceGender,
           ...overrides,
         };
         await AsyncStorage.setItem(PREFS_KEY, JSON.stringify(current));
@@ -142,7 +148,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       recentLangs,
       autoDetect,
       transliteration,
+      voiceGender,
     ]
+  );
+
+  const setVoiceGender = useCallback(
+    (gender: VoiceGender) => {
+      setVoiceGenderState(gender);
+      savePrefs({ voiceGender: gender });
+    },
+    [savePrefs]
   );
 
   const setApiKey = useCallback(async (key: string) => {
@@ -226,6 +241,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       isDark,
       recentLangs,
       addRecentLang,
+      voiceGender,
+      setVoiceGender,
     }),
     [
       apiKey,
@@ -244,6 +261,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       isDark,
       recentLangs,
       addRecentLang,
+      voiceGender,
+      setVoiceGender,
     ]
   );
 

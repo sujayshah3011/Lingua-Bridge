@@ -36,6 +36,7 @@ import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import MicButton from "@/components/MicButton";
 import { transcribeAudio } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
+import { VoiceSelector } from "@/components/VoiceSelector";
 import { translateText } from "@/services/sarvam";
 
 type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
@@ -62,6 +63,8 @@ export default function VoiceScreen() {
     addToHistory,
     addRecentLang,
     isDark,
+    voiceGender,
+    setVoiceGender,
   } = useApp();
   const C = isDark ? Colors.dark : Colors.light;
 
@@ -250,7 +253,7 @@ export default function VoiceScreen() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
       });
-      const fileUri = await synthesizeSpeech(translation, targetLang, apiKey);
+      const fileUri = await synthesizeSpeech(translation, targetLang, apiKey, voiceGender);
       const { sound } = await Audio.Sound.createAsync(
         { uri: fileUri },
         { shouldPlay: true }
@@ -385,6 +388,13 @@ export default function VoiceScreen() {
           </View>
         ) : (
           <>
+            {/* Voice selector */}
+            <VoiceSelector
+              targetLang={targetLang}
+              gender={voiceGender}
+              onGenderChange={setVoiceGender}
+            />
+
             {/* Mic area */}
             <View style={styles.micArea}>
               {isProcessing ? (

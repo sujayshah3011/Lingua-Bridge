@@ -29,6 +29,7 @@ import {
   transliterateText,
 } from "@/services/sarvam";
 import { synthesizeSpeech } from "@/services/tts";
+import { VoiceSelector } from "@/components/VoiceSelector";
 
 export default function TranslateScreen() {
   const {
@@ -43,6 +44,8 @@ export default function TranslateScreen() {
     transliteration,
     addToHistory,
     addRecentLang,
+    voiceGender,
+    setVoiceGender,
   } = useApp();
   const { theme, isDark } = useTheme();
   const insets = useSafeAreaInsets();
@@ -217,7 +220,7 @@ export default function TranslateScreen() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
       });
-      const uri = await synthesizeSpeech(translatedText, targetLang, apiKey);
+      const uri = await synthesizeSpeech(translatedText, targetLang, apiKey, voiceGender);
       const { sound } = await Audio.Sound.createAsync(
         { uri },
         { shouldPlay: true }
@@ -332,6 +335,13 @@ export default function TranslateScreen() {
             onSpeak={handleSpeak}
             isSpeaking={isSpeaking}
           />
+          {Platform.OS !== "web" && !!translatedText && (
+            <VoiceSelector
+              targetLang={targetLang}
+              gender={voiceGender}
+              onGenderChange={setVoiceGender}
+            />
+          )}
           <View style={styles.gap} />
           <ToggleStrip />
 

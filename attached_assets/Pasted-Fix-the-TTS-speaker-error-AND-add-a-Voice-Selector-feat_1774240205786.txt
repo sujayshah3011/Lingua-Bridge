@@ -1,0 +1,100 @@
+Fix the TTS speaker error AND add a Voice Selector feature.
+
+─────────────────────────────────────
+PART 1 — FIX: Update all speaker names
+─────────────────────────────────────
+
+In tts.ts, replace the entire SPEAKER_MAP with this corrected map
+using only valid bulbul:v3 speaker names:
+
+const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
+  "hi-IN": { female: "anushka", male: "abhilash" },
+  "en-IN": { female: "ritu",    male: "aditya"   },
+  "ta-IN": { female: "vidya",   male: "karun"    },
+  "te-IN": { female: "kavitha", male: "rahul"    },
+  "kn-IN": { female: "shreya",  male: "manan"    },
+  "ml-IN": { female: "manisha", male: "varun"    },
+  "bn-IN": { female: "arya",    male: "rohan"    },
+  "gu-IN": { female: "priya",   male: "dev"      },
+  "mr-IN": { female: "kavya",   male: "amit"     },
+  "pa-IN": { female: "simran",  male: "sumit"    },
+  "od-IN": { female: "roopa",   male: "kabir"    },
+  "as-IN": { female: "neha",    male: "hitesh"   },
+  "ur-IN": { female: "ishita",  male: "rehan"    },
+  "sa-IN": { female: "pooja",   male: "anand"    },
+  "mai-IN":{ female: "tanya",   male: "tarun"    },
+  "brx-IN":{ female: "shruti",  male: "sunny"    },
+  "doi-IN":{ female: "suhani",  male: "mohit"    },
+  "kok-IN":{ female: "rupali",  male: "soham"    },
+  "ks-IN": { female: "sophia",  male: "advait"   },
+  "mni-IN":{ female: "amelia",  male: "gokul"    },
+  "ne-IN": { female: "nisha",   male: "vijay"    },
+  "sat-IN":{ female: "shubh",   male: "ashutosh" },
+  "sd-IN": { female: "ratan",   male: "mani"     },
+};
+
+The speaker lookup should use:
+  SPEAKER_MAP[languageCode]?.[gender] ?? "anushka"
+
+─────────────────────────────────────
+PART 2 — FEATURE: Voice Selector UI
+─────────────────────────────────────
+
+Add a Voice Selector that lets the user pick their preferred 
+speaker voice before/after translation.
+
+WHERE TO ADD IT:
+- On the Voice tab screen, below the language selector row
+- On the Home tab screen, as a small row above the Speak button
+
+UI DESIGN — Voice Selector Row:
+  Label: "Voice"
+  Two toggle pills side by side:
+    [ 👩 Female ]  [ 👨 Male ]
+  Selected pill: filled saffron (#FF6B00) background, white text
+  Unselected pill: outlined, grey text
+  Below the pills: show the actual speaker name in small grey text
+    e.g., "anushka" or "abhilash" — updates dynamically per language
+
+IMPLEMENTATION:
+
+1. Add gender state:
+   const [voiceGender, setVoiceGender] = useState<'female' | 'male'>('female');
+
+2. Pass gender into synthesizeSpeech:
+   const speaker = SPEAKER_MAP[targetLang]?.[voiceGender] ?? "anushka";
+
+3. Voice Selector component:
+   const VoiceSelector = ({ targetLang, gender, onGenderChange }) => {
+     const speakerName = SPEAKER_MAP[targetLang]?.[gender] ?? "anushka";
+     return (
+       <View style={styles.voiceSelectorRow}>
+         <Text style={styles.voiceLabel}>Voice</Text>
+         <TouchableOpacity
+           style={[styles.pill, gender==='female' && styles.pillActive]}
+           onPress={() => onGenderChange('female')}>
+           <Text>👩 Female</Text>
+         </TouchableOpacity>
+         <TouchableOpacity
+           style={[styles.pill, gender==='male' && styles.pillActive]}
+           onPress={() => onGenderChange('male')}>
+           <Text>👨 Male</Text>
+         </TouchableOpacity>
+         <Text style={styles.speakerName}>{speakerName}</Text>
+       </View>
+     );
+   };
+
+4. Persist the gender preference in AsyncStorage key "voice_gender"
+   so it is remembered across app restarts.
+
+5. Place <VoiceSelector /> :
+   - On Voice tab: between language selector and mic button
+   - On Home tab: inside the output card, left of the Speak 🔊 button
+
+STYLES:
+  voiceSelectorRow: flexDirection row, alignItems center, gap 8, marginVertical 8
+  pill: paddingHorizontal 16, paddingVertical 6, borderRadius 20,
+        borderWidth 1, borderColor #FF6B00
+  pillActive: backgroundColor #FF6B00
+  speakerName: fontSize 11, color #999, marginLeft 8, fontStyle italic

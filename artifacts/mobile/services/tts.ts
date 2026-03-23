@@ -12,38 +12,40 @@ import * as FileSystem from "expo-file-system/legacy";
 
 const SARVAM_BASE = "https://api.sarvam.ai";
 
+export type VoiceGender = "female" | "male";
+
 /**
- * Voice map: best Sarvam speaker per target language.
- * Sarvam provides gender-differentiated voices for major languages.
+ * Speaker map: valid bulbul:v3 speaker names per language, split by gender.
+ * Both names are confirmed valid for the bulbul:v3 model.
  */
-export const VOICE_MAP: Record<string, string> = {
-  "hi-IN": "meera",
-  "ta-IN": "valli",
-  "te-IN": "pavithra",
-  "kn-IN": "shreya",
-  "ml-IN": "sobha",
-  "bn-IN": "diya",
-  "gu-IN": "neel",
-  "mr-IN": "madhur",
-  "pa-IN": "amol",
-  "od-IN": "indira",
-  "en-IN": "ritu",
-  "as-IN": "diya",
-  "ur-IN": "meera",
-  "sd-IN": "meera",
-  "ks-IN": "meera",
-  "ne-IN": "meera",
-  "sa-IN": "meera",
-  "mai-IN": "meera",
-  "mni-IN": "diya",
-  "brx-IN": "diya",
-  "doi-IN": "meera",
-  "kok-IN": "meera",
-  "sat-IN": "diya",
+export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
+  "hi-IN":  { female: "anushka",  male: "abhilash" },
+  "en-IN":  { female: "ritu",     male: "aditya"   },
+  "ta-IN":  { female: "vidya",    male: "karun"    },
+  "te-IN":  { female: "kavitha",  male: "rahul"    },
+  "kn-IN":  { female: "shreya",   male: "manan"    },
+  "ml-IN":  { female: "manisha",  male: "varun"    },
+  "bn-IN":  { female: "arya",     male: "rohan"    },
+  "gu-IN":  { female: "priya",    male: "dev"      },
+  "mr-IN":  { female: "kavya",    male: "amit"     },
+  "pa-IN":  { female: "simran",   male: "sumit"    },
+  "od-IN":  { female: "roopa",    male: "kabir"    },
+  "as-IN":  { female: "neha",     male: "hitesh"   },
+  "ur-IN":  { female: "ishita",   male: "rehan"    },
+  "sa-IN":  { female: "pooja",    male: "anand"    },
+  "mai-IN": { female: "tanya",    male: "tarun"    },
+  "brx-IN": { female: "shruti",   male: "sunny"    },
+  "doi-IN": { female: "suhani",   male: "mohit"    },
+  "kok-IN": { female: "rupali",   male: "soham"    },
+  "ks-IN":  { female: "sophia",   male: "advait"   },
+  "mni-IN": { female: "amelia",   male: "gokul"    },
+  "ne-IN":  { female: "nisha",    male: "vijay"    },
+  "sat-IN": { female: "shubh",    male: "ashutosh" },
+  "sd-IN":  { female: "ratan",    male: "mani"     },
 };
 
-function getSpeaker(langCode: string): string {
-  return VOICE_MAP[langCode] ?? "meera";
+export function getSpeakerName(langCode: string, gender: VoiceGender): string {
+  return SPEAKER_MAP[langCode]?.[gender] ?? "anushka";
 }
 
 /**
@@ -51,16 +53,17 @@ function getSpeaker(langCode: string): string {
  * Returns a local file URI that expo-av can play.
  *
  * Limits input to 500 characters (Sarvam REST TTS limit).
- * For longer text, chunk it or use the streaming WS endpoint.
+ * Note: bulbul:v3 does NOT accept pitch or loudness — omit them.
  */
 export async function synthesizeSpeech(
   text: string,
   targetLanguageCode: string,
-  apiKey: string
+  apiKey: string,
+  gender: VoiceGender = "female"
 ): Promise<string> {
   const input = text.slice(0, 500);
   if (!input.trim()) throw new Error("TTS_EMPTY_INPUT");
-  const speaker = getSpeaker(targetLanguageCode);
+  const speaker = getSpeakerName(targetLanguageCode, gender);
 
   const requestBody = {
     inputs: [input],
