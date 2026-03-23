@@ -1,7 +1,7 @@
 /**
  * Sarvam AI — Text-to-Speech Service
  *
- * Uses the `bulbul:v3` model for natural-sounding Indian language synthesis.
+ * Uses the `bulbul:v1` model for natural-sounding Indian language synthesis.
  * Writes the decoded WAV audio to the device cache and returns a file URI
  * that expo-av can load and play.
  */
@@ -71,13 +71,12 @@ export async function synthesizeSpeech(
       inputs: [input],
       target_language_code: targetLanguageCode,
       speaker,
-      model: "bulbul:v3",
+      model: "bulbul:v1",
       pitch: 0,
       pace: 1.0,
       loudness: 1.5,
       speech_sample_rate: 22050,
       enable_preprocessing: true,
-      eng_interpolation_wt: 123,
     }),
   });
 
@@ -90,7 +89,9 @@ export async function synthesizeSpeech(
   if (!base64Wav) throw new Error("TTS_EMPTY_RESPONSE");
 
   // Write the base64 WAV to a temp cache file so expo-av can load it
-  const tempPath = `${FileSystem.cacheDirectory}tts_output_${Date.now()}.wav`;
+  const cacheDir = FileSystem.cacheDirectory;
+  if (!cacheDir) throw new Error("TTS_NO_CACHE_DIR");
+  const tempPath = `${cacheDir}tts_${Date.now()}.wav`;
   await FileSystem.writeAsStringAsync(tempPath, base64Wav, {
     encoding: FileSystem.EncodingType.Base64,
   });

@@ -245,7 +245,11 @@ export default function VoiceScreen() {
         await soundRef.current.unloadAsync().catch(() => {});
         soundRef.current = null;
       }
-      await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+      });
       const fileUri = await synthesizeSpeech(translation, targetLang, apiKey);
       const { sound } = await Audio.Sound.createAsync(
         { uri: fileUri },
@@ -260,12 +264,17 @@ export default function VoiceScreen() {
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
+      console.error("[TTS] speakTranslation error:", msg);
       Alert.alert(
         "Playback Failed",
         msg === "INVALID_KEY"
           ? "Invalid API key — check Settings."
           : msg === "RATE_LIMIT"
           ? "Rate limit reached, please wait."
+          : msg.startsWith("TTS_ERROR_")
+          ? "Speech synthesis failed. Please try again."
+          : msg === "TTS_EMPTY_RESPONSE"
+          ? "No audio received from the server."
           : "Could not play audio. Please try again."
       );
     } finally {

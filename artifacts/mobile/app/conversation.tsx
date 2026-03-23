@@ -169,7 +169,10 @@ export default function ConversationScreen() {
 
       try {
         await recording.stopAndUnloadAsync();
-        await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: true,
+        });
         const uri = recording.getURI();
         if (!uri) throw new Error("No audio");
 
