@@ -58,7 +58,7 @@ export async function transcribeAudio(
     type: mimeType,   // always "audio/wav" for WAV; never "audio/vnd.wave"
     name: filename,
   } as unknown as Blob);
-  formData.append("model", "saaras:v2");
+  formData.append("model", "saaras:v2.5");
   formData.append("language_code", languageCode);
   formData.append("mode", "transcribe");
   formData.append("with_timestamps", "false");
@@ -121,7 +121,7 @@ export function openStreamingSTT(
         data: {
           sample_rate: 16000,
           encoding: "pcm_s16le",
-          model: "saaras:v2",
+          model: "saaras:v2.5",
           language_code: "unknown",
           mode: "transcribe",
           vad_signals: true,
