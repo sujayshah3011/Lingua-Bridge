@@ -1,7 +1,7 @@
 /**
  * Sarvam AI — Text-to-Speech Service
  *
- * Uses the `bulbul:v1` model for natural-sounding Indian language synthesis.
+ * Uses the `bulbul:v3` model for natural-sounding Indian language synthesis.
  * Writes the decoded WAV audio to the device cache and returns a file URI
  * that expo-av can load and play.
  */
@@ -59,7 +59,22 @@ export async function synthesizeSpeech(
   apiKey: string
 ): Promise<string> {
   const input = text.slice(0, 500);
+  if (!input.trim()) throw new Error("TTS_EMPTY_INPUT");
   const speaker = getSpeaker(targetLanguageCode);
+
+  const requestBody = {
+    inputs: [input],
+    target_language_code: targetLanguageCode,
+    speaker,
+    model: "bulbul:v3",
+    pitch: 0,
+    pace: 1.0,
+    loudness: 1.5,
+    speech_sample_rate: 22050,
+    enable_preprocessing: true,
+    eng_interpolation_wt: 123,
+  };
+  console.log("[TTS] request →", JSON.stringify(requestBody));
 
   const res = await fetch(`${SARVAM_BASE}/text-to-speech`, {
     method: "POST",
@@ -67,22 +82,22 @@ export async function synthesizeSpeech(
       "Content-Type": "application/json",
       "api-subscription-key": apiKey,
     },
-    body: JSON.stringify({
-      inputs: [input],
-      target_language_code: targetLanguageCode,
-      speaker,
-      model: "bulbul:v1",
-      pitch: 0,
-      pace: 1.0,
-      loudness: 1.5,
-      speech_sample_rate: 22050,
-      enable_preprocessing: true,
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (res.status === 401) throw new Error("INVALID_KEY");
-  if (!res.ok) throw new Error(`TTS_ERROR_${res.status}`);
+  if (!res.ok) {
+    let detail = "";
+    try {
+      const errBody = await res.json();
+      detail = JSON.stringify(errBody);
+    } catch {
+      detail = await res.text().catch(() => "");
+    }
+    console.error(`[TTS] API error ${res.status}:`, detail);
+    throw new Error(`TTS_ERROR_${res.status}`);
+  }
 
   const data = await res.json();
   const base64Wav: string = data.audios?.[0];
