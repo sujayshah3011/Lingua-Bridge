@@ -49,7 +49,12 @@ export default function SettingsScreen() {
 
   useEffect(() => {
     AsyncStorage.getItem(USAGE_KEY).then((raw) => {
-      if (raw) setUsage(JSON.parse(raw));
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        // Merge with defaults so any missing fields stay 0 rather than undefined
+        setUsage((prev) => ({ ...prev, ...parsed }));
+      } catch {}
     });
   }, []);
 
@@ -330,7 +335,7 @@ export default function SettingsScreen() {
             <View style={styles.usageStat}>
               <Feather name="type" size={16} color={theme.primary} />
               <Text style={[styles.usageValue, { color: theme.text }]}>
-                {usage.charsTranslated.toLocaleString()}
+                {(usage?.charsTranslated ?? 0).toLocaleString()}
               </Text>
               <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
                 Characters translated
@@ -340,7 +345,7 @@ export default function SettingsScreen() {
             <View style={styles.usageStat}>
               <Feather name="mic" size={16} color={theme.primary} />
               <Text style={[styles.usageValue, { color: theme.text }]}>
-                {Math.round(usage.audioSeconds)}s
+                {Math.round(usage?.audioSeconds ?? 0)}s
               </Text>
               <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
                 Audio transcribed
@@ -350,7 +355,7 @@ export default function SettingsScreen() {
             <View style={styles.usageStat}>
               <Feather name="credit-card" size={16} color={theme.primary} />
               <Text style={[styles.usageValue, { color: theme.text }]}>
-                ~₹{((usage.charsTranslated / 10000) * 30).toFixed(2)}
+                ~₹{(((usage?.charsTranslated ?? 0) / 10000) * 30).toFixed(2)}
               </Text>
               <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
                 Est. API cost
