@@ -59,11 +59,8 @@ export async function transcribeAudio(
     name: filename,
   } as unknown as Blob);
   formData.append("model", "saaras:v2");
-  // Only send language_code when we actually know it — the API auto-detects when
-  // the field is absent. Sending "unknown" causes a 422 validation error.
-  if (languageCode && languageCode !== "unknown") {
-    formData.append("language_code", languageCode);
-  }
+  formData.append("language_code", languageCode);
+  formData.append("mode", "transcribe");
   formData.append("with_timestamps", "false");
 
   const res = await fetch(`${SARVAM_BASE}/speech-to-text-translate`, {

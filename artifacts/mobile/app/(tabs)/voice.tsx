@@ -42,39 +42,6 @@ type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
 const USAGE_KEY = "bhaashai_usage";
 
-/**
- * Recording options that produce 16 kHz mono WAV on both platforms.
- *
- * WAV is the most reliably accepted format by the Sarvam STT API.
- * We record WAV on iOS (LinearPCM) and tell Android to use its default
- * encoder with a .wav extension so the MIME type stays "audio/wav".
- *
- * IMPORTANT: the MIME type sent in FormData must be "audio/wav" — NOT
- * "audio/vnd.wave" (an alias that Sarvam's API rejects with a 400).
- * This is enforced in stt.ts → audioMeta().
- */
-const STT_RECORDING_OPTIONS: Audio.RecordingOptions = {
-  android: {
-    extension: ".wav",
-    outputFormat: Audio.AndroidOutputFormat.DEFAULT,
-    audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 256000,
-  },
-  ios: {
-    extension: ".wav",
-    audioQuality: Audio.IOSAudioQuality.HIGH,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 256000,
-    linearPCMBitDepth: 16,
-    linearPCMIsBigEndian: false,
-    linearPCMIsFloat: false,
-  },
-  web: {},
-};
-
 async function incrementUsage(
   key: "charsTranslated" | "audioSeconds",
   by: number
@@ -150,7 +117,9 @@ export default function VoiceScreen() {
       });
 
       const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync(STT_RECORDING_OPTIONS);
+      await recording.prepareToRecordAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
       await recording.startAsync();
       recordingRef.current = recording;
       recordingStartRef.current = Date.now();

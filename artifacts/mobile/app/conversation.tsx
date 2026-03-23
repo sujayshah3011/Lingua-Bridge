@@ -40,32 +40,6 @@ import { translateText } from "@/services/sarvam";
 type Speaker = "A" | "B";
 type SpeakerState = "idle" | "recording" | "processing";
 
-/**
- * 16 kHz mono WAV on both platforms — matches what the Sarvam STT API expects.
- * MIME must be "audio/wav" (not the alias "audio/vnd.wave"). Enforced in stt.ts.
- */
-const STT_RECORDING_OPTIONS: Audio.RecordingOptions = {
-  android: {
-    extension: ".wav",
-    outputFormat: Audio.AndroidOutputFormat.DEFAULT,
-    audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 256000,
-  },
-  ios: {
-    extension: ".wav",
-    audioQuality: Audio.IOSAudioQuality.HIGH,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 256000,
-    linearPCMBitDepth: 16,
-    linearPCMIsBigEndian: false,
-    linearPCMIsFloat: false,
-  },
-  web: {},
-};
-
 export default function ConversationScreen() {
   const { apiKey, isDark } = useApp();
   const C = isDark ? Colors.dark : Colors.light;
@@ -139,7 +113,9 @@ export default function ConversationScreen() {
           playsInSilentModeIOS: true,
         });
         const recording = new Audio.Recording();
-        await recording.prepareToRecordAsync(STT_RECORDING_OPTIONS);
+        await recording.prepareToRecordAsync(
+          Audio.RecordingOptionsPresets.HIGH_QUALITY
+        );
         await recording.startAsync();
         recordingRef.current = recording;
 
