@@ -40,28 +40,30 @@ import { translateText } from "@/services/sarvam";
 type Speaker = "A" | "B";
 type SpeakerState = "idle" | "recording" | "processing";
 
-/** WAV on iOS (Sarvam STT accepts WAV/M4A/MP3/OGG — not CAF), M4A on Android */
+/**
+ * 16 kHz mono WAV on both platforms — matches what the Sarvam STT API expects.
+ * MIME must be "audio/wav" (not the alias "audio/vnd.wave"). Enforced in stt.ts.
+ */
 const STT_RECORDING_OPTIONS: Audio.RecordingOptions = {
-  ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
+  android: {
+    extension: ".wav",
+    outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+    audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
+    sampleRate: 16000,
+    numberOfChannels: 1,
+    bitRate: 256000,
+  },
   ios: {
     extension: ".wav",
-    outputFormat: Audio.IOSOutputFormat.LINEARPCM,
     audioQuality: Audio.IOSAudioQuality.HIGH,
     sampleRate: 16000,
     numberOfChannels: 1,
-    bitRate: 128000,
+    bitRate: 256000,
     linearPCMBitDepth: 16,
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
   },
-  android: {
-    extension: ".m4a",
-    outputFormat: Audio.AndroidOutputFormat.MPEG_4,
-    audioEncoder: Audio.AndroidAudioEncoder.AAC,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 128000,
-  },
+  web: {},
 };
 
 export default function ConversationScreen() {

@@ -12,11 +12,19 @@ export interface STTResult {
   languageCode?: string;
 }
 
-/** Derive the correct MIME type and a clean filename from the recorded URI. */
+/**
+ * Derive filename and MIME type from the recorded URI.
+ *
+ * IMPORTANT — WAV files: React Native's networking layer may auto-detect the
+ * MIME type of a WAV file as "audio/vnd.wave", which is NOT on Sarvam's
+ * allowlist. We always explicitly specify "audio/wav" for WAV files so the
+ * value we set is used verbatim and not overridden by the RN HTTP client.
+ */
 function audioMeta(uri: string): { mimeType: string; filename: string } {
   const ext = uri.split(".").pop()?.toLowerCase() ?? "";
   switch (ext) {
     case "wav":
+      // Hardcode "audio/wav" — do NOT use "audio/vnd.wave" (alias rejected by Sarvam)
       return { mimeType: "audio/wav", filename: "recording.wav" };
     case "mp3":
       return { mimeType: "audio/mpeg", filename: "recording.mp3" };
@@ -25,12 +33,8 @@ function audioMeta(uri: string): { mimeType: string; filename: string } {
     case "m4a":
     case "aac":
       return { mimeType: "audio/m4a", filename: "recording.m4a" };
-    case "caf":
-      // Core Audio Format from iOS — re-label so the API recognises it.
-      // The audio is AAC-encoded inside a CAF container which many APIs handle.
-      return { mimeType: "audio/x-caf", filename: "recording.caf" };
     default:
-      return { mimeType: "audio/m4a", filename: "recording.m4a" };
+      return { mimeType: "audio/wav", filename: "recording.wav" };
   }
 }
 
@@ -45,10 +49,13 @@ export async function transcribeAudio(
 ): Promise<STTResult> {
   const { mimeType, filename } = audioMeta(fileUri);
 
+  // Explicitly pass the MIME string we derived — React Native's HTTP client
+  // may sniff WAV files and replace the type with "audio/vnd.wave", which
+  // Sarvam rejects. Our explicit value takes precedence over any sniffing.
   const formData = new FormData();
   formData.append("file", {
     uri: fileUri,
-    type: mimeType,
+    type: mimeType,   // always "audio/wav" for WAV; never "audio/vnd.wave"
     name: filename,
   } as unknown as Blob);
   formData.append("model", "saaras:v2");

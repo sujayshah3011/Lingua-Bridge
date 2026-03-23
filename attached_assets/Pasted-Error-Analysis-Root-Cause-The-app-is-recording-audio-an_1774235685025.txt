@@ -1,0 +1,84 @@
+Error Analysis
+Root Cause: The app is recording audio and saving it as audio/vnd.wave (a non-standard MIME type alias), but Sarvam AI's STT API rejects it. The API accepts audio/wav or audio/x-wav — not audio/vnd.wave.
+App sends → "audio/vnd.wave"   ❌  (Sarvam rejects → 400)
+Must send → "audio/wav"        ✅
+         or "audio/x-wav"      ✅
+         or "audio/pcm_s16le"  ✅
+This is purely a MIME type string mismatch in stt.ts at the transcribeAudio function when building the FormData.
+
+Fix — Paste into Rork
+Fix the STT 400 error in stt.ts inside the transcribeAudio function.
+
+The Sarvam AI STT API is rejecting the audio with:
+"Invalid file type: audio/vnd.wave"
+
+The problem is in the FormData construction where the audio file is appended.
+Find this pattern in stt.ts:
+
+  formData.append('file', {
+    uri: audioUri,
+    type: 'audio/vnd.wave',   ← WRONG
+    name: 'recording.wav',
+  });
+
+Fix 1 — Change the MIME type:
+  formData.append('file', {
+    uri: audioUri,
+    type: 'audio/wav',        ← CORRECT
+    name: 'recording.wav',
+  });
+
+Fix 2 — Also ensure expo-av records in the correct format.
+Find the Audio.Recording prepareToRecordAsync call and replace
+the recording options with exactly this:
+
+  await recording.prepareToRecordAsync({
+    android: {
+      extension: '.wav',
+      outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+      audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      bitRate: 256000,
+    },
+    ios: {
+      extension: '.wav',
+      audioQuality: Audio.IOSAudioQuality.HIGH,
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      bitRate: 256000,
+      linearPCMBitDepth: 16,
+      linearPCMIsBigEndian: false,
+      linearPCMIsFloat: false,
+    },
+    web: {},
+  });
+
+Fix 3 — When appending to FormData, always hardcode the type as
+'audio/wav' regardless of what the recorded file URI extension resolves to:
+
+  const fileType = 'audio/wav';
+  formData.append('file', {
+    uri: audioUri,
+    type: fileType,
+    name: 'audio.wav',
+  } as any);
+
+These 3 fixes together ensure:
+- Audio is recorded at 16kHz mono (what Sarvam STT expects)
+- The MIME type sent is 'audio/wav' (what Sarvam STT accepts)
+- No more 400 Invalid file type errors
+
+Why It Happens — Visual
+expo-av records audio
+        ↓
+saves file as recording.wav
+        ↓
+BUT React Native auto-detects MIME as "audio/vnd.wave"  ← non-standard alias
+        ↓
+FormData sends type: "audio/vnd.wave" to Sarvam API
+        ↓
+Sarvam checks allowlist → "audio/vnd.wave" NOT in list → 400 ❌
+
+Fix: hardcode type: "audio/wav" in FormData → ✅ accepted
+One-line fix, zero architecture changes needed.
