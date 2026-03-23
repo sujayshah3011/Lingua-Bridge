@@ -52,7 +52,11 @@ export async function transcribeAudio(
     name: filename,
   } as unknown as Blob);
   formData.append("model", "saaras:v2");
-  formData.append("language_code", languageCode === "unknown" ? "unknown" : languageCode);
+  // Only send language_code when we actually know it — the API auto-detects when
+  // the field is absent. Sending "unknown" causes a 422 validation error.
+  if (languageCode && languageCode !== "unknown") {
+    formData.append("language_code", languageCode);
+  }
   formData.append("with_timestamps", "false");
 
   const res = await fetch(`${SARVAM_BASE}/speech-to-text-translate`, {
@@ -67,8 +71,11 @@ export async function transcribeAudio(
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (res.status === 401) throw new Error("INVALID_KEY");
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || `STT_ERROR_${res.status}`);
+    // Log the body for debugging but always throw with our recognisable prefix
+    // so the caller's catch block can classify it as an STT failure.
+    const body = await res.text().catch(() => "");
+    console.error(`[STT] ${res.status} error:`, body);
+    throw new Error(`STT_ERROR_${res.status}`);
   }
 
   const data = await res.json();
