@@ -15,37 +15,41 @@ const SARVAM_BASE = "https://api.sarvam.ai";
 export type VoiceGender = "female" | "male";
 
 /**
- * Speaker map: valid bulbul:v3 speaker names per language, split by gender.
- * Both names are confirmed valid for the bulbul:v3 model.
+ * Speaker map: confirmed valid bulbul:v3 speaker names per language.
+ * Full valid list from the API:
+ * aditya, ritu, ashutosh, priya, neha, rahul, pooja, rohan, simran, kavya,
+ * amit, dev, ishita, shreya, ratan, varun, manan, sumit, roopa, kabir, aayan,
+ * shubh, advait, amelia, sophia, anand, tanya, tarun, sunny, mani, gokul,
+ * vijay, shruti, suhani, mohit, kavitha, rehan, soham, rupali, niharika
  */
 export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
-  "hi-IN":  { female: "anushka",  male: "abhilash" },
-  "en-IN":  { female: "ritu",     male: "aditya"   },
-  "ta-IN":  { female: "vidya",    male: "karun"    },
-  "te-IN":  { female: "kavitha",  male: "rahul"    },
-  "kn-IN":  { female: "shreya",   male: "manan"    },
-  "ml-IN":  { female: "manisha",  male: "varun"    },
-  "bn-IN":  { female: "arya",     male: "rohan"    },
-  "gu-IN":  { female: "priya",    male: "dev"      },
-  "mr-IN":  { female: "kavya",    male: "amit"     },
-  "pa-IN":  { female: "simran",   male: "sumit"    },
-  "od-IN":  { female: "roopa",    male: "kabir"    },
-  "as-IN":  { female: "neha",     male: "hitesh"   },
-  "ur-IN":  { female: "ishita",   male: "rehan"    },
-  "sa-IN":  { female: "pooja",    male: "anand"    },
-  "mai-IN": { female: "tanya",    male: "tarun"    },
-  "brx-IN": { female: "shruti",   male: "sunny"    },
-  "doi-IN": { female: "suhani",   male: "mohit"    },
-  "kok-IN": { female: "rupali",   male: "soham"    },
-  "ks-IN":  { female: "sophia",   male: "advait"   },
-  "mni-IN": { female: "amelia",   male: "gokul"    },
-  "ne-IN":  { female: "nisha",    male: "vijay"    },
-  "sat-IN": { female: "shubh",    male: "ashutosh" },
-  "sd-IN":  { female: "ratan",    male: "mani"     },
+  "hi-IN":  { female: "neha",      male: "aditya"   },
+  "en-IN":  { female: "ritu",      male: "rahul"    },
+  "ta-IN":  { female: "kavitha",   male: "kabir"    },
+  "te-IN":  { female: "kavitha",   male: "rahul"    },
+  "kn-IN":  { female: "shreya",    male: "manan"    },
+  "ml-IN":  { female: "ishita",    male: "varun"    },
+  "bn-IN":  { female: "niharika",  male: "rohan"    },
+  "gu-IN":  { female: "priya",     male: "dev"      },
+  "mr-IN":  { female: "kavya",     male: "amit"     },
+  "pa-IN":  { female: "simran",    male: "sumit"    },
+  "od-IN":  { female: "roopa",     male: "kabir"    },
+  "as-IN":  { female: "neha",      male: "aayan"    },
+  "ur-IN":  { female: "ishita",    male: "rehan"    },
+  "sa-IN":  { female: "pooja",     male: "anand"    },
+  "mai-IN": { female: "tanya",     male: "tarun"    },
+  "brx-IN": { female: "shruti",    male: "sunny"    },
+  "doi-IN": { female: "suhani",    male: "mohit"    },
+  "kok-IN": { female: "rupali",    male: "soham"    },
+  "ks-IN":  { female: "sophia",    male: "advait"   },
+  "mni-IN": { female: "amelia",    male: "gokul"    },
+  "ne-IN":  { female: "niharika",  male: "vijay"    },
+  "sat-IN": { female: "shubh",     male: "ashutosh" },
+  "sd-IN":  { female: "ratan",     male: "mani"     },
 };
 
 export function getSpeakerName(langCode: string, gender: VoiceGender): string {
-  return SPEAKER_MAP[langCode]?.[gender] ?? "anushka";
+  return SPEAKER_MAP[langCode]?.[gender] ?? (gender === "male" ? "aditya" : "neha");
 }
 
 /**
