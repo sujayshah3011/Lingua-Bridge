@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -35,6 +36,7 @@ export default function SettingsScreen() {
     signOut,
     credits,
     totalDebited,
+    stats,
     themeMode,
     setThemeMode,
     formalMode,
@@ -289,6 +291,52 @@ export default function SettingsScreen() {
               </Text>
             </View>
           )}
+
+          <Pressable
+            onPress={() => router.push("/topup")}
+            style={[styles.addCreditsBtn, { backgroundColor: theme.primary }]}
+          >
+            <Feather name="plus-circle" size={15} color="#fff" />
+            <Text style={styles.addCreditsBtnText}>Add Credits</Text>
+          </Pressable>
+        </View>
+
+        {/* Usage Stats */}
+        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
+          USAGE
+        </Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <View style={styles.statGrid}>
+            <View style={[styles.statCell, { borderColor: theme.border }]}>
+              <Text style={[styles.statValue, { color: theme.text }]}>
+                {(stats?.charsTranslated ?? 0).toLocaleString()}
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.textMuted }]}>
+                Chars Translated
+              </Text>
+            </View>
+            <View style={[styles.statCell, { borderColor: theme.border }]}>
+              <Text style={[styles.statValue, { color: theme.text }]}>
+                {(stats?.charsTTS ?? 0).toLocaleString()}
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.textMuted }]}>
+                Chars Spoken
+              </Text>
+            </View>
+            <View style={[styles.statCell, { borderColor: theme.border, borderRightWidth: 0 }]}>
+              <Text style={[styles.statValue, { color: theme.text }]}>
+                {((stats?.secondsSTT ?? 0) / 60).toFixed(1)} min
+              </Text>
+              <Text style={[styles.statLabel, { color: theme.textMuted }]}>
+                Voice Input
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Rate Card */}
@@ -647,6 +695,40 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Inter_500Medium",
     color: "#9A3412",
+  },
+  addCreditsBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 11,
+    borderRadius: 10,
+    marginTop: 4,
+  },
+  addCreditsBtnText: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
+  },
+  statGrid: {
+    flexDirection: "row",
+  },
+  statCell: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 8,
+    borderRightWidth: StyleSheet.hairlineWidth,
+    gap: 4,
+  },
+  statValue: {
+    fontSize: 18,
+    fontFamily: "Inter_700Bold",
+  },
+  statLabel: {
+    fontSize: 10,
+    fontFamily: "Inter_500Medium",
+    textAlign: "center",
+    letterSpacing: 0.3,
   },
   rateCardHeader: {
     flexDirection: "row",

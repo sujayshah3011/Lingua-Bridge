@@ -31,6 +31,32 @@ type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
 const USAGE_KEY = "bhaashai_usage";
 
+const WAV_RECORDING_OPTIONS: Audio.RecordingOptions = {
+  android: {
+    extension: ".wav",
+    outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+    audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
+    sampleRate: 16000,
+    numberOfChannels: 1,
+    bitRate: 256000,
+  },
+  ios: {
+    extension: ".wav",
+    outputFormat: Audio.IOSOutputFormat.LINEARPCM,
+    audioQuality: Audio.IOSAudioQuality.HIGH,
+    sampleRate: 16000,
+    numberOfChannels: 1,
+    bitRate: 256000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+  web: {
+    mimeType: "audio/wav",
+    bitsPerSecond: 256000,
+  },
+};
+
 async function incrementUsage(
   key: "charsTranslated" | "audioSeconds",
   by: number
@@ -96,8 +122,15 @@ export default function VoiceScreen() {
   }, []);
 
   const startRecording = useCallback(async () => {
-    if (credits < 0.01) {
-      Alert.alert("No Credits", "Your ₹ balance is empty. Please add credits in Settings.");
+    if (credits < 0.05) {
+      Alert.alert(
+        "Not Enough Credits",
+        "Your balance is too low to record voice. Please add credits in Settings.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Add Credits", onPress: () => router.push("/topup") },
+        ]
+      );
       return;
     }
     if (!(await ensurePermission())) return;
@@ -109,9 +142,7 @@ export default function VoiceScreen() {
       });
 
       const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
+      await recording.prepareToRecordAsync(WAV_RECORDING_OPTIONS);
       await recording.startAsync();
       recordingRef.current = recording;
       recordingStartRef.current = Date.now();
@@ -126,7 +157,6 @@ export default function VoiceScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
     } catch (err) {
-      console.error("Recording start error:", err);
       setState("error");
       setStatusText("Could not start microphone. Please try again.");
     }
@@ -238,7 +268,14 @@ export default function VoiceScreen() {
   const speakTranslation = useCallback(async () => {
     if (!translation || ttsLoading) return;
     if (credits < 0.01) {
-      Alert.alert("No Credits", "Your ₹ balance is empty. Please add credits in Settings.");
+      Alert.alert(
+        "No Credits",
+        "Your ₹ balance is empty.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Add Credits", onPress: () => router.push("/topup") },
+        ]
+      );
       return;
     }
     const uid = user?.uid;
@@ -312,7 +349,8 @@ export default function VoiceScreen() {
       <View style={[styles.header, { borderBottomColor: C.border }]}>
         <Text style={[styles.headerTitle, { color: C.text }]}>Voice</Text>
         <View style={styles.headerRight}>
-          <View
+          <Pressable
+            onPress={() => router.push("/topup")}
             style={[
               styles.creditsPill,
               { backgroundColor: badgeColor + "15", borderColor: badgeColor },
@@ -321,7 +359,7 @@ export default function VoiceScreen() {
             <Text style={[styles.creditsText, { color: badgeColor }]}>
               ₹{credits.toFixed(2)}
             </Text>
-          </View>
+          </Pressable>
           <Pressable
             onPress={() => router.push("/conversation")}
             accessibilityRole="button"
@@ -337,6 +375,18 @@ export default function VoiceScreen() {
           </Pressable>
         </View>
       </View>
+
+      {credits > 0 && credits < 5 && (
+        <Pressable
+          onPress={() => router.push("/topup")}
+          style={styles.lowBanner}
+        >
+          <Feather name="alert-triangle" size={13} color="#9A3412" />
+          <Text style={styles.lowBannerText}>
+            Low balance ₹{credits.toFixed(2)} — Tap to add credits
+          </Text>
+        </Pressable>
+      )}
 
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -398,7 +448,7 @@ export default function VoiceScreen() {
                   <MicButton
                     isRecording={isRecording}
                     onPress={toggleRecording}
-                    disabled={credits < 0.01}
+                    disabled={credits < 0.05}
                     size={88}
                   />
                   <Text style={[styles.micHint, { color: C.textMuted }]}>
@@ -450,6 +500,24 @@ export default function VoiceScreen() {
           </>
         )}
       </ScrollView>
+
+      {credits <= 0 && (
+        <View style={styles.zeroOverlay}>
+          <View style={styles.zeroCard}>
+            <Feather name="alert-circle" size={48} color="#DC2626" />
+            <Text style={styles.zeroTitle}>No credits left</Text>
+            <Text style={styles.zeroSub}>
+              Add credits to continue using voice translation.
+            </Text>
+            <Pressable
+              onPress={() => router.push("/topup")}
+              style={styles.zeroBtn}
+            >
+              <Text style={styles.zeroBtnText}>Add Credits</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
 
       <LanguagePickerModal
         visible={showSourcePicker}
@@ -520,6 +588,21 @@ const styles = StyleSheet.create({
   convBtnText: {
     fontSize: 13,
     fontFamily: "Inter_600SemiBold",
+  },
+  lowBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#FFF7ED",
+    borderLeftWidth: 3,
+    borderLeftColor: "#EA580C",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  lowBannerText: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+    color: "#9A3412",
   },
   scroll: {
     padding: 16,
@@ -618,5 +701,46 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "Inter_500Medium",
     lineHeight: 28,
+  },
+  zeroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 99,
+    backgroundColor: "rgba(0,0,0,0.85)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+  },
+  zeroCard: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 32,
+    alignItems: "center",
+    gap: 12,
+    width: "100%",
+  },
+  zeroTitle: {
+    fontSize: 22,
+    fontFamily: "Inter_700Bold",
+    color: "#0A1628",
+    marginTop: 4,
+  },
+  zeroSub: {
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    color: "#64748B",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  zeroBtn: {
+    marginTop: 8,
+    backgroundColor: "#FF6B00",
+    borderRadius: 12,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+  },
+  zeroBtnText: {
+    fontSize: 16,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
   },
 });

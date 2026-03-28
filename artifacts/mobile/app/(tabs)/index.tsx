@@ -307,7 +307,8 @@ export default function TranslateScreen() {
           <Text style={[styles.appName, { color: theme.text }]}>BhaashAI</Text>
         </View>
         <View style={styles.headerRight}>
-          <View
+          <Pressable
+            onPress={() => router.push("/topup")}
             style={[
               styles.creditsPill,
               { backgroundColor: badgeColor + "15", borderColor: badgeColor },
@@ -316,7 +317,7 @@ export default function TranslateScreen() {
             <Text style={[styles.creditsText, { color: badgeColor }]}>
               ₹{credits.toFixed(2)}
             </Text>
-          </View>
+          </Pressable>
           <Pressable
             onPress={() => router.push("/(tabs)/settings")}
             hitSlop={12}
@@ -386,21 +387,26 @@ export default function TranslateScreen() {
           <View style={styles.gap} />
           <ToggleStrip />
 
-          {credits < 0.01 && (
-            <View
-              style={[
-                styles.noCreditsBanner,
-                { backgroundColor: theme.error + "12", borderColor: theme.error + "30" },
-              ]}
-            >
-              <Feather name="alert-triangle" size={15} color={theme.error} />
-              <Text style={[styles.noCreditText, { color: theme.error }]}>
-                No credits remaining. Check Settings to top up.
-              </Text>
-            </View>
-          )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {credits <= 0 && (
+        <View style={styles.zeroOverlay}>
+          <View style={styles.zeroCard}>
+            <Feather name="alert-circle" size={48} color="#DC2626" />
+            <Text style={styles.zeroTitle}>No credits left</Text>
+            <Text style={styles.zeroSub}>
+              Add credits to continue translating.
+            </Text>
+            <Pressable
+              onPress={() => router.push("/topup")}
+              style={styles.zeroBtn}
+            >
+              <Text style={styles.zeroBtnText}>Add Credits</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
 
       <LanguagePickerModal
         visible={showSourcePicker}
@@ -460,6 +466,47 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 20,
     borderWidth: 1,
+  },
+  zeroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 99,
+    backgroundColor: "rgba(0,0,0,0.85)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+  },
+  zeroCard: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 32,
+    alignItems: "center",
+    gap: 12,
+    width: "100%",
+  },
+  zeroTitle: {
+    fontSize: 22,
+    fontFamily: "Inter_700Bold",
+    color: "#0A1628",
+    marginTop: 4,
+  },
+  zeroSub: {
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    color: "#64748B",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  zeroBtn: {
+    marginTop: 8,
+    backgroundColor: "#FF6B00",
+    borderRadius: 12,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+  },
+  zeroBtnText: {
+    fontSize: 16,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
   },
   creditsText: {
     fontSize: 13,

@@ -27,10 +27,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Platform, useColorScheme } from "react-native";
+import { Alert, Platform, useColorScheme } from "react-native";
 import { auth, db } from "@/services/firebase";
 import { VoiceGender } from "@/services/tts";
-import { useCredits } from "@/hooks/useCredits";
+import { UserStats, useCredits } from "@/hooks/useCredits";
 import { WELCOME_CREDIT_INR } from "@/constants/pricing";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -52,6 +52,7 @@ interface AppContextValue {
   signOut: () => Promise<void>;
   credits: number;
   totalDebited: number;
+  stats: UserStats;
   setCredits: (n: number) => void;
   refreshCredits: () => Promise<void>;
   sourceLang: string;
@@ -84,43 +85,43 @@ const PREFS_KEY = "bhaashai_prefs";
 
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
 
-async function createUserDocIfNew(user: User) {
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-    if (!snap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        createdAt: serverTimestamp(),
-        credits: WELCOME_CREDIT_INR,
-        totalCredited: WELCOME_CREDIT_INR,
-        totalDebited: 0,
-        stats: {
-          charsTranslated: 0,
-          charsTTS: 0,
-          secondsSTT: 0,
-          sessionCount: 1,
-        },
-        plan: "pay-as-you-go",
-        isActive: true,
-      });
-      await addDoc(collection(db, "transactions"), {
-        uid: user.uid,
-        type: "topup",
-        userCharged: -WELCOME_CREDIT_INR,
-        balanceBefore: 0,
-        balanceAfter: WELCOME_CREDIT_INR,
-        note: `Welcome credit — ₹${WELCOME_CREDIT_INR} on signup`,
-        success: true,
-        timestamp: serverTimestamp(),
-      });
-    } else {
-      await updateDoc(userRef, { "stats.sessionCount": increment(1) });
-    }
-  } catch {}
+async function createUserDocIfNew(user: User): Promise<void> {
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      createdAt: serverTimestamp(),
+      credits: WELCOME_CREDIT_INR,
+      totalCredited: WELCOME_CREDIT_INR,
+      totalDebited: 0,
+      stats: {
+        charsTranslated: 0,
+        charsTTS: 0,
+        secondsSTT: 0,
+        sessionCount: 1,
+      },
+      plan: "pay-as-you-go",
+      isActive: true,
+    });
+    await addDoc(collection(db, "transactions"), {
+      uid: user.uid,
+      type: "topup",
+      chars: null,
+      seconds: null,
+      userCharged: -WELCOME_CREDIT_INR,
+      balanceBefore: 0,
+      balanceAfter: WELCOME_CREDIT_INR,
+      note: "Welcome credit",
+      success: true,
+      timestamp: serverTimestamp(),
+    });
+  } else {
+    await updateDoc(userRef, { "stats.sessionCount": increment(1) });
+  }
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -129,7 +130,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  const { credits, totalDebited, ready: creditsReady } = useCredits(user?.uid);
+  const { credits, totalDebited, stats, ready: creditsReady } = useCredits(user?.uid);
 
   const [sourceLang, setSourceLang] = useState("en-IN");
   const [targetLang, setTargetLang] = useState("hi-IN");
@@ -156,11 +157,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
-      setAuthLoading(false);
       if (firebaseUser) {
-        await createUserDocIfNew(firebaseUser);
+        try {
+          await createUserDocIfNew(firebaseUser);
+          setUser(firebaseUser);
+        } catch {
+          await firebaseSignOut(auth).catch(() => {});
+          setUser(null);
+          Alert.alert(
+            "Setup Failed",
+            "We couldn't set up your account. Please try signing in again.",
+            [{ text: "OK" }]
+          );
+        }
+      } else {
+        setUser(null);
       }
+      setAuthLoading(false);
     });
     return unsubscribe;
   }, []);
@@ -316,6 +329,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signOut,
       credits,
       totalDebited,
+      stats,
       setCredits,
       refreshCredits,
       sourceLang,
@@ -347,6 +361,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signOut,
       credits,
       totalDebited,
+      stats,
       setCredits,
       refreshCredits,
       sourceLang,

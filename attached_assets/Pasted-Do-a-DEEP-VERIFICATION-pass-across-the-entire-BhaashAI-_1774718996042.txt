@@ -1,0 +1,502 @@
+Do a DEEP VERIFICATION pass across the entire BhaashAI codebase.
+Do not add new features. Only verify, fix, and harden what exists.
+Go file by file through every flow listed below and confirm each
+checkpoint is correctly implemented. Fix anything that is wrong or missing.
+
+════════════════════════════════════════════════════
+BLOCK 1 — APP LAUNCH & AUTH GATE VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 1.1 — Splash behavior
+  ✓ App.tsx shows SplashScreen component FIRST while onAuthStateChanged
+    has not yet fired (authChecked === false)
+  ✓ SplashScreen has NO navigation buttons, NO skip option
+  ✓ SplashScreen dismisses AUTOMATICALLY when Firebase responds —
+    NOT on a fixed timer
+  ✓ Background: solid #FF6B00. Text: "भाषAI" white 52px. 
+    White ActivityIndicator at bottom.
+  FIX IF WRONG: Replace any setTimeout-based splash with the
+  onAuthStateChanged-driven pattern.
+
+CHECK 1.2 — Auth gate is absolute
+  ✓ If user === null → ONLY WelcomeScreen is reachable
+  ✓ AuthStack has exactly ONE screen: WelcomeScreen
+  ✓ No "Continue as Guest", "Skip", "Browse", "Maybe Later" buttons exist
+    anywhere in WelcomeScreen or any auth screen
+  ✓ Back gesture/button on WelcomeScreen does NOT navigate anywhere
+    (it is the root screen)
+  ✓ No deep link or tab press can reach MainNavigator when logged out
+  FIX IF WRONG: Remove any guest/skip paths. Ensure AuthStack has
+  exactly one screen.
+
+CHECK 1.3 — Auth state persistence
+  ✓ Firebase auth is initialized with AsyncStorage persistence:
+    initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) })
+  ✓ After signing in, closing and reopening the app skips WelcomeScreen
+    and goes directly to MainNavigator (user stays logged in)
+  ✓ After signing out, reopening the app shows WelcomeScreen
+  FIX IF WRONG: Ensure initializeAuth uses getReactNativePersistence.
+
+════════════════════════════════════════════════════
+BLOCK 2 — GOOGLE SIGN-IN FLOW VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 2.1 — GoogleSignin.configure is called exactly once
+  ✓ initGoogleSignIn() is called inside useEffect in App.tsx on mount
+  ✓ webClientId is the WEB APPLICATION type client ID from Firebase Console
+    (NOT Android, NOT iOS client ID)
+  ✓ offlineAccess: true is set
+
+CHECK 2.2 — Sign-in sequence
+  ✓ GoogleSignin.signOut() is called BEFORE GoogleSignin.signIn()
+    to always show the account picker (not auto-sign-in)
+  ✓ idToken is retrieved via GoogleSignin.getTokens() after signIn()
+  ✓ GoogleAuthProvider.credential(idToken) creates the Firebase credential
+  ✓ signInWithCredential(auth, credential) completes Firebase auth
+
+CHECK 2.3 — New vs returning user detection
+  ✓ After signInWithCredential, check Firestore:
+    getDoc(doc(db, 'users', result.user.uid))
+  ✓ If doc does NOT exist → call createNewUserDocument()
+  ✓ If doc DOES exist → call updateDoc to increment stats.sessionCount only
+  ✓ No duplicate user documents are ever created
+
+CHECK 2.4 — Sign-in error handling
+  ✓ statusCodes.SIGN_IN_CANCELLED → silent return (no alert)
+  ✓ statusCodes.IN_PROGRESS → silent return
+  ✓ statusCodes.PLAY_SERVICES_NOT_AVAILABLE → Alert "Update Google Play Services"
+  ✓ Any other error → Alert "Sign-in Failed, please try again"
+  ✓ Loading spinner shown on button during sign-in, disabled to prevent double-tap
+
+CHECK 2.5 — Sign out
+  ✓ Settings screen sign-out calls BOTH:
+    await GoogleSignin.signOut()
+    await auth.signOut()
+  ✓ After sign-out, onAuthStateChanged fires with null → AuthStack shown
+  ✓ No stale user data remains in component state after sign-out
+
+════════════════════════════════════════════════════
+BLOCK 3 — NEW USER CREATION & WELCOME CREDIT
+════════════════════════════════════════════════════
+
+CHECK 3.1 — Firestore user document creation
+  ✓ createNewUserDocument sets EXACTLY these fields:
+    uid, email, displayName, photoURL, createdAt (serverTimestamp)
+    credits: 100          ← user-facing ₹100
+    totalCredited: 100
+    totalDebited: 0
+    stats: { charsTranslated:0, charsTTS:0, secondsSTT:0, sessionCount:1 }
+    plan: 'pay-as-you-go'
+    isActive: true
+  ✓ Uses setDoc (not addDoc) with doc(db, 'users', uid) as the reference
+  ✓ Called with await — not fire-and-forget
+
+CHECK 3.2 — Welcome credit transaction log
+  ✓ After setDoc, addDoc to 'transactions' collection with:
+    uid, type:'topup', userCharged: -100 (negative = credit)
+    balanceBefore:0, balanceAfter:100
+    note:'Welcome credit', success:true, timestamp:serverTimestamp()
+  ✓ This transaction appears in user's transaction history as "+₹100 Welcome"
+
+CHECK 3.3 — Idempotency guard
+  ✓ If createNewUserDocument throws halfway, it does NOT leave a partial document
+  ✓ Wrap setDoc + addDoc in a try/catch. If it fails, sign the user out and
+    show "Setup failed, please try signing in again."
+  ✓ On next sign-in, getDoc will return null again → retry document creation
+
+════════════════════════════════════════════════════
+BLOCK 4 — CREDIT DISPLAY & MATH VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 4.1 — Constants are correct
+  ✓ In lib/constants.ts verify these EXACT values exist:
+
+    SARVAM_COST.translate.perChar    === 0.002      (₹20 / 10000)
+    SARVAM_COST.tts.perChar          === 0.0015     (₹15 / 10000)
+    SARVAM_COST.stt.perSecond        === 0.008333   (₹30 / 3600)
+    SARVAM_COST.transliterate.perChar=== 0.002
+
+    USER_PRICE.translate.perChar     === 0.004      (2x)
+    USER_PRICE.tts.perChar           === 0.003      (2x)
+    USER_PRICE.stt.perSecond         === 0.016667   (2x, rounded)
+    USER_PRICE.transliterate.perChar === 0.004      (2x)
+
+    WELCOME_CREDIT_INR               === 100
+
+  ✓ SARVAM_COST values are NEVER passed to any UI component
+  ✓ SARVAM_COST is used ONLY in the transaction log's internal fields
+    (if stored at all — it's optional)
+  FIX IF WRONG: Correct any values that don't match above.
+
+CHECK 4.2 — Math spot-checks (verify these compute correctly in code)
+  ✓ 1000 chars translated → user charged: 1000 × 0.004 = ₹4.00
+  ✓ 60 seconds STT → user charged: 60 × 0.016667 = ₹1.00
+  ✓ 500 chars TTS → user charged: 500 × 0.003 = ₹1.50
+  ✓ 2500 chars transliterate → user charged: 2500 × 0.004 = ₹10.00
+  Add a __DEV__ console.log in each charge function that prints:
+    console.log(`[CREDIT] ${type}: ${quantity} units → ₹${userCharged.toFixed(6)}`);
+  This lets you verify in dev mode. Remove for production.
+
+CHECK 4.3 — Floating point precision
+  ✓ All credit arithmetic uses Math.round(x * 1000000) / 1000000
+    to avoid floating point drift (e.g., 0.1 + 0.2 = 0.30000000000000004)
+  ✓ Firestore credits field never stores more than 6 decimal places
+  ✓ UI always displays credits with exactly 2 decimal places: toFixed(2)
+  FIX IF WRONG: Wrap every credit calculation in the Math.round pattern.
+
+════════════════════════════════════════════════════
+BLOCK 5 — ATOMIC CREDIT DEDUCTION VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 5.1 — runTransaction is used (not updateDoc)
+  ✓ atomicDeduct() in lib/credits.ts uses runTransaction for EVERY deduction
+  ✓ The transaction reads credits balance, checks it's sufficient,
+    then writes the new balance — all in one atomic operation
+  ✓ If another deduction happens simultaneously, Firestore retries the
+    transaction automatically (this is the runTransaction guarantee)
+  FIX IF WRONG: Replace any direct updateDoc credit deductions with
+  runTransaction.
+
+CHECK 5.2 — Never charge on API failure
+  ✓ In translateText: chargeTranslate() is called ONLY after res.ok === true
+  ✓ In synthesizeSpeech: chargeTTS() is called ONLY after res.ok === true
+  ✓ In transcribeAudio: chargeSTT() is called ONLY after successful response
+  ✓ If the API returns 400/401/429/500 → throw error, NO credit deduction
+  Verify by searching codebase: chargeTranslate/chargeTTS/chargeSTT must
+  ALWAYS appear AFTER the `if (!res.ok) throw` line.
+
+CHECK 5.3 — INSUFFICIENT_CREDITS handling
+  ✓ assertSufficientCredits() is called BEFORE every Sarvam API call
+  ✓ If thrown, the error propagates up and:
+    - Translate screen: shows "No Credits" message + [Add Credits] button
+    - Voice screen: stops recording, shows toast "No credits — add more"
+    - Both navigate to TopUp screen
+  ✓ The Sarvam API is NEVER called if credits are insufficient
+  FIX IF WRONG: Add assertSufficientCredits call before each API call.
+
+CHECK 5.4 — Transaction log completeness
+  ✓ Every deduction writes to 'transactions' collection with ALL fields:
+    uid, type, chars OR seconds (null for the other), userCharged,
+    balanceBefore, balanceAfter, sourceLang, targetLang, success, timestamp
+  ✓ Every topup (including welcome credit) writes to 'transactions' with
+    userCharged as NEGATIVE number (e.g. -100 for ₹100 added)
+  ✓ timestamp always uses serverTimestamp() — never new Date() or Date.now()
+
+════════════════════════════════════════════════════
+BLOCK 6 — REAL-TIME CREDIT DISPLAY VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 6.1 — useCredits hook
+  ✓ hook uses onSnapshot (not getDoc) for real-time updates
+  ✓ Unsubscribe function returned from onSnapshot is called in useEffect cleanup
+  ✓ Hook returns: { credits, totalDebited, stats, ready }
+  ✓ Initial state: credits=0, ready=false (shows skeleton until first snapshot)
+
+CHECK 6.2 — Header credit badge
+  ✓ Present on: Translate tab, Voice tab, Conversation tab
+  ✓ NOT on: Settings tab (has full wallet card instead)
+  ✓ Color logic:
+    credits > 20  → green  #16A34A
+    credits 5-20  → orange #EA580C
+    credits < 5   → red    #DC2626
+  ✓ Badge is tappable → navigates to TopUp screen
+  ✓ Updates within 1-2 seconds after any API call completes
+
+CHECK 6.3 — Low balance banner
+  ✓ Appears at TOP of screen body (below header, above content)
+  ✓ Condition: credits > 0 AND credits < 5
+  ✓ Shows: "⚠️ Low balance ₹X.XX — Tap to add credits"
+  ✓ Tappable → navigates to TopUp
+  ✓ Does NOT block usage — user can still translate
+
+CHECK 6.4 — Zero balance full block
+  ✓ Condition: credits <= 0
+  ✓ Shows as full-screen overlay (position absolute, zIndex 99)
+  ✓ Dark overlay background rgba(0,0,0,0.85)
+  ✓ Message: "No credits left" + [Add Credits] button
+  ✓ User CANNOT dismiss this overlay without adding credits or signing out
+  ✓ [Add Credits] button navigates to TopUp screen
+
+════════════════════════════════════════════════════
+BLOCK 7 — TRANSLATION FLOW VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 7.1 — Debounced real-time translation
+  ✓ Translation fires 600ms after user STOPS typing (debounce)
+  ✓ If user keeps typing, previous pending call is cancelled (clearTimeout)
+  ✓ Translation does NOT fire for empty string or strings < 2 chars
+  ✓ Loading indicator shown in output card while API call in progress
+
+CHECK 7.2 — Credit deduction on translate
+  ✓ chargeTranslate(uid, inputText, sourceLang, targetLang) called after success
+  ✓ The uid comes from auth.currentUser.uid (not a hardcoded value)
+  ✓ After deduction, credit badge updates in header within ~1 second
+  ✓ Transaction appears in history with correct type:'translate' and char count
+
+CHECK 7.3 — Language swap
+  ✓ Swap button exchanges source and target languages
+  ✓ Swap also moves translated text to input (so user can continue translating)
+  ✓ Swap does NOT trigger a new API call unless input text changed
+  ✓ Auto-detect is set back to manual source lang when swapping
+
+CHECK 7.4 — Auto-detect
+  ✓ When source is "Auto Detect", API receives source_language_code: 'unknown'
+    (NOT 'auto' — Sarvam uses 'unknown' for auto-detection)
+  ✓ Detected language shown below input after translation: "Detected: Hindi"
+  ✓ If detection fails, fallback to 'hi-IN' silently
+
+════════════════════════════════════════════════════
+BLOCK 8 — VOICE (STT) FLOW VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 8.1 — Audio recording format
+  ✓ iOS recording options include:
+    extension: '.wav', sampleRate: 16000,
+    numberOfChannels: 1, linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false, linearPCMIsFloat: false
+  ✓ Android recording options include:
+    extension: '.wav', sampleRate: 16000, numberOfChannels: 1
+  ✓ FormData file append uses type: 'audio/wav' (NOT 'audio/vnd.wave')
+
+CHECK 8.2 — Recording time tracking
+  ✓ const startTime = Date.now() set when recording STARTS
+  ✓ const audioSeconds = (Date.now() - startTime) / 1000 calculated when STOPPED
+  ✓ audioSeconds passed to chargeSTT(uid, audioSeconds, sourceLang)
+  ✓ Minimum charge: if audioSeconds < 0.5, set to 0.5 (avoid free micro-charges)
+
+CHECK 8.3 — Credit check before recording
+  ✓ Before starting mic, check: credits > 0.05 (at least 3 seconds worth)
+  ✓ If insufficient → show alert "Not enough credits to record voice"
+  ✓ Do NOT start recording if insufficient credits
+
+CHECK 8.4 — Transcript → auto-translate
+  ✓ After STT returns final transcript, automatically calls translateText()
+  ✓ Translation credit is charged separately from STT credit
+  ✓ Total cost of one voice input = STT cost + translate cost (both deducted)
+
+════════════════════════════════════════════════════
+BLOCK 9 — TTS (SPEAK) FLOW VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 9.1 — Request body has no forbidden fields
+  ✓ TTS request body contains ONLY:
+    inputs, target_language_code, speaker, model, pace,
+    speech_sample_rate, enable_preprocessing
+  ✓ 'pitch' field is ABSENT
+  ✓ 'loudness' field is ABSENT
+  ✓ 'eng_interpolation_wt' field is ABSENT
+  ✓ model is 'bulbul:v3' (NOT bulbul:v1, NOT bulbul:v2)
+
+CHECK 9.2 — Speaker name validation
+  ✓ All speaker names in SPEAKER_MAP are from this valid list ONLY:
+    anushka, abhilash, manisha, vidya, arya, karun, hitesh,
+    aditya, ritu, priya, neha, rahul, pooja, rohan, simran,
+    kavya, amit, dev, ishita, shreya, ratan, varun, manan,
+    sumit, roopa, kabir, aayan, shubh, ashutosh, advait,
+    amelia, sophia, anand, tanya, tarun, sunny, mani, gokul,
+    vijay, shruti, suhani, mohit, kavitha, rehan, soham, rupali
+  ✓ No speaker from the OLD list is used: meera, arjun, valli,
+    pavithra, sobha, diya, neel, madhur, amol, indira, ritu(old)
+  ✓ Fallback speaker if language not in map: 'anushka'
+
+CHECK 9.3 — Audio playback
+  ✓ Response base64 audio decoded correctly
+  ✓ expo-av Audio.Sound used for playback
+  ✓ Previous sound unloaded before playing new one (no audio stacking)
+  ✓ chargeTTS(uid, text, targetLang) called ONLY after successful API response
+
+════════════════════════════════════════════════════
+BLOCK 10 — SETTINGS SCREEN VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 10.1 — No API key input exists
+  ✓ Search entire codebase for: "api key", "apiKey input", "sarvam key",
+    "enter your key", "subscription key" in JSX/UI components
+  ✓ ZERO results. If found, remove those UI elements entirely.
+  ✓ SARVAM_API_KEY is imported from lib/constants.ts in API service files only
+
+CHECK 10.2 — Profile section
+  ✓ Shows user.displayName and user.email from Firebase Auth
+  ✓ Shows user.photoURL as circular avatar (fallback: initials if photoURL null)
+  ✓ Sign Out button calls both GoogleSignin.signOut() and auth.signOut()
+
+CHECK 10.3 — Wallet section (real-time)
+  ✓ Uses useCredits(user.uid) hook — NOT getDoc one-time fetch
+  ✓ Shows: "₹{credits.toFixed(2)}" with correct color coding
+  ✓ Progress bar: width = (totalDebited / totalCredited) × 100%
+    Clamp to max 100% to avoid overflow
+  ✓ [Add Credits] button navigates to TopUp screen
+
+CHECK 10.4 — Usage stats
+  ✓ stats.charsTranslated shown as formatted number: toLocaleString()
+  ✓ stats.charsTTS shown
+  ✓ stats.secondsSTT converted to minutes: (secondsSTT/60).toFixed(1) + " min"
+  ✓ All stats use optional chaining: stats?.charsTranslated ?? 0
+    (fixes the toLocaleString of undefined crash)
+
+CHECK 10.5 — Rate card
+  ✓ Displays USER_PRICE values (not SARVAM_COST)
+  ✓ Shows: "₹4.00 per 1,000 chars" for translate
+  ✓ Shows: "₹1.00 per minute" for STT
+  ✓ Shows: "₹3.00 per 1,000 chars" for TTS
+
+════════════════════════════════════════════════════
+BLOCK 11 — TOPUP SCREEN VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 11.1 — Package display
+  ✓ All 4 packages shown correctly:
+    ₹99  → ₹99 credits  (no bonus)
+    ₹299 → ₹329 credits (₹30 bonus, 10%)
+    ₹599 → ₹689 credits (₹90 bonus, 15%)
+    ₹999 → ₹1199 credits (₹200 bonus, 20%)
+  ✓ "Get ₹{amount+bonus} credits" shown on each card
+  ✓ Popular (₹599) card has highlight border and "Most Popular" badge
+
+CHECK 11.2 — Credit addition is atomic
+  ✓ Uses runTransaction when adding topup credits:
+    reads current balance → adds credits → writes new balance
+  ✓ Writes to BOTH 'topups' collection AND 'transactions' collection
+  ✓ Transaction type: 'topup', userCharged: negative number
+  ✓ totalCredited field incremented by creditsToAdd amount
+
+CHECK 11.3 — "What can I do with ₹X" section
+  ✓ Dynamically computes for the currently selected/highlighted package:
+    Translate: Math.floor(amount / USER_PRICE.translate.perChar).toLocaleString() + " chars"
+    Voice in: Math.floor(amount / USER_PRICE.stt.perSecond / 60).toFixed(0) + " minutes"
+    Voice out: Math.floor(amount / USER_PRICE.tts.perChar).toLocaleString() + " chars"
+
+════════════════════════════════════════════════════
+BLOCK 12 — TRANSACTION HISTORY VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 12.1 — Query correctness
+  ✓ Query: collection('transactions') where('uid','==',user.uid)
+    orderBy('timestamp','desc') limit(20)
+  ✓ Uses onSnapshot for real-time (new transactions appear without refresh)
+  ✓ Composite index exists in Firestore for (uid ASC, timestamp DESC)
+    If missing, console shows a URL to create it — paste that URL in browser.
+
+CHECK 12.2 — Display format per type
+  ✓ type:'translate' → icon 🌐, label "Translation", amount in RED "-₹X.XX"
+  ✓ type:'tts'       → icon 🔊, label "Voice Output", amount in RED "-₹X.XX"
+  ✓ type:'stt'       → icon 🎙️, label "Voice Input",  amount in RED "-₹X.XX"
+  ✓ type:'topup'     → icon ➕, label "Credits Added", amount in GREEN "+₹X.XX"
+  ✓ Welcome credit shows as: "➕ Welcome Bonus  +₹100.00"
+  ✓ Timestamp shown as relative time: "2 min ago", "3 hours ago", "Yesterday"
+
+CHECK 12.3 — Amount display
+  ✓ For deductions: display Math.abs(userCharged).toFixed(2) with minus prefix
+  ✓ For topups: display Math.abs(userCharged).toFixed(2) with plus prefix
+  ✓ Very small amounts (e.g. ₹0.004) shown as "₹0.00" is NOT acceptable —
+    use toFixed(4) for amounts < ₹0.01, toFixed(2) for amounts >= ₹0.01:
+    const displayAmt = Math.abs(amt) < 0.01 
+      ? Math.abs(amt).toFixed(4) 
+      : Math.abs(amt).toFixed(2);
+
+════════════════════════════════════════════════════
+BLOCK 13 — FIRESTORE SECURITY RULES VERIFICATION
+════════════════════════════════════════════════════
+
+CHECK 13.1 — Rules must be set to this exact content
+  Verify (or instruct user to set) in Firebase Console → Firestore → Rules:
+
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      
+      // Users can only read/write their OWN document
+      match /users/{uid} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+      
+      // Users can only read their OWN transactions
+      match /transactions/{txnId} {
+        allow read: if request.auth != null && 
+                       resource.data.uid == request.auth.uid;
+        // Only server (app code) writes transactions — 
+        // users cannot write directly
+        allow write: if request.auth != null;
+      }
+      
+      // Topups: users can read own, not write directly
+      match /topups/{topupId} {
+        allow read: if request.auth != null && 
+                       resource.data.uid == request.auth.uid;
+        allow write: if request.auth != null;
+      }
+    }
+  }
+
+  ✓ No rule allows unauthenticated access to any collection
+  ✓ Users cannot read other users' documents
+
+════════════════════════════════════════════════════
+BLOCK 14 — EDGE CASES & REGRESSION CHECKS
+════════════════════════════════════════════════════
+
+CHECK 14.1 — Rapid tapping
+  ✓ Translate button / speak button / mic button all have a loading state
+  ✓ While loading: button is DISABLED (pointerEvents:'none' or disabled prop)
+  ✓ No duplicate API calls from double-tapping
+
+CHECK 14.2 — Network offline
+  ✓ If device is offline when API called → catch block shows toast:
+    "No internet connection"
+  ✓ Credits are NOT deducted if API call fails due to network error
+
+CHECK 14.3 — Session persistence across tabs
+  ✓ Switching tabs does NOT reset credit balance displayed
+  ✓ useCredits hook mounted at a high enough level that it persists
+
+CHECK 14.4 — Long text handling
+  ✓ Text input has maxLength={1000}
+  ✓ Character counter shows "X/1000" below input
+  ✓ Estimated cost shows dynamically as user types:
+    "~₹{estimateCost('translate', text.length).toFixed(3)}"
+  ✓ Text > 1000 chars is truncated before API call as last resort
+
+CHECK 14.5 — First launch experience
+  ✓ Brand new user flow: 
+    [Splash] → [Welcome] → [Google Picker] → [MainApp with ₹100 balance]
+  ✓ ₹100 appears in header badge immediately on first landing in main app
+  ✓ Welcome credit transaction visible in history as first item
+
+CHECK 14.6 — Stats null safety
+  ✓ ALL stats accesses use optional chaining:
+    stats?.charsTranslated ?? 0
+    stats?.charsTTS ?? 0
+    stats?.secondsSTT ?? 0
+    stats?.sessionCount ?? 0
+  ✓ credits?.toFixed is never called — credits is always initialized to 0 (number)
+  ✓ toLocaleString() is never called on undefined anywhere in codebase
+
+════════════════════════════════════════════════════
+FINAL INSTRUCTION
+════════════════════════════════════════════════════
+
+After completing all checks and fixes:
+
+1. Search codebase for TODO, FIXME, console.error, and any hardcoded
+   uid or test email strings — remove or resolve all of them.
+
+2. Ensure SARVAM_API_KEY and RAZORPAY_KEY_ID are in lib/constants.ts
+   and imported from there — never hardcoded inline in any other file.
+
+3. Confirm no file imports from a path that doesn't exist
+   (check all import statements for lib/credits, lib/auth, lib/firebase,
+   lib/constants, hooks/useCredits).
+
+4. Confirm the 5-tab MainNavigator has tabs in this order:
+   🌐 Translate | 🎙️ Voice | 💬 Conversation | 📚 Phrasebook | ⚙️ Settings
+
+5. Run the app and manually trace this golden path:
+   → Cold launch → Splash (auto) → Welcome (sign in) 
+   → Main app loads → Header shows ₹100.00 in green
+   → Type 100 chars → wait 600ms → translation appears
+   → Header updates to ₹99.60 (100 × ₹0.004 = ₹0.40 deducted)
+   → Settings → Wallet shows ₹99.60 remaining, ₹0.40 spent
+   → History shows one 'translate' transaction at top
+   → Sign out → Welcome screen → done.
+   
+   If this golden path works end to end, the app is production-verified.

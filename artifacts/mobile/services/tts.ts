@@ -10,7 +10,7 @@ export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
   "te-IN":  { female: "kavitha",   male: "rahul"    },
   "kn-IN":  { female: "shreya",    male: "manan"    },
   "ml-IN":  { female: "ishita",    male: "varun"    },
-  "bn-IN":  { female: "niharika",  male: "rohan"    },
+  "bn-IN":  { female: "neha",      male: "rohan"    },
   "gu-IN":  { female: "priya",     male: "dev"      },
   "mr-IN":  { female: "kavya",     male: "amit"     },
   "pa-IN":  { female: "simran",    male: "sumit"    },
@@ -24,7 +24,7 @@ export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
   "kok-IN": { female: "rupali",    male: "soham"    },
   "ks-IN":  { female: "sophia",    male: "advait"   },
   "mni-IN": { female: "amelia",    male: "gokul"    },
-  "ne-IN":  { female: "niharika",  male: "vijay"    },
+  "ne-IN":  { female: "neha",      male: "vijay"    },
   "sat-IN": { female: "shubh",     male: "ashutosh" },
   "sd-IN":  { female: "ratan",     male: "mani"     },
 };
@@ -67,7 +67,6 @@ export async function synthesizeSpeech(
     } catch {
       detail = await res.text().catch(() => "");
     }
-    console.error(`[TTS] API error ${res.status}:`, detail);
     throw new Error(`TTS_ERROR_${res.status}`);
   }
 

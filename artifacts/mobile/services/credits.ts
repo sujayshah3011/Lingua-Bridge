@@ -77,6 +77,9 @@ export async function chargeTranslate(
 ) {
   const chars = text.length;
   const userCharged = round6(chars * USER_PRICE.translate.perChar);
+  if (__DEV__) {
+    console.log(`[CREDIT] translate: ${chars} chars → ₹${userCharged.toFixed(6)}`);
+  }
   await atomicDeduct({ uid, type: "translate", chars, userCharged, sourceLang, targetLang });
   await updateDoc(doc(db, "users", uid), { "stats.charsTranslated": increment(chars) });
   return { chars, cost: userCharged };
@@ -85,22 +88,31 @@ export async function chargeTranslate(
 export async function chargeTTS(uid: string, text: string, targetLang: string) {
   const chars = text.length;
   const userCharged = round6(chars * USER_PRICE.tts.perChar);
+  if (__DEV__) {
+    console.log(`[CREDIT] tts: ${chars} chars → ₹${userCharged.toFixed(6)}`);
+  }
   await atomicDeduct({ uid, type: "tts", chars, userCharged, targetLang });
   await updateDoc(doc(db, "users", uid), { "stats.charsTTS": increment(chars) });
   return { chars, cost: userCharged };
 }
 
 export async function chargeSTT(uid: string, audioSeconds: number, sourceLang: string) {
-  const seconds = round6(audioSeconds);
-  const userCharged = round6(seconds * USER_PRICE.stt.perSecond);
-  await atomicDeduct({ uid, type: "stt", seconds, userCharged, sourceLang });
-  await updateDoc(doc(db, "users", uid), { "stats.secondsSTT": increment(seconds) });
-  return { seconds, cost: userCharged };
+  const billable = round6(Math.max(0.5, audioSeconds));
+  const userCharged = round6(billable * USER_PRICE.stt.perSecond);
+  if (__DEV__) {
+    console.log(`[CREDIT] stt: ${billable.toFixed(2)}s (raw ${audioSeconds.toFixed(2)}s) → ₹${userCharged.toFixed(6)}`);
+  }
+  await atomicDeduct({ uid, type: "stt", seconds: billable, userCharged, sourceLang });
+  await updateDoc(doc(db, "users", uid), { "stats.secondsSTT": increment(billable) });
+  return { seconds: billable, cost: userCharged };
 }
 
 export async function chargeTransliterate(uid: string, text: string) {
   const chars = text.length;
   const userCharged = round6(chars * USER_PRICE.transliterate.perChar);
+  if (__DEV__) {
+    console.log(`[CREDIT] transliterate: ${chars} chars → ₹${userCharged.toFixed(6)}`);
+  }
   await atomicDeduct({ uid, type: "transliterate", chars, userCharged });
   return { chars, cost: userCharged };
 }

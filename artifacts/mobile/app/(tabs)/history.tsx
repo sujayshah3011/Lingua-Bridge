@@ -1,8 +1,9 @@
 import { Feather } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import React, { useState } from "react";
+import { router } from "expo-router";
+import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import {
-  Alert,
+  ActivityIndicator,
   FlatList,
   Platform,
   Pressable,
@@ -11,43 +12,128 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { FadeInDown } from "react-native-reanimated";
 
-import { HistoryCard } from "@/components/HistoryCard";
-import { TranslationRecord, useApp } from "@/context/AppContext";
+import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/hooks/useTheme";
+import { db } from "@/services/firebase";
+
+interface Transaction {
+  id: string;
+  type: "translate" | "tts" | "stt" | "transliterate" | "topup";
+  userCharged: number;
+  chars?: number | null;
+  seconds?: number | null;
+  sourceLang?: string | null;
+  targetLang?: string | null;
+  note?: string;
+  timestamp: { seconds: number } | null;
+}
+
+function relativeTime(ts: { seconds: number } | null): string {
+  if (!ts) return "";
+  const diffMs = Date.now() - ts.seconds * 1000;
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return `${diffSec}s ago`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} min ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay === 1) return "Yesterday";
+  return `${diffDay} days ago`;
+}
+
+function displayAmount(amt: number): string {
+  const abs = Math.abs(amt);
+  return abs < 0.01 ? abs.toFixed(4) : abs.toFixed(2);
+}
+
+const TYPE_META: Record<string, { icon: string; label: string }> = {
+  translate:     { icon: "globe",      label: "Translation"  },
+  tts:           { icon: "volume-2",   label: "Voice Output" },
+  stt:           { icon: "mic",        label: "Voice Input"  },
+  transliterate: { icon: "type",       label: "Transliteration" },
+  topup:         { icon: "plus-circle", label: "Credits Added" },
+};
 
 export default function HistoryScreen() {
-  const { history, deleteHistoryItem, clearHistory } = useApp();
+  const { user } = useApp();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const [selected, setSelected] = useState<TranslationRecord | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
 
-  const handleClearAll = () => {
-    Alert.alert(
-      "Clear History",
-      "Are you sure you want to delete all translation history?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Clear All",
-          style: "destructive",
-          onPress: async () => {
-            await Haptics.notificationAsync(
-              Haptics.NotificationFeedbackType.Warning
-            );
-            clearHistory();
-          },
-        },
-      ]
-    );
-  };
+  useEffect(() => {
+    if (!user?.uid) {
+      setLoading(false);
+      return;
+    }
 
-  const handleDelete = async (id: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    deleteHistoryItem(id);
+    const q = query(
+      collection(db, "transactions"),
+      where("uid", "==", user.uid),
+      orderBy("timestamp", "desc"),
+      limit(50)
+    );
+
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const items: Transaction[] = snap.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<Transaction, "id">),
+        }));
+        setTransactions(items);
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
+
+    return unsub;
+  }, [user?.uid]);
+
+  const renderItem = ({ item }: { item: Transaction }) => {
+    const isTopup = item.type === "topup";
+    const meta = TYPE_META[item.type] ?? TYPE_META.translate;
+    const amtColor = isTopup ? "#16A34A" : "#DC2626";
+    const prefix = isTopup ? "+" : "-";
+    const amt = displayAmount(item.userCharged);
+
+    return (
+      <View
+        style={[
+          styles.row,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <View style={[styles.iconWrap, { backgroundColor: amtColor + "14" }]}>
+          <Feather
+            name={meta.icon as keyof typeof Feather.glyphMap}
+            size={18}
+            color={amtColor}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.rowLabel, { color: theme.text }]}>
+            {item.note ?? meta.label}
+          </Text>
+          <Text style={[styles.rowSub, { color: theme.textMuted }]}>
+            {item.chars != null
+              ? `${item.chars.toLocaleString()} chars`
+              : item.seconds != null
+              ? `${item.seconds.toFixed(1)}s`
+              : ""}
+            {item.chars != null || item.seconds != null ? " · " : ""}
+            {relativeTime(item.timestamp)}
+          </Text>
+        </View>
+        <Text style={[styles.rowAmt, { color: amtColor }]}>
+          {prefix}₹{amt}
+        </Text>
+      </View>
+    );
   };
 
   return (
@@ -63,86 +149,49 @@ export default function HistoryScreen() {
         ]}
       >
         <Text style={[styles.title, { color: theme.text }]}>History</Text>
-        {history.length > 0 && (
-          <Pressable
-            onPress={handleClearAll}
-            hitSlop={12}
-            style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
-          >
-            <Text style={[styles.clearBtn, { color: theme.error }]}>
-              Clear All
-            </Text>
-          </Pressable>
-        )}
+        <Pressable
+          onPress={() => router.push("/topup")}
+          style={[styles.addBtn, { backgroundColor: theme.primary + "15", borderColor: theme.primary + "40" }]}
+        >
+          <Feather name="plus" size={14} color={theme.primary} />
+          <Text style={[styles.addBtnText, { color: theme.primary }]}>Add Credits</Text>
+        </Pressable>
       </View>
 
-      {selected && (
-        <View
-          style={[
-            styles.detailModal,
+      {loading ? (
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={theme.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={transactions}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={[
+            styles.list,
             {
-              backgroundColor: theme.surface,
-              borderColor: theme.border,
+              paddingBottom:
+                Platform.OS === "web"
+                  ? insets.bottom + 34 + 84
+                  : insets.bottom + 84,
             },
           ]}
-        >
-          <Pressable
-            onPress={() => setSelected(null)}
-            style={styles.detailClose}
-          >
-            <Feather name="x" size={20} color={theme.textSecondary} />
-          </Pressable>
-          <Text style={[styles.detailSource, { color: theme.textSecondary }]}>
-            {selected.sourceText}
-          </Text>
-          <View style={[styles.detailDivider, { backgroundColor: theme.border }]} />
-          <Text style={[styles.detailTranslated, { color: theme.text }]} selectable>
-            {selected.translatedText}
-          </Text>
-        </View>
-      )}
-
-      <FlatList
-        data={history}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={[
-          styles.list,
-          {
-            paddingBottom:
-              Platform.OS === "web"
-                ? insets.bottom + 34 + 84
-                : insets.bottom + 84,
-          },
-        ]}
-        ListEmptyComponent={
-          <View style={styles.empty}>
-            <View
-              style={[
-                styles.emptyIcon,
-                { backgroundColor: theme.surfaceSecondary },
-              ]}
-            >
-              <Feather name="clock" size={28} color={theme.textMuted} />
+          ListEmptyComponent={
+            <View style={styles.empty}>
+              <View style={[styles.emptyIcon, { backgroundColor: theme.surfaceSecondary }]}>
+                <Feather name="clock" size={28} color={theme.textMuted} />
+              </View>
+              <Text style={[styles.emptyTitle, { color: theme.text }]}>
+                No transactions yet
+              </Text>
+              <Text style={[styles.emptySub, { color: theme.textMuted }]}>
+                Your credit activity will appear here
+              </Text>
             </View>
-            <Text style={[styles.emptyTitle, { color: theme.text }]}>
-              No translations yet
-            </Text>
-            <Text style={[styles.emptySub, { color: theme.textMuted }]}>
-              Your translation history will appear here
-            </Text>
-          </View>
-        }
-        renderItem={({ item, index }) => (
-          <Animated.View entering={FadeInDown.delay(index * 30).duration(250)}>
-            <HistoryCard
-              record={item}
-              onDelete={handleDelete}
-              onPress={setSelected}
-            />
-          </Animated.View>
-        )}
-        showsVerticalScrollIndicator={false}
-      />
+          }
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }
@@ -156,21 +205,64 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 12,
+    marginBottom: 4,
   },
   title: {
     fontSize: 28,
     fontFamily: "Inter_700Bold",
   },
-  clearBtn: {
-    fontSize: 14,
-    fontFamily: "Inter_500Medium",
+  addBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  addBtnText: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+  },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   list: {
-    paddingTop: 4,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    gap: 8,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  iconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rowLabel: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    marginBottom: 2,
+  },
+  rowSub: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+  },
+  rowAmt: {
+    fontSize: 15,
+    fontFamily: "Inter_700Bold",
   },
   empty: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 80,
@@ -193,31 +285,5 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     textAlign: "center",
     paddingHorizontal: 40,
-  },
-  detailModal: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    gap: 10,
-  },
-  detailClose: {
-    alignSelf: "flex-end",
-    padding: 4,
-  },
-  detailSource: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    fontStyle: "italic",
-    lineHeight: 20,
-  },
-  detailDivider: {
-    height: StyleSheet.hairlineWidth,
-  },
-  detailTranslated: {
-    fontSize: 16,
-    fontFamily: "Inter_500Medium",
-    lineHeight: 24,
   },
 });

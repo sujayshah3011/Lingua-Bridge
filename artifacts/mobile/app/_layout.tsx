@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -21,10 +22,37 @@ SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
+function AppSplash() {
+  return (
+    <View style={splash.root}>
+      <Text style={splash.text}>भाषAI</Text>
+      <ActivityIndicator color="#fff" size="large" style={splash.indicator} />
+    </View>
+  );
+}
+
+const splash = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: "#FF6B00",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    fontSize: 52,
+    color: "#fff",
+    fontFamily: "Inter_700Bold",
+    letterSpacing: -1,
+  },
+  indicator: {
+    marginTop: 48,
+  },
+});
+
 function RootLayoutNav() {
   const { user, authLoading } = useApp();
 
-  if (authLoading) return null;
+  if (authLoading) return <AppSplash />;
   if (!user) return <WelcomeScreen />;
 
   return (
@@ -38,6 +66,14 @@ function RootLayoutNav() {
         name="conversation"
         options={{
           headerShown: false,
+          presentation: "modal",
+          gestureEnabled: true,
+        }}
+      />
+      <Stack.Screen
+        name="topup"
+        options={{
+          title: "Add Credits",
           presentation: "modal",
           gestureEnabled: true,
         }}
