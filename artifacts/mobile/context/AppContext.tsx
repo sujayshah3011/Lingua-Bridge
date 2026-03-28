@@ -8,6 +8,16 @@ import {
   signInWithCredential,
   signOut as firebaseSignOut,
 } from "firebase/auth";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  increment,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import React, {
   createContext,
   useCallback,
@@ -17,9 +27,10 @@ import React, {
   useState,
 } from "react";
 import { useColorScheme } from "react-native";
-import { auth } from "@/services/firebase";
+import { auth, db } from "@/services/firebase";
 import { VoiceGender } from "@/services/tts";
-import { fetchCredits } from "@/services/api";
+import { useCredits } from "@/hooks/useCredits";
+import { WELCOME_CREDIT_INR } from "@/constants/pricing";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -39,6 +50,7 @@ interface AppContextValue {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   credits: number;
+  totalDebited: number;
   setCredits: (n: number) => void;
   refreshCredits: () => Promise<void>;
   sourceLang: string;
@@ -71,13 +83,53 @@ const PREFS_KEY = "bhaashai_prefs";
 
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
 
+async function createUserDocIfNew(user: User) {
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        createdAt: serverTimestamp(),
+        credits: WELCOME_CREDIT_INR,
+        totalCredited: WELCOME_CREDIT_INR,
+        totalDebited: 0,
+        stats: {
+          charsTranslated: 0,
+          charsTTS: 0,
+          secondsSTT: 0,
+          sessionCount: 1,
+        },
+        plan: "pay-as-you-go",
+        isActive: true,
+      });
+      await addDoc(collection(db, "transactions"), {
+        uid: user.uid,
+        type: "topup",
+        userCharged: -WELCOME_CREDIT_INR,
+        balanceBefore: 0,
+        balanceAfter: WELCOME_CREDIT_INR,
+        note: `Welcome credit — ₹${WELCOME_CREDIT_INR} on signup`,
+        success: true,
+        timestamp: serverTimestamp(),
+      });
+    } else {
+      await updateDoc(userRef, { "stats.sessionCount": increment(1) });
+    }
+  } catch {}
+}
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useColorScheme();
 
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  const [credits, setCreditsState] = useState(50);
+  const { credits, totalDebited, ready: creditsReady } = useCredits(user?.uid);
+
   const [sourceLang, setSourceLang] = useState("en-IN");
   const [targetLang, setTargetLang] = useState("hi-IN");
   const [autoDetect, setAutoDetect] = useState(true);
@@ -102,11 +154,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       setAuthLoading(false);
       if (firebaseUser) {
-        fetchCredits().then(setCreditsState);
+        await createUserDocIfNew(firebaseUser);
       }
     });
     return unsubscribe;
@@ -132,16 +184,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     await firebaseSignOut(auth);
     setUser(null);
-    fetchCredits().then(setCreditsState);
   }, []);
 
   const refreshCredits = useCallback(async () => {
-    const n = await fetchCredits();
-    setCreditsState(n);
   }, []);
 
-  const setCredits = useCallback((n: number) => {
-    setCreditsState(n);
+  const setCredits = useCallback((_n: number) => {
   }, []);
 
   useEffect(() => {
@@ -164,8 +212,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (prefs.voiceGender) setVoiceGenderState(prefs.voiceGender);
         }
       } catch {}
-
-      refreshCredits();
     };
     loadData();
   }, []);
@@ -263,6 +309,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signOut,
       credits,
+      totalDebited,
       setCredits,
       refreshCredits,
       sourceLang,
@@ -293,6 +340,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signOut,
       credits,
+      totalDebited,
       setCredits,
       refreshCredits,
       sourceLang,

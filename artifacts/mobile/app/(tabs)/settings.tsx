@@ -20,6 +20,13 @@ import { useTheme } from "@/hooks/useTheme";
 
 type ThemeOption = "system" | "light" | "dark";
 
+const RATE_ROWS = [
+  { label: "Text Translation", value: "₹4.00 per 1,000 chars" },
+  { label: "Voice Input (STT)", value: "₹1.00 per minute" },
+  { label: "Voice Output (TTS)", value: "₹3.00 per 1,000 chars" },
+  { label: "Transliteration", value: "₹4.00 per 1,000 chars" },
+];
+
 export default function SettingsScreen() {
   const {
     user,
@@ -27,7 +34,7 @@ export default function SettingsScreen() {
     signIn,
     signOut,
     credits,
-    refreshCredits,
+    totalDebited,
     themeMode,
     setThemeMode,
     formalMode,
@@ -38,11 +45,20 @@ export default function SettingsScreen() {
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
   const [signingIn, setSigningIn] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [rateCardOpen, setRateCardOpen] = useState(false);
 
-  const handleRefreshCredits = async () => {
-    await Haptics.selectionAsync();
-    await refreshCredits();
-  };
+  const creditColor =
+    credits > 20 ? "#16A34A" : credits > 5 ? "#EA580C" : "#DC2626";
+
+  const totalUsed = totalDebited;
+  const totalEver = totalUsed + credits;
+  const progressPct = totalEver > 0 ? Math.min(totalUsed / totalEver, 1) : 0;
+
+  const themeOptions: { label: string; value: ThemeOption; icon: string }[] = [
+    { label: "System", value: "system", icon: "monitor" },
+    { label: "Light", value: "light", icon: "sun" },
+    { label: "Dark", value: "dark", icon: "moon" },
+  ];
 
   const handleSignIn = async () => {
     setSigningIn(true);
@@ -72,19 +88,6 @@ export default function SettingsScreen() {
       },
     ]);
   };
-
-  const creditColor =
-    credits > 20
-      ? theme.success
-      : credits > 5
-      ? "#F59E0B"
-      : theme.error;
-
-  const themeOptions: { label: string; value: ThemeOption; icon: string }[] = [
-    { label: "System", value: "system", icon: "monitor" },
-    { label: "Light", value: "light", icon: "sun" },
-    { label: "Dark", value: "dark", icon: "moon" },
-  ];
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
@@ -186,9 +189,7 @@ export default function SettingsScreen() {
                 ) : (
                   <>
                     <Feather name="log-out" size={14} color={theme.textMuted} />
-                    <Text
-                      style={[styles.signOutText, { color: theme.textMuted }]}
-                    >
+                    <Text style={[styles.signOutText, { color: theme.textMuted }]}>
                       Sign out
                     </Text>
                   </>
@@ -198,37 +199,24 @@ export default function SettingsScreen() {
           ) : (
             <>
               <View style={styles.signInPromptRow}>
-                <View
-                  style={[
-                    styles.signInIconWrap,
-                    { backgroundColor: theme.primary + "14" },
-                  ]}
-                >
+                <View style={[styles.signInIconWrap, { backgroundColor: theme.primary + "14" }]}>
                   <Feather name="user" size={22} color={theme.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.cardLabel, { color: theme.text }]}>
-                    Sign in to sync credits
+                    Sign in required
                   </Text>
-                  <Text
-                    style={[styles.cardDesc, { color: theme.textSecondary }]}
-                  >
-                    Your credits will be linked to your account and available
-                    across devices.
+                  <Text style={[styles.cardDesc, { color: theme.textSecondary }]}>
+                    Sign in with Google to use BhaashAI.
                   </Text>
                 </View>
               </View>
-
               <Pressable
                 onPress={handleSignIn}
                 disabled={signingIn}
                 style={({ pressed }) => [
                   styles.googleBtn,
-                  {
-                    backgroundColor: pressed ? "#f5f5f5" : "#fff",
-                    borderColor: theme.border,
-                    opacity: signingIn ? 0.7 : 1,
-                  },
+                  { backgroundColor: pressed ? "#f5f5f5" : "#fff", borderColor: theme.border, opacity: signingIn ? 0.7 : 1 },
                 ]}
               >
                 {signingIn ? (
@@ -236,9 +224,7 @@ export default function SettingsScreen() {
                 ) : (
                   <>
                     <Feather name="log-in" size={16} color="#4285F4" />
-                    <Text style={styles.googleBtnText}>
-                      Continue with Google
-                    </Text>
+                    <Text style={styles.googleBtnText}>Continue with Google</Text>
                   </>
                 )}
               </Pressable>
@@ -246,9 +232,9 @@ export default function SettingsScreen() {
           )}
         </View>
 
-        {/* Credits */}
+        {/* Wallet */}
         <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
-          CREDITS
+          WALLET
         </Text>
         <View
           style={[
@@ -256,66 +242,100 @@ export default function SettingsScreen() {
             { backgroundColor: theme.surface, borderColor: theme.border },
           ]}
         >
-          <View style={styles.creditsRow}>
-            <View
-              style={[
-                styles.creditsBadge,
-                { backgroundColor: creditColor + "18" },
-              ]}
-            >
-              <Feather name="zap" size={22} color={creditColor} />
-              <Text style={[styles.creditsNumber, { color: creditColor }]}>
-                {credits}
+          <View style={styles.walletHeader}>
+            <View>
+              <Text style={[styles.walletLabel, { color: theme.textMuted }]}>
+                Wallet Balance
+              </Text>
+              <Text style={[styles.walletAmount, { color: creditColor }]}>
+                ₹{credits.toFixed(2)}
               </Text>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.cardLabel, { color: theme.text }]}>
-                Translation Credits
-              </Text>
-              <Text
-                style={[styles.cardDesc, { color: theme.textSecondary }]}
-              >
-                Each translation costs 1 credit. Voice recognition costs 2.
-                {user
-                  ? " Credits are linked to your account."
-                  : " New devices start with 50 free credits."}
-              </Text>
+            <View style={[styles.walletIcon, { backgroundColor: creditColor + "18" }]}>
+              <Feather name="credit-card" size={22} color={creditColor} />
             </View>
           </View>
 
-          <Pressable
-            onPress={handleRefreshCredits}
-            style={({ pressed }) => [
-              styles.refreshBtn,
-              {
-                borderColor: theme.border,
-                opacity: pressed ? 0.6 : 1,
-              },
-            ]}
-          >
-            <Feather name="refresh-cw" size={13} color={theme.textMuted} />
-            <Text style={[styles.refreshBtnText, { color: theme.textMuted }]}>
-              Refresh balance
-            </Text>
-          </Pressable>
-
-          {credits <= 5 && (
+          <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
             <View
               style={[
-                styles.lowCreditsBanner,
-                {
-                  backgroundColor: theme.error + "12",
-                  borderColor: theme.error + "30",
-                },
+                styles.progressFill,
+                { width: `${progressPct * 100}%` as any, backgroundColor: creditColor },
               ]}
-            >
-              <Feather name="alert-triangle" size={13} color={theme.error} />
-              <Text style={[styles.lowCreditsText, { color: theme.error }]}>
-                {credits === 0
-                  ? "No credits remaining. More credits coming soon."
-                  : `Only ${credits} credit${credits === 1 ? "" : "s"} left.`}
+            />
+          </View>
+          <View style={styles.progressLabels}>
+            <Text style={[styles.progressLabel, { color: theme.textMuted }]}>
+              Spent: ₹{totalUsed.toFixed(2)}
+            </Text>
+            <Text style={[styles.progressLabel, { color: theme.textMuted }]}>
+              Remaining: ₹{credits.toFixed(2)}
+            </Text>
+          </View>
+
+          {credits < 5 && credits > 0 && (
+            <View style={[styles.lowBanner, { backgroundColor: "#FFF7ED", borderColor: "#FED7AA" }]}>
+              <Feather name="alert-triangle" size={13} color="#EA580C" />
+              <Text style={styles.lowBannerText}>
+                Low balance — consider adding credits
               </Text>
             </View>
+          )}
+          {credits < 0.01 && (
+            <View style={[styles.lowBanner, { backgroundColor: theme.error + "12", borderColor: theme.error + "30" }]}>
+              <Feather name="alert-triangle" size={13} color={theme.error} />
+              <Text style={[styles.lowBannerText, { color: theme.error }]}>
+                No credits remaining
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Rate Card */}
+        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
+          PRICING
+        </Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <Pressable
+            onPress={() => {
+              Haptics.selectionAsync();
+              setRateCardOpen((v) => !v);
+            }}
+            style={styles.rateCardHeader}
+          >
+            <Text style={[styles.cardLabel, { color: theme.text }]}>Rate Card</Text>
+            <Feather
+              name={rateCardOpen ? "chevron-up" : "chevron-down"}
+              size={18}
+              color={theme.textSecondary}
+            />
+          </Pressable>
+
+          {rateCardOpen && (
+            <>
+              <View style={[styles.divider, { backgroundColor: theme.border }]} />
+              {RATE_ROWS.map((row) => (
+                <View key={row.label} style={styles.rateRow}>
+                  <Text style={[styles.rateLabel, { color: theme.textSecondary }]}>
+                    {row.label}
+                  </Text>
+                  <Text style={[styles.rateValue, { color: theme.text }]}>
+                    {row.value}
+                  </Text>
+                </View>
+              ))}
+              <View style={[styles.rateNote, { backgroundColor: theme.primary + "10", borderColor: theme.primary + "30" }]}>
+                <Feather name="info" size={13} color={theme.primary} />
+                <Text style={[styles.rateNoteText, { color: theme.textSecondary }]}>
+                  ₹100 signup credits ≈ 25,000 translated characters
+                </Text>
+              </View>
+            </>
           )}
         </View>
 
@@ -343,9 +363,7 @@ export default function SettingsScreen() {
                   style={[
                     styles.themeBtn,
                     {
-                      backgroundColor: active
-                        ? theme.primary
-                        : theme.surfaceSecondary,
+                      backgroundColor: active ? theme.primary : theme.surfaceSecondary,
                       borderColor: active ? theme.primary : theme.border,
                     },
                   ]}
@@ -426,12 +444,7 @@ export default function SettingsScreen() {
           ]}
         >
           <View style={styles.aboutRow}>
-            <View
-              style={[
-                styles.aboutIcon,
-                { backgroundColor: theme.primary },
-              ]}
-            >
+            <View style={[styles.aboutIcon, { backgroundColor: theme.primary }]}>
               <Feather name="globe" size={20} color="#fff" />
             </View>
             <View style={{ flex: 1 }}>
@@ -451,9 +464,7 @@ export default function SettingsScreen() {
             onPress={() => Linking.openURL("https://sarvam.ai")}
             style={[styles.aboutLink, { borderColor: theme.border }]}
           >
-            <Text
-              style={[styles.aboutLinkText, { color: theme.textSecondary }]}
-            >
+            <Text style={[styles.aboutLinkText, { color: theme.textSecondary }]}>
               Sarvam AI
             </Text>
             <Feather name="external-link" size={14} color={theme.textMuted} />
@@ -582,37 +593,48 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_600SemiBold",
     color: "#202124",
   },
-  creditsRow: {
+  walletHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
+    justifyContent: "space-between",
   },
-  creditsBadge: {
-    width: 64,
-    height: 64,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 2,
-  },
-  creditsNumber: {
-    fontSize: 20,
-    fontFamily: "Inter_700Bold",
-  },
-  refreshBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  refreshBtnText: {
-    fontSize: 13,
+  walletLabel: {
+    fontSize: 12,
     fontFamily: "Inter_500Medium",
+    letterSpacing: 0.3,
+    marginBottom: 2,
   },
-  lowCreditsBanner: {
+  walletAmount: {
+    fontSize: 32,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: -1,
+  },
+  walletIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 3,
+  },
+  progressLabels: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: -4,
+  },
+  progressLabel: {
+    fontSize: 11,
+    fontFamily: "Inter_400Regular",
+  },
+  lowBanner: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -620,10 +642,45 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
   },
-  lowCreditsText: {
+  lowBannerText: {
     flex: 1,
     fontSize: 13,
     fontFamily: "Inter_500Medium",
+    color: "#9A3412",
+  },
+  rateCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  rateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 2,
+  },
+  rateLabel: {
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+  },
+  rateValue: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+  },
+  rateNote: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 4,
+  },
+  rateNoteText: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 17,
   },
   themeRow: {
     flexDirection: "row",

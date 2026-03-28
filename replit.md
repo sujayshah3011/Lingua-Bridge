@@ -114,13 +114,24 @@ Real-Time Indian Language Translator using Sarvam AI REST API.
 - `constants/colors.ts` — COLORS token + Colors.light/dark theme objects
 - `metro.config.js` — Metro config with blockList for Firebase pnpm temp files
 
+**V5 — Firestore Credit System + Mandatory Auth Gate**
+- **Mandatory sign-in**: App is inaccessible without Google Sign-In (WelcomeScreen auth gate)
+- **WelcomeScreen**: `components/WelcomeScreen.tsx` — linear gradient (#FF6B00→#7C2D8F→#0A1628), logo, feature chips, ₹100 signup stats, white card with Google Sign-In button
+- **Auth gate**: `app/_layout.tsx` — conditional rendering: `authLoading=true` → null (splash), `!user` → WelcomeScreen, `user` → Stack
+- **₹-based credits**: `constants/pricing.ts` — SARVAM_COST + USER_PRICE (2× markup), WELCOME_CREDIT_INR=100
+- **Firestore credit system**: `services/credits.ts` — `chargeTranslate/chargeTTS/chargeSTT/chargeTransliterate` with atomic Firestore transactions, `assertSufficientCredits`, transaction logging to `transactions` collection
+- **Real-time balance**: `hooks/useCredits.ts` — Firestore `onSnapshot` listener on `users/{uid}` for live credit display
+- **User doc on signup**: Created at `users/{uid}` with ₹100 welcome credit + welcome transaction log
+- **Credit display**: ₹{credits.toFixed(2)} in header pills and Settings wallet; color-coded (green >₹20, orange >₹5, red ≤₹5)
+- **API server**: Simplified to pure Sarvam proxy — no server-side credit management; Firestore handles all credits
+
 ### Firebase Auth
 - **Package**: `firebase@12.11.0`, `expo-auth-session@7.0.10`, `expo-web-browser`
-- **Flow**: Google OAuth via `expo-auth-session/providers/google` → `signInWithCredential` → Firebase
+- **Firestore**: `firebase/firestore` — user docs + transactions at `users/{uid}` and `transactions` collection
+- **Flow**: Google OAuth via `expo-auth-session/providers/google` → `signInWithCredential` → Firebase → create Firestore user doc if new
 - **Web Client ID**: stored as `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` env var
 - **Firebase config**: stored as `EXPO_PUBLIC_FIREBASE_*` env vars (all 7 values)
-- **Credit integration**: when signed in, Firebase UID is used as `x-device-id`; credits keyed per UID on server
-- **Settings screen**: Account section shows profile photo/name/email when signed in, Google Sign-In button when not
+- **Settings screen**: Account section (profile photo/name/email + sign-out), Wallet section (₹ balance, progress bar, rate card)
 
 ### Color Palette
 - Primary: `#FF6B00` (deep saffron orange)

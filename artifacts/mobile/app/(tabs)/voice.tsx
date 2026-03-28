@@ -25,6 +25,7 @@ import { transcribeAudio } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
 import { translateText } from "@/services/sarvam";
+import { chargeSTT, chargeTranslate, chargeTTS } from "@/services/credits";
 
 type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
@@ -44,8 +45,8 @@ async function incrementUsage(
 
 export default function VoiceScreen() {
   const {
+    user,
     credits,
-    setCredits,
     targetLang,
     setTargetLang,
     addToHistory,
@@ -55,6 +56,9 @@ export default function VoiceScreen() {
     setVoiceGender,
   } = useApp();
   const C = isDark ? Colors.dark : Colors.light;
+
+  const badgeColor =
+    credits > 20 ? "#16A34A" : credits > 5 ? "#EA580C" : "#DC2626";
 
   const [voiceSourceLang, setVoiceSourceLang] = useState("unknown");
   const [showSourcePicker, setShowSourcePicker] = useState(false);
@@ -92,8 +96,8 @@ export default function VoiceScreen() {
   }, []);
 
   const startRecording = useCallback(async () => {
-    if (credits <= 0) {
-      Alert.alert("No Credits", "You have no credits remaining. Check Settings for more info.");
+    if (credits < 0.01) {
+      Alert.alert("No Credits", "Your ₹ balance is empty. Please add credits in Settings.");
       return;
     }
     if (!(await ensurePermission())) return;
@@ -140,6 +144,7 @@ export default function VoiceScreen() {
     }
 
     const durationMs = Date.now() - recordingStartRef.current;
+    const audioSeconds = durationMs / 1000;
 
     try {
       await recording.stopAndUnloadAsync();
@@ -149,12 +154,10 @@ export default function VoiceScreen() {
       recordingRef.current = null;
       if (!uri) throw new Error("NO_AUDIO");
 
-      const seconds = Math.round(durationMs / 1000);
-      incrementUsage("audioSeconds", seconds);
+      incrementUsage("audioSeconds", Math.round(audioSeconds));
 
       setStatusText("Transcribing…");
       const result = await transcribeAudio(uri, voiceSourceLang);
-      if (typeof result.credits === "number") setCredits(result.credits);
 
       if (!result.transcript.trim()) {
         setStatusText("No speech detected. Tap the mic and try again.");
@@ -162,17 +165,30 @@ export default function VoiceScreen() {
         return;
       }
 
+      const uid = user?.uid;
+      if (uid) {
+        await chargeSTT(uid, audioSeconds, voiceSourceLang);
+      }
+
       setTranscript(result.transcript);
       if (result.languageCode) setDetectedLang(result.languageCode);
       setStatusText("Translating…");
 
-      const { translatedText, detectedSourceLang, credits: newCredits } = await translateText({
+      const { translatedText, detectedSourceLang } = await translateText({
         input: result.transcript,
         sourceLanguageCode: result.languageCode ?? voiceSourceLang,
         targetLanguageCode: targetLang,
         formalMode: true,
       });
-      if (typeof newCredits === "number") setCredits(newCredits);
+
+      if (uid) {
+        await chargeTranslate(
+          uid,
+          result.transcript,
+          detectedSourceLang ?? result.languageCode ?? voiceSourceLang,
+          targetLang
+        );
+      }
 
       if (detectedSourceLang) setDetectedLang(detectedSourceLang);
       setTranslation(translatedText || "Translation unavailable.");
@@ -196,7 +212,6 @@ export default function VoiceScreen() {
       const msg = err instanceof Error ? err.message : "";
       if (msg === "INSUFFICIENT_CREDITS") {
         setStatusText("No credits remaining.");
-        setCredits(0);
       } else if (msg === "RATE_LIMIT") {
         setStatusText("Rate limit reached. Try again in a moment.");
       } else if (msg === "NO_AUDIO") {
@@ -210,7 +225,7 @@ export default function VoiceScreen() {
       }
       setState("error");
     }
-  }, [voiceSourceLang, targetLang, addToHistory, setCredits]);
+  }, [user, voiceSourceLang, targetLang, addToHistory]);
 
   const toggleRecording = useCallback(() => {
     if (state === "recording") {
@@ -222,10 +237,12 @@ export default function VoiceScreen() {
 
   const speakTranslation = useCallback(async () => {
     if (!translation || ttsLoading) return;
-    if (credits <= 0) {
-      Alert.alert("No Credits", "You have no credits remaining.");
+    if (credits < 0.01) {
+      Alert.alert("No Credits", "Your ₹ balance is empty. Please add credits in Settings.");
       return;
     }
+    const uid = user?.uid;
+
     setTtsLoading(true);
     try {
       if (soundRef.current) {
@@ -244,6 +261,11 @@ export default function VoiceScreen() {
         { shouldPlay: true }
       );
       soundRef.current = sound;
+
+      if (uid) {
+        await chargeTTS(uid, translation, targetLang);
+      }
+
       sound.setOnPlaybackStatusUpdate((s) => {
         if (!s.isLoaded || ("didJustFinish" in s && s.didJustFinish)) {
           sound.unloadAsync().catch(() => {});
@@ -267,7 +289,7 @@ export default function VoiceScreen() {
     } finally {
       setTtsLoading(false);
     }
-  }, [translation, targetLang, voiceGender, ttsLoading, credits]);
+  }, [user, translation, targetLang, voiceGender, ttsLoading, credits]);
 
   const isRecording = state === "recording";
   const isProcessing = state === "processing";
@@ -293,35 +315,11 @@ export default function VoiceScreen() {
           <View
             style={[
               styles.creditsPill,
-              {
-                backgroundColor:
-                  credits > 20
-                    ? C.primary + "15"
-                    : credits > 5
-                    ? "#F59E0B15"
-                    : C.error + "15",
-              },
+              { backgroundColor: badgeColor + "15", borderColor: badgeColor },
             ]}
           >
-            <Feather
-              name="zap"
-              size={11}
-              color={credits > 20 ? C.primary : credits > 5 ? "#F59E0B" : C.error}
-            />
-            <Text
-              style={[
-                styles.creditsText,
-                {
-                  color:
-                    credits > 20
-                      ? C.primary
-                      : credits > 5
-                      ? "#F59E0B"
-                      : C.error,
-                },
-              ]}
-            >
-              {credits}
+            <Text style={[styles.creditsText, { color: badgeColor }]}>
+              ₹{credits.toFixed(2)}
             </Text>
           </View>
           <Pressable
@@ -400,7 +398,7 @@ export default function VoiceScreen() {
                   <MicButton
                     isRecording={isRecording}
                     onPress={toggleRecording}
-                    disabled={credits <= 0}
+                    disabled={credits < 0.01}
                     size={88}
                   />
                   <Text style={[styles.micHint, { color: C.textMuted }]}>
@@ -501,10 +499,10 @@ const styles = StyleSheet.create({
   creditsPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 16,
+    borderWidth: 1,
   },
   creditsText: {
     fontSize: 12,

@@ -5,35 +5,27 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack, router } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { AppProvider } from "@/context/AppContext";
+import { WelcomeScreen } from "@/components/WelcomeScreen";
+import { AppProvider, useApp } from "@/context/AppContext";
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
-const ONBOARDING_KEY = "onboarding_completed";
 
 function RootLayoutNav() {
-  const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const { user, authLoading } = useApp();
 
-  useEffect(() => {
-    AsyncStorage.getItem(ONBOARDING_KEY).then((val) => {
-      setOnboardingChecked(true);
-      if (!val) {
-        // Delay slightly so the stack is mounted
-        setTimeout(() => router.replace("/onboarding"), 50);
-      }
-    });
-  }, []);
+  if (authLoading) return null;
+  if (!user) return <WelcomeScreen />;
 
   return (
     <Stack screenOptions={{ headerBackTitle: "Back" }}>

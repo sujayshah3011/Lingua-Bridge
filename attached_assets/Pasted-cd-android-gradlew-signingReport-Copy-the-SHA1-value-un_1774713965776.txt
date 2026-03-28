@@ -1,0 +1,622 @@
+cd android && ./gradlew signingReport
+```
+Copy the `SHA1` value under `Variant: debug`
+
+**Step 2 — Add SHA-1 to Firebase**
+1. Go to [console.firebase.google.com](https://console.firebase.google.com)
+2. Project Settings → General → Your Android app
+3. Click **"Add fingerprint"** → paste the SHA-1
+4. Re-download `google-services.json` → replace the file in your project
+
+**Step 3 — Fix Google Cloud Console**
+1. Go to [console.cloud.google.com](https://console.cloud.google.com) → project `261134857983`
+2. APIs & Services → Credentials
+3. Find your **Android OAuth 2.0 Client ID**
+4. Verify: package name = `com.bhaashai.app`, SHA-1 = the one you just copied
+5. Make sure the `webClientId` in `GoogleSignin.configure()` is the **Web type** client ID, NOT the Android one. 
+
+**Step 4 — OAuth Consent Screen**
+1. APIs & Services → OAuth consent screen
+2. If status is "Testing" → either add your Gmail as a test user, OR click **"Publish App"** to move to production
+
+---
+
+## Part 2 — The Complete Rork Prompt
+```
+Apply ALL of the following changes precisely to BhaashAI.
+Do not skip any section. Do not rebuild existing working features.
+
+════════════════════════════════════════════
+SECTION 1 — CREDIT DISPLAY LOGIC (CRITICAL)
+════════════════════════════════════════════
+
+The user ALWAYS sees double the actual Sarvam cost.
+Sarvam is our backend cost — the user never sees or knows about it.
+
+THE RULE: User's ₹1 displayed = ₹0.50 actual Sarvam cost
+So ₹100 shown to user = ₹50 actual Sarvam spend.
+This 2x display gives us our margin automatically.
+
+Update lib/constants.ts with this exact pricing model:
+
+  // ─── ACTUAL SARVAM COST (internal only, never shown to user) ────
+  export const SARVAM_COST = {
+    translate:    { perChar:   20 / 10000 },   // ₹0.002/char
+    tts:          { perChar:   15 / 10000 },   // ₹0.0015/char
+    stt:          { perSecond: 30 / 3600  },   // ₹0.008333/sec
+    transliterate:{ perChar:   20 / 10000 },   // ₹0.002/char
+  };
+
+  // ─── USER-FACING PRICE (exactly 2x Sarvam cost) ─────────────────
+  // This is what gets deducted from user's displayed balance
+  export const USER_PRICE = {
+    translate:    { perChar:   SARVAM_COST.translate.perChar    * 2 },  // ₹0.004
+    tts:          { perChar:   SARVAM_COST.tts.perChar          * 2 },  // ₹0.003
+    stt:          { perSecond: SARVAM_COST.stt.perSecond        * 2 },  // ₹0.016667
+    transliterate:{ perChar:   SARVAM_COST.transliterate.perChar* 2 },  // ₹0.004
+  };
+
+  // ─── WELCOME CREDIT ──────────────────────────────────────────────
+  // User SEES ₹100. We store ₹100 in Firestore. 
+  // Actual Sarvam spend limit is ₹50 (since we charge user 2x).
+  export const WELCOME_CREDIT_INR = 100;
+
+  // ─── STORED VALUE IN FIRESTORE ───────────────────────────────────
+  // credits field in Firestore always stores the USER-FACING amount.
+  // Never store or expose Sarvam cost to any UI component.
+  // The 2x is already baked into USER_PRICE — just use USER_PRICE everywhere.
+
+Verify this math is correct:
+  User translates 1000 chars:
+    User charged:   1000 * 0.004 = ₹4.00  (deducted from their ₹100 balance)
+    Sarvam charged: 1000 * 0.002 = ₹2.00  (we pay from our account)
+    Our margin:     ₹2.00  ✓
+
+  User does 60 seconds STT:
+    User charged:   60 * 0.016667 = ₹1.00  (deducted from balance)
+    Sarvam charged: 60 * 0.008333 = ₹0.50  (we pay)
+    Our margin:     ₹0.50  ✓
+
+════════════════════════════════════════════
+SECTION 2 — 3-SCREEN MAX AUTH GATE
+════════════════════════════════════════════
+
+If the user is NOT logged in, they must NEVER reach more than 3 screens.
+The only 3 screens a logged-out user can see:
+
+  Screen 1: SplashScreen (auto, 2 seconds)
+  Screen 2: WelcomeScreen (Google Sign-In)
+  Screen 3: (none — goes directly to app after sign-in)
+
+IMPLEMENTATION in App.tsx:
+
+  const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setAuthChecked(true);
+    });
+    return unsub;
+  }, []);
+
+  // SPLASH: show while Firebase checks auth state
+  if (!authChecked) {
+    return <SplashScreen />;
+  }
+
+  // STRICT GATE: only 2 possible states
+  return (
+    <NavigationContainer>
+      {user ? <MainNavigator /> : <AuthStack />}
+    </NavigationContainer>
+  );
+
+  // AuthStack contains ONLY WelcomeScreen — nothing else
+  // No "browse as guest", no "skip", no "maybe later" buttons
+  // WelcomeScreen has ONE action: Google Sign-In button
+  // After sign-in → immediately replace with MainNavigator
+
+AuthStack definition:
+  const AuthStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Welcome" component={WelcomeScreen} />
+    </Stack.Navigator>
+  );
+  // One screen only. No navigation possible from here except sign-in.
+
+SplashScreen component:
+  - Full screen saffron #FF6B00 background
+  - Center: "भाषAI" text in white, 52px bold
+  - Subtitle: "Translate India" in white, 18px
+  - Auto-dismisses when onAuthStateChanged fires (not a timer)
+  - ActivityIndicator (white, small) at bottom
+
+WelcomeScreen — STRICT LAYOUT (no extra navigation elements):
+  - Background: linear gradient #FF6B00 → #0A1628 (top to bottom)
+  - Top 60%: 
+      "भाषAI" logo in white 48px bold, centered
+      "India's 22 languages in your voice" in white 16px
+      3 floating feature chips below:
+        [🌐 Translate]  [🎙️ Voice]  [💬 Live]
+  - Bottom 40% white rounded card (borderTopLeftRadius 32, borderTopRightRadius 32):
+      "Welcome" in dark 26px bold
+      "Get ₹100 free credits on signup" in green 14px
+      "No subscription. Pay only what you use." in grey 12px
+      ─────────────
+      Google Sign-In button:
+        Height: 56px, full width, borderRadius 14
+        Background: white, border: 1px #E5E7EB
+        Left: Google "G" logo SVG (20px)
+        Text: "Continue with Google" in #111 16px medium
+      ─────────────
+      "By signing in you agree to our Terms & Privacy Policy" 
+        in grey 11px, centered, at very bottom of card
+  - NO back button, NO skip button, NO other navigation
+
+════════════════════════════════════════════
+SECTION 3 — GOOGLE SIGN-IN FIX (CODE SIDE)
+════════════════════════════════════════════
+
+Replace the entire Google Sign-In implementation with this exact code.
+The OAuth 400 error is caused by wrong client ID type + missing SHA-1.
+The code side fix ensures we use the correct client ID types:
+
+In lib/auth.ts, implement:
+
+  import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+  import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+  import { auth, db } from './firebase';
+  import { doc, getDoc, setDoc, updateDoc, addDoc, collection, serverTimestamp, increment } from 'firebase/firestore';
+  import { WELCOME_CREDIT_INR } from './constants';
+
+  // Call this ONCE at app startup (in App.tsx useEffect)
+  export const initGoogleSignIn = () => {
+    GoogleSignin.configure({
+      // IMPORTANT: This MUST be the Web OAuth client ID
+      // Get from: Google Cloud Console → Credentials → OAuth 2.0 Client IDs
+      // Select the one with Type: "Web application" — NOT Android, NOT iOS
+      webClientId: '<WEB_APPLICATION_CLIENT_ID>',
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+    });
+  };
+
+  export const signInWithGoogle = async () => {
+    try {
+      // Check Google Play Services (Android)
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      
+      // Sign in — triggers Google account picker
+      await GoogleSignin.signOut(); // Always sign out first to force account picker
+      const userInfo = await GoogleSignin.signIn();
+      
+      // Get token
+      const { idToken } = await GoogleSignin.getTokens();
+      if (!idToken) throw new Error('NO_ID_TOKEN');
+      
+      // Sign in to Firebase with Google credential
+      const credential = GoogleAuthProvider.credential(idToken);
+      const result = await signInWithCredential(auth, credential);
+      
+      // Check if new user
+      const userRef = doc(db, 'users', result.user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        // NEW USER — create document with ₹100 welcome credits
+        await setDoc(userRef, {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+          createdAt: serverTimestamp(),
+          credits: WELCOME_CREDIT_INR,          // ₹100 (user-facing)
+          totalCredited: WELCOME_CREDIT_INR,
+          totalDebited: 0,
+          stats: {
+            charsTranslated: 0,
+            charsTTS: 0,
+            secondsSTT: 0,
+            sessionCount: 1,
+          },
+          plan: 'pay-as-you-go',
+          isActive: true,
+        });
+        
+        // Log welcome credit as transaction
+        await addDoc(collection(db, 'transactions'), {
+          uid: result.user.uid,
+          type: 'topup',
+          chars: null,
+          seconds: null,
+          userCharged: -WELCOME_CREDIT_INR,   // negative = credit given
+          balanceBefore: 0,
+          balanceAfter: WELCOME_CREDIT_INR,
+          note: 'Welcome credit — ₹100 on signup',
+          success: true,
+          timestamp: serverTimestamp(),
+        });
+      } else {
+        // EXISTING USER — just increment session count
+        await updateDoc(userRef, {
+          'stats.sessionCount': increment(1),
+        });
+      }
+      
+      return result.user;
+    } catch (error: any) {
+      // Specific error handling
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        throw new Error('CANCELLED');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        throw new Error('IN_PROGRESS');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        throw new Error('PLAY_SERVICES_UNAVAILABLE');
+      } else {
+        console.error('Google Sign-In error:', error);
+        throw error;
+      }
+    }
+  };
+
+  export const signOut = async () => {
+    await GoogleSignin.signOut();
+    await auth.signOut();
+  };
+
+In WelcomeScreen, use signInWithGoogle from lib/auth.ts:
+
+  const handleSignIn = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle();
+      // onAuthStateChanged in App.tsx handles navigation automatically
+    } catch (err: any) {
+      if (err.message === 'CANCELLED') return; // silent, user chose to cancel
+      Alert.alert(
+        'Sign-in Failed',
+        'Could not sign in with Google. Please try again.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+════════════════════════════════════════════
+SECTION 4 — PRECISE CREDIT TRACKING ENGINE
+════════════════════════════════════════════
+
+Create lib/credits.ts with atomic Firestore transactions:
+
+  import { db } from './firebase';
+  import {
+    doc, runTransaction, addDoc, collection,
+    serverTimestamp, increment
+  } from 'firebase/firestore';
+  import { USER_PRICE, SARVAM_COST } from './constants';
+
+  // ─── CORE ATOMIC DEDUCT ───────────────────────────────────────────
+  const atomicDeduct = async ({
+    uid, type, chars = null, seconds = null,
+    userCharged, sourceLang = null, targetLang = null,
+  }: {
+    uid: string; type: string;
+    chars?: number | null; seconds?: number | null;
+    userCharged: number;
+    sourceLang?: string | null; targetLang?: string | null;
+  }) => {
+    const userRef = doc(db, 'users', uid);
+
+    let balanceBefore = 0;
+    let balanceAfter = 0;
+
+    await runTransaction(db, async (txn) => {
+      const snap = await txn.get(userRef);
+      if (!snap.exists()) throw new Error('USER_NOT_FOUND');
+      
+      balanceBefore = snap.data().credits;
+      
+      // BLOCK if insufficient — never go negative
+      if (balanceBefore < userCharged) {
+        throw new Error('INSUFFICIENT_CREDITS');
+      }
+      
+      // Round to 6 decimal places to avoid floating point drift
+      balanceAfter = Math.round((balanceBefore - userCharged) * 1000000) / 1000000;
+      
+      txn.update(userRef, {
+        credits: balanceAfter,
+        totalDebited: increment(userCharged),
+      });
+    });
+
+    // Log transaction AFTER successful balance update
+    await addDoc(collection(db, 'transactions'), {
+      uid, type, chars, seconds,
+      userCharged: Math.round(userCharged * 1000000) / 1000000,
+      balanceBefore: Math.round(balanceBefore * 1000000) / 1000000,
+      balanceAfter:  Math.round(balanceAfter  * 1000000) / 1000000,
+      sourceLang, targetLang,
+      success: true,
+      timestamp: serverTimestamp(),
+    });
+  };
+
+  // ─── TRANSLATE ────────────────────────────────────────────────────
+  export const chargeTranslate = async (
+    uid: string, text: string,
+    sourceLang: string, targetLang: string
+  ) => {
+    const chars = text.length;
+    const userCharged = chars * USER_PRICE.translate.perChar;
+    await atomicDeduct({ uid, type: 'translate', chars, userCharged, sourceLang, targetLang });
+    // Update stats
+    await import('firebase/firestore').then(({ updateDoc, doc: fdoc, increment: inc }) =>
+      updateDoc(fdoc(db, 'users', uid), { 'stats.charsTranslated': inc(chars) })
+    );
+    return { chars, cost: userCharged };
+  };
+
+  // ─── TTS ──────────────────────────────────────────────────────────
+  export const chargeTTS = async (
+    uid: string, text: string, targetLang: string
+  ) => {
+    const chars = text.length;
+    const userCharged = chars * USER_PRICE.tts.perChar;
+    await atomicDeduct({ uid, type: 'tts', chars, userCharged, targetLang });
+    await import('firebase/firestore').then(({ updateDoc, doc: fdoc, increment: inc }) =>
+      updateDoc(fdoc(db, 'users', uid), { 'stats.charsTTS': inc(chars) })
+    );
+    return { chars, cost: userCharged };
+  };
+
+  // ─── STT ──────────────────────────────────────────────────────────
+  export const chargeSTT = async (
+    uid: string, audioSeconds: number, sourceLang: string
+  ) => {
+    const seconds = Math.round(audioSeconds * 100) / 100;
+    const userCharged = seconds * USER_PRICE.stt.perSecond;
+    await atomicDeduct({ uid, type: 'stt', seconds, userCharged, sourceLang });
+    await import('firebase/firestore').then(({ updateDoc, doc: fdoc, increment: inc }) =>
+      updateDoc(fdoc(db, 'users', uid), { 'stats.secondsSTT': inc(seconds) })
+    );
+    return { seconds, cost: userCharged };
+  };
+
+  // ─── TRANSLITERATE ────────────────────────────────────────────────
+  export const chargeTransliterate = async (uid: string, text: string) => {
+    const chars = text.length;
+    const userCharged = chars * USER_PRICE.transliterate.perChar;
+    await atomicDeduct({ uid, type: 'transliterate', chars, userCharged });
+    return { chars, cost: userCharged };
+  };
+
+  // ─── COST ESTIMATOR (pre-flight UI display) ───────────────────────
+  export const estimateCost = (
+    type: 'translate' | 'tts' | 'stt' | 'transliterate',
+    quantity: number
+  ): number => {
+    const rates = {
+      translate:     USER_PRICE.translate.perChar,
+      tts:           USER_PRICE.tts.perChar,
+      stt:           USER_PRICE.stt.perSecond,
+      transliterate: USER_PRICE.transliterate.perChar,
+    };
+    return quantity * rates[type];
+  };
+
+  // ─── BALANCE GUARD (call before every API action) ─────────────────
+  export const assertSufficientCredits = async (
+    uid: string,
+    type: 'translate' | 'tts' | 'stt' | 'transliterate',
+    quantity: number
+  ): Promise<void> => {
+    const { getDoc, doc: fdoc } = await import('firebase/firestore');
+    const snap = await getDoc(fdoc(db, 'users', uid));
+    const balance = snap.data()?.credits ?? 0;
+    const needed = estimateCost(type, quantity);
+    if (balance < needed) {
+      throw new Error('INSUFFICIENT_CREDITS');
+    }
+  };
+
+════════════════════════════════════════════
+SECTION 5 — WIRE CREDITS INTO ALL API CALLS
+════════════════════════════════════════════
+
+Update every Sarvam API call to follow this pattern:
+
+TRANSLATE (in translate service):
+  export const translateText = async (
+    uid: string, text: string,
+    sourceLang: string, targetLang: string
+  ): Promise<string> => {
+    // 1. Pre-flight balance check
+    await assertSufficientCredits(uid, 'translate', text.length);
+    
+    // 2. Call Sarvam API
+    const res = await fetch('https://api.sarvam.ai/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-subscription-key': SARVAM_API_KEY,
+      },
+      body: JSON.stringify({
+        input: text,
+        source_language_code: sourceLang === 'auto' ? 'unknown' : sourceLang,
+        target_language_code: targetLang,
+        model: 'sarvam-translate:v1',
+        enable_preprocessing: true,
+      }),
+    });
+    if (!res.ok) throw new Error(`TRANSLATE_ERROR_${res.status}`);
+    const data = await res.json();
+    
+    // 3. Charge ONLY after successful response
+    await chargeTranslate(uid, text, sourceLang, targetLang);
+    
+    return data.translated_text;
+  };
+
+TTS (in tts service):
+  // After successful API call and before returning audio:
+  await chargeTTS(uid, text, targetLang);
+
+STT (in stt service):
+  // Track recording time:
+  const startTime = Date.now();
+  // ... STT API call ...
+  const audioSeconds = (Date.now() - startTime) / 1000;
+  // After successful response:
+  await chargeSTT(uid, audioSeconds, sourceLang);
+
+RULE: NEVER charge if API call throws or returns non-200.
+
+INSUFFICIENT_CREDITS error handler (everywhere):
+  } catch (error: any) {
+    if (error.message === 'INSUFFICIENT_CREDITS') {
+      // Navigate to TopUp screen
+      navigation.navigate('TopUp');
+      return;
+    }
+    throw error;
+  }
+
+════════════════════════════════════════════
+SECTION 6 — REAL-TIME CREDIT DISPLAY
+════════════════════════════════════════════
+
+Create hooks/useCredits.ts:
+
+  import { useState, useEffect } from 'react';
+  import { onSnapshot, doc } from 'firebase/firestore';
+  import { db } from '../lib/firebase';
+
+  export const useCredits = (uid: string | undefined) => {
+    const [credits, setCredits] = useState<number>(0);
+    const [totalDebited, setTotalDebited] = useState<number>(0);
+    const [stats, setStats] = useState<any>({});
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+      if (!uid) return;
+      const unsub = onSnapshot(doc(db, 'users', uid), (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          setCredits(data.credits ?? 0);
+          setTotalDebited(data.totalDebited ?? 0);
+          setStats(data.stats ?? {});
+        }
+        setReady(true);
+      });
+      return unsub;
+    }, [uid]);
+
+    return { credits, totalDebited, stats, ready };
+  };
+
+Credit badge (add to header of Translate, Voice, Conversation tabs):
+
+  const { credits } = useCredits(user?.uid);
+  
+  const badgeColor = credits > 20 ? '#16A34A'   // green
+                   : credits >  5 ? '#EA580C'   // orange
+                                  : '#DC2626';  // red
+
+  // In header right:
+  <TouchableOpacity onPress={() => navigate('TopUp')}>
+    <View style={{
+      flexDirection: 'row', alignItems: 'center',
+      backgroundColor: badgeColor + '15',   // 15 = 8% opacity
+      borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4,
+      borderWidth: 1, borderColor: badgeColor,
+    }}>
+      <Text style={{ color: badgeColor, fontWeight: '700', fontSize: 13 }}>
+        ₹{credits.toFixed(2)}
+      </Text>
+    </View>
+  </TouchableOpacity>
+
+Low balance banner (render at TOP of screen body when credits < ₹5):
+
+  {credits > 0 && credits < 5 && (
+    <TouchableOpacity
+      onPress={() => navigate('TopUp')}
+      style={{
+        backgroundColor: '#FFF7ED',
+        borderLeftWidth: 3, borderLeftColor: '#EA580C',
+        paddingHorizontal: 16, paddingVertical: 10,
+        flexDirection: 'row', alignItems: 'center',
+      }}>
+      <Text style={{ flex: 1, color: '#9A3412', fontSize: 13 }}>
+        ⚠️  Low balance ₹{credits.toFixed(2)} — Tap to add credits
+      </Text>
+      <Text style={{ color: '#EA580C', fontWeight: '700', fontSize: 13 }}>
+        Top up →
+      </Text>
+    </TouchableOpacity>
+  )}
+
+Zero balance block (render as overlay when credits ≤ 0):
+
+  {credits <= 0 && (
+    <View style={{
+      position: 'absolute', inset: 0, zIndex: 99,
+      backgroundColor: 'rgba(0,0,0,0.85)',
+      justifyContent: 'center', alignItems: 'center',
+      padding: 32,
+    }}>
+      <Text style={{ fontSize: 48 }}>💳</Text>
+      <Text style={{ color: '#FFF', fontSize: 22, fontWeight: '700', marginTop: 16 }}>
+        No credits left
+      </Text>
+      <Text style={{ color: '#AAA', fontSize: 14, textAlign: 'center', marginTop: 8 }}>
+        Add credits to continue using BhaashAI
+      </Text>
+      <TouchableOpacity
+        onPress={() => navigate('TopUp')}
+        style={{
+          backgroundColor: '#FF6B00', borderRadius: 14,
+          paddingHorizontal: 32, paddingVertical: 14, marginTop: 24,
+        }}>
+        <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '700' }}>
+          Add Credits
+        </Text>
+      </TouchableOpacity>
+    </View>
+  )}
+
+════════════════════════════════════════════
+SECTION 7 — SETTINGS SCREEN UPDATE
+════════════════════════════════════════════
+
+REMOVE: All API key input UI
+REMOVE: Any "enter your Sarvam key" text
+
+ADD these in Settings:
+
+A. Profile section:
+   - Avatar (Google photo, 60px circle)  
+   - Name + email
+   - [Sign Out] → calls signOut() from lib/auth.ts
+
+B. Wallet section (real-time via useCredits):
+   - Label: "Wallet Balance"
+   - Value: "₹{credits.toFixed(2)}" large, color-coded
+   - Progress bar: totalDebited / (totalDebited + credits) width
+   - Labels: "Spent: ₹{totalDebited.toFixed(2)}" | "Remaining: ₹{credits.toFixed(2)}"
+   - [Add Credits] button → navigate('TopUp')
+
+C. Rate card (collapsible):
+   Title: "Pricing" with chevron icon
+   When expanded shows:
+     Text Translation  →  ₹4.00 per 1,000 chars
+     Voice Input (STT) →  ₹1.00 per minute  
+     Voice Output (TTS)→  ₹3.00 per 1,000 chars
+     Transliteration   →  ₹4.00 per 1,000 chars
+   Note below: "₹100 signup credits ≈ 25,000 translated characters"
+
+D. Keep existing: theme toggle, default language, voice gender

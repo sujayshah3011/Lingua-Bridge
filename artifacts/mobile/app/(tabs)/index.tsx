@@ -30,11 +30,12 @@ import {
 } from "@/services/sarvam";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
+import { chargeTranslate, chargeTTS } from "@/services/credits";
 
 export default function TranslateScreen() {
   const {
+    user,
     credits,
-    setCredits,
     sourceLang,
     setSourceLang,
     targetLang,
@@ -78,14 +79,20 @@ export default function TranslateScreen() {
     []
   );
 
+  const badgeColor =
+    credits > 20 ? "#16A34A" : credits > 5 ? "#EA580C" : "#DC2626";
+
   const runTranslation = useCallback(
     async (text: string) => {
-      if (credits <= 0) {
+      if (credits < 0.01) {
         showToast("No credits remaining", "error");
         return;
       }
       if (!text.trim() || text.length > 1000) return;
       if (text === lastTranslatedRef.current) return;
+
+      const uid = user?.uid;
+      if (!uid) return;
 
       setIsLoading(true);
       try {
@@ -100,10 +107,14 @@ export default function TranslateScreen() {
         if (result.detectedSourceLang) {
           setDetectedLang(result.detectedSourceLang);
         }
-        if (typeof result.credits === "number") {
-          setCredits(result.credits);
-        }
         lastTranslatedRef.current = text;
+
+        await chargeTranslate(
+          uid,
+          text,
+          result.detectedSourceLang ?? sourceLang,
+          targetLang
+        );
 
         addToHistory({
           sourceText: text,
@@ -127,7 +138,6 @@ export default function TranslateScreen() {
         const msg = err instanceof Error ? err.message : String(err);
         if (msg === "INSUFFICIENT_CREDITS") {
           showToast("No credits remaining", "error");
-          setCredits(0);
         } else if (msg === "RATE_LIMIT") {
           showToast("Translation limit reached, please wait", "error");
         } else if (msg.includes("Network") || msg.includes("fetch")) {
@@ -140,6 +150,7 @@ export default function TranslateScreen() {
       }
     },
     [
+      user,
       credits,
       autoDetect,
       sourceLang,
@@ -148,7 +159,6 @@ export default function TranslateScreen() {
       transliteration,
       addToHistory,
       showToast,
-      setCredits,
     ]
   );
 
@@ -213,10 +223,13 @@ export default function TranslateScreen() {
 
   const handleSpeak = useCallback(async () => {
     if (!translatedText || isSpeaking) return;
-    if (credits <= 0) {
+    if (credits < 0.01) {
       showToast("No credits remaining", "error");
       return;
     }
+    const uid = user?.uid;
+    if (!uid) return;
+
     try {
       setIsSpeaking(true);
       if (soundRef.current) {
@@ -235,6 +248,9 @@ export default function TranslateScreen() {
         { shouldPlay: true }
       );
       soundRef.current = sound;
+
+      await chargeTTS(uid, translatedText, targetLang);
+
       sound.setOnPlaybackStatusUpdate((status) => {
         if (!status.isLoaded || status.didJustFinish) {
           setIsSpeaking(false);
@@ -247,7 +263,6 @@ export default function TranslateScreen() {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg === "INSUFFICIENT_CREDITS") {
         showToast("No credits remaining", "error");
-        setCredits(0);
       } else if (msg === "RATE_LIMIT") {
         showToast("Rate limit reached, please wait", "error");
       } else if (msg.startsWith("TTS_ERROR_")) {
@@ -258,7 +273,7 @@ export default function TranslateScreen() {
         showToast("Could not play audio", "error");
       }
     }
-  }, [translatedText, targetLang, voiceGender, isSpeaking, credits, showToast, setCredits]);
+  }, [translatedText, targetLang, voiceGender, isSpeaking, credits, user, showToast]);
 
   useEffect(() => {
     return () => {
@@ -295,35 +310,11 @@ export default function TranslateScreen() {
           <View
             style={[
               styles.creditsPill,
-              {
-                backgroundColor:
-                  credits > 20
-                    ? theme.primary + "15"
-                    : credits > 5
-                    ? "#F59E0B15"
-                    : theme.error + "15",
-              },
+              { backgroundColor: badgeColor + "15", borderColor: badgeColor },
             ]}
           >
-            <Feather
-              name="zap"
-              size={12}
-              color={credits > 20 ? theme.primary : credits > 5 ? "#F59E0B" : theme.error}
-            />
-            <Text
-              style={[
-                styles.creditsText,
-                {
-                  color:
-                    credits > 20
-                      ? theme.primary
-                      : credits > 5
-                      ? "#F59E0B"
-                      : theme.error,
-                },
-              ]}
-            >
-              {credits}
+            <Text style={[styles.creditsText, { color: badgeColor }]}>
+              ₹{credits.toFixed(2)}
             </Text>
           </View>
           <Pressable
@@ -335,6 +326,15 @@ export default function TranslateScreen() {
           </Pressable>
         </View>
       </View>
+
+      {credits > 0 && credits < 5 && (
+        <View style={styles.lowBanner}>
+          <Feather name="alert-triangle" size={13} color="#9A3412" />
+          <Text style={styles.lowBannerText}>
+            Low balance ₹{credits.toFixed(2)}
+          </Text>
+        </View>
+      )}
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -386,7 +386,7 @@ export default function TranslateScreen() {
           <View style={styles.gap} />
           <ToggleStrip />
 
-          {credits === 0 && (
+          {credits < 0.01 && (
             <View
               style={[
                 styles.noCreditsBanner,
@@ -395,7 +395,7 @@ export default function TranslateScreen() {
             >
               <Feather name="alert-triangle" size={15} color={theme.error} />
               <Text style={[styles.noCreditText, { color: theme.error }]}>
-                No credits remaining. Check Settings for more info.
+                No credits remaining. Check Settings to top up.
               </Text>
             </View>
           )}
@@ -456,10 +456,10 @@ const styles = StyleSheet.create({
   creditsPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
+    borderWidth: 1,
   },
   creditsText: {
     fontSize: 13,
@@ -470,6 +470,21 @@ const styles = StyleSheet.create({
     height: 38,
     alignItems: "center",
     justifyContent: "center",
+  },
+  lowBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#FFF7ED",
+    borderLeftWidth: 3,
+    borderLeftColor: "#EA580C",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  lowBannerText: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+    color: "#9A3412",
   },
   scrollContent: { gap: 0 },
   gap: { height: 14 },
