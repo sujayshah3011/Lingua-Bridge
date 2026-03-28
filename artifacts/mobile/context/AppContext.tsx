@@ -6,6 +6,7 @@ import {
   User,
   onAuthStateChanged,
   signInWithCredential,
+  signInWithPopup,
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import {
@@ -26,7 +27,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useColorScheme } from "react-native";
+import { Platform, useColorScheme } from "react-native";
 import { auth, db } from "@/services/firebase";
 import { VoiceGender } from "@/services/tts";
 import { useCredits } from "@/hooks/useCredits";
@@ -178,7 +179,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [response]);
 
   const signIn = useCallback(async () => {
-    await promptAsync();
+    if (Platform.OS === "web") {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } else {
+      await promptAsync();
+    }
   }, [promptAsync]);
 
   const signOut = useCallback(async () => {
