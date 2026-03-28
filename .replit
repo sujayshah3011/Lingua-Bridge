@@ -24,3 +24,15 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[userenv]
+
+[userenv.shared]
+EXPO_PUBLIC_FIREBASE_API_KEY = "AIzaSyDKSWCxHrHVaYmSJZbqZ3mLecdShn0tJEA"
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN = "bhaashai.firebaseapp.com"
+EXPO_PUBLIC_FIREBASE_PROJECT_ID = "bhaashai"
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET = "bhaashai.firebasestorage.app"
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "261134857983"
+EXPO_PUBLIC_FIREBASE_APP_ID = "1:261134857983:web:9b2e063c5b3598d71dfeca"
+EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID = "G-V0EN9RTJ99"
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID = "261134857983-9tsvvio6p3j2ganv6gufgooio5r1nlgn.apps.googleusercontent.com"

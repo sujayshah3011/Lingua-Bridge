@@ -14,6 +14,13 @@ function generateUUID(): string {
 }
 
 export async function getDeviceId(): Promise<string> {
+  try {
+    const { auth } = await import("./firebase");
+    if (auth.currentUser) {
+      return `uid_${auth.currentUser.uid}`;
+    }
+  } catch {}
+
   if (_deviceId) return _deviceId;
   let id = await AsyncStorage.getItem(DEVICE_ID_KEY);
   if (!id) {

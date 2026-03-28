@@ -1,4 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Google from "expo-auth-session/providers/google";
+import * as WebBrowser from "expo-web-browser";
+import {
+  GoogleAuthProvider,
+  User,
+  onAuthStateChanged,
+  signInWithCredential,
+  signOut as firebaseSignOut,
+} from "firebase/auth";
 import React, {
   createContext,
   useCallback,
@@ -8,8 +17,11 @@ import React, {
   useState,
 } from "react";
 import { useColorScheme } from "react-native";
+import { auth } from "@/services/firebase";
 import { VoiceGender } from "@/services/tts";
 import { fetchCredits } from "@/services/api";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export interface TranslationRecord {
   id: string;
@@ -22,6 +34,10 @@ export interface TranslationRecord {
 }
 
 interface AppContextValue {
+  user: User | null;
+  authLoading: boolean;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
   credits: number;
   setCredits: (n: number) => void;
   refreshCredits: () => Promise<void>;
@@ -53,8 +69,14 @@ const AppContext = createContext<AppContextValue | null>(null);
 const HISTORY_KEY = "bhaashai_history";
 const PREFS_KEY = "bhaashai_prefs";
 
+const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useColorScheme();
+
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
   const [credits, setCreditsState] = useState(50);
   const [sourceLang, setSourceLang] = useState("en-IN");
   const [targetLang, setTargetLang] = useState("hi-IN");
@@ -74,6 +96,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const isDark =
     themeMode === "system" ? systemScheme === "dark" : themeMode === "dark";
+
+  const [_request, response, promptAsync] = Google.useAuthRequest({
+    clientId: WEB_CLIENT_ID,
+  });
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthLoading(false);
+      if (firebaseUser) {
+        fetchCredits().then(setCreditsState);
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication) {
+        const credential = GoogleAuthProvider.credential(
+          authentication.idToken,
+          authentication.accessToken
+        );
+        signInWithCredential(auth, credential).catch(() => {});
+      }
+    }
+  }, [response]);
+
+  const signIn = useCallback(async () => {
+    await promptAsync();
+  }, [promptAsync]);
+
+  const signOut = useCallback(async () => {
+    await firebaseSignOut(auth);
+    setUser(null);
+    fetchCredits().then(setCreditsState);
+  }, []);
 
   const refreshCredits = useCallback(async () => {
     const n = await fetchCredits();
@@ -198,6 +258,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AppContextValue>(
     () => ({
+      user,
+      authLoading,
+      signIn,
+      signOut,
       credits,
       setCredits,
       refreshCredits,
@@ -224,6 +288,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setVoiceGender,
     }),
     [
+      user,
+      authLoading,
+      signIn,
+      signOut,
       credits,
       setCredits,
       refreshCredits,

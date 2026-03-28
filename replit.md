@@ -98,18 +98,29 @@ Real-Time Indian Language Translator using Sarvam AI REST API.
 - `app/(tabs)/voice.tsx` — Voice tab (mic + STT + TTS)
 - `app/(tabs)/phrasebook.tsx` — Offline phrasebook
 - `app/(tabs)/history.tsx` — Translation history
-- `app/(tabs)/settings.tsx` — Settings + usage dashboard
+- `app/(tabs)/settings.tsx` — Settings: Account (Google Sign-In), Credits, Theme, Translation, About
 - `app/onboarding.tsx` — First-launch onboarding carousel (stack screen)
 - `app/conversation.tsx` — Dual-speaker conversation mode (stack modal)
-- `context/AppContext.tsx` — Global state (API key, languages, history, theme, usage)
+- `context/AppContext.tsx` — Global state (user, auth, languages, history, credits, theme)
+- `services/firebase.ts` — Firebase app + auth initialization
+- `services/api.ts` — API base URL, device ID (uses Firebase UID when signed in), credit fetch
 - `services/sarvam.ts` — Sarvam AI API client (translate, detect, transliterate)
-- `services/stt.ts` — Speech-to-text (REST + WebSocket streaming implementation)
+- `services/stt.ts` — Speech-to-text (multipart upload to API proxy)
 - `services/tts.ts` — Text-to-speech (REST, writes WAV to cache, returns URI)
 - `data/phrases.ts` — 30 pre-loaded phrases in 8 languages across 6 categories
 - `components/MicButton.tsx` — Animated pulsing mic button with dual ring effect
 - `components/ConversationBubble.tsx` — Chat bubble for conversation mode
 - `constants/languages.ts` — All 23 language definitions with native scripts
 - `constants/colors.ts` — COLORS token + Colors.light/dark theme objects
+- `metro.config.js` — Metro config with blockList for Firebase pnpm temp files
+
+### Firebase Auth
+- **Package**: `firebase@12.11.0`, `expo-auth-session@7.0.10`, `expo-web-browser`
+- **Flow**: Google OAuth via `expo-auth-session/providers/google` → `signInWithCredential` → Firebase
+- **Web Client ID**: stored as `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` env var
+- **Firebase config**: stored as `EXPO_PUBLIC_FIREBASE_*` env vars (all 7 values)
+- **Credit integration**: when signed in, Firebase UID is used as `x-device-id`; credits keyed per UID on server
+- **Settings screen**: Account section shows profile photo/name/email when signed in, Google Sign-In button when not
 
 ### Color Palette
 - Primary: `#FF6B00` (deep saffron orange)

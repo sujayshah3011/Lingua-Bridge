@@ -1,8 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import React from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
+  Image,
   Linking,
   Platform,
   Pressable,
@@ -20,6 +22,10 @@ type ThemeOption = "system" | "light" | "dark";
 
 export default function SettingsScreen() {
   const {
+    user,
+    authLoading,
+    signIn,
+    signOut,
     credits,
     refreshCredits,
     themeMode,
@@ -30,10 +36,41 @@ export default function SettingsScreen() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
+  const [signingIn, setSigningIn] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   const handleRefreshCredits = async () => {
     await Haptics.selectionAsync();
     await refreshCredits();
+  };
+
+  const handleSignIn = async () => {
+    setSigningIn(true);
+    try {
+      await signIn();
+    } catch {
+      Alert.alert("Sign-in failed", "Please try again.");
+    } finally {
+      setSigningIn(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    Alert.alert("Sign out", "Are you sure you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Sign out",
+        style: "destructive",
+        onPress: async () => {
+          setSigningOut(true);
+          try {
+            await signOut();
+          } finally {
+            setSigningOut(false);
+          }
+        },
+      },
+    ]);
   };
 
   const creditColor =
@@ -76,6 +113,139 @@ export default function SettingsScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
+        {/* Account */}
+        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
+          ACCOUNT
+        </Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          {authLoading ? (
+            <ActivityIndicator size="small" color={theme.primary} />
+          ) : user ? (
+            <>
+              <View style={styles.profileRow}>
+                {user.photoURL ? (
+                  <Image
+                    source={{ uri: user.photoURL }}
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.avatarPlaceholder,
+                      { backgroundColor: theme.primary + "22" },
+                    ]}
+                  >
+                    <Feather name="user" size={22} color={theme.primary} />
+                  </View>
+                )}
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={[styles.profileName, { color: theme.text }]}
+                    numberOfLines={1}
+                  >
+                    {user.displayName ?? "Google User"}
+                  </Text>
+                  <Text
+                    style={[styles.profileEmail, { color: theme.textSecondary }]}
+                    numberOfLines={1}
+                  >
+                    {user.email ?? ""}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.signedInBadge,
+                    { backgroundColor: theme.success + "18" },
+                  ]}
+                >
+                  <Feather name="check-circle" size={12} color={theme.success} />
+                  <Text style={[styles.signedInText, { color: theme.success }]}>
+                    Signed in
+                  </Text>
+                </View>
+              </View>
+
+              <Pressable
+                onPress={handleSignOut}
+                disabled={signingOut}
+                style={({ pressed }) => [
+                  styles.signOutBtn,
+                  {
+                    borderColor: theme.border,
+                    opacity: pressed || signingOut ? 0.6 : 1,
+                  },
+                ]}
+              >
+                {signingOut ? (
+                  <ActivityIndicator size="small" color={theme.textMuted} />
+                ) : (
+                  <>
+                    <Feather name="log-out" size={14} color={theme.textMuted} />
+                    <Text
+                      style={[styles.signOutText, { color: theme.textMuted }]}
+                    >
+                      Sign out
+                    </Text>
+                  </>
+                )}
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <View style={styles.signInPromptRow}>
+                <View
+                  style={[
+                    styles.signInIconWrap,
+                    { backgroundColor: theme.primary + "14" },
+                  ]}
+                >
+                  <Feather name="user" size={22} color={theme.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.cardLabel, { color: theme.text }]}>
+                    Sign in to sync credits
+                  </Text>
+                  <Text
+                    style={[styles.cardDesc, { color: theme.textSecondary }]}
+                  >
+                    Your credits will be linked to your account and available
+                    across devices.
+                  </Text>
+                </View>
+              </View>
+
+              <Pressable
+                onPress={handleSignIn}
+                disabled={signingIn}
+                style={({ pressed }) => [
+                  styles.googleBtn,
+                  {
+                    backgroundColor: pressed ? "#f5f5f5" : "#fff",
+                    borderColor: theme.border,
+                    opacity: signingIn ? 0.7 : 1,
+                  },
+                ]}
+              >
+                {signingIn ? (
+                  <ActivityIndicator size="small" color={theme.primary} />
+                ) : (
+                  <>
+                    <Feather name="log-in" size={16} color="#4285F4" />
+                    <Text style={styles.googleBtnText}>
+                      Continue with Google
+                    </Text>
+                  </>
+                )}
+              </Pressable>
+            </>
+          )}
+        </View>
+
         {/* Credits */}
         <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
           CREDITS
@@ -106,7 +276,9 @@ export default function SettingsScreen() {
                 style={[styles.cardDesc, { color: theme.textSecondary }]}
               >
                 Each translation costs 1 credit. Voice recognition costs 2.
-                New devices start with 50 free credits.
+                {user
+                  ? " Credits are linked to your account."
+                  : " New devices start with 50 free credits."}
               </Text>
             </View>
           </View>
@@ -131,13 +303,14 @@ export default function SettingsScreen() {
             <View
               style={[
                 styles.lowCreditsBanner,
-                { backgroundColor: theme.error + "12", borderColor: theme.error + "30" },
+                {
+                  backgroundColor: theme.error + "12",
+                  borderColor: theme.error + "30",
+                },
               ]}
             >
               <Feather name="alert-triangle" size={13} color={theme.error} />
-              <Text
-                style={[styles.lowCreditsText, { color: theme.error }]}
-              >
+              <Text style={[styles.lowCreditsText, { color: theme.error }]}>
                 {credits === 0
                   ? "No credits remaining. More credits coming soon."
                   : `Only ${credits} credit${credits === 1 ? "" : "s"} left.`}
@@ -278,7 +451,9 @@ export default function SettingsScreen() {
             onPress={() => Linking.openURL("https://sarvam.ai")}
             style={[styles.aboutLink, { borderColor: theme.border }]}
           >
-            <Text style={[styles.aboutLinkText, { color: theme.textSecondary }]}>
+            <Text
+              style={[styles.aboutLinkText, { color: theme.textSecondary }]}
+            >
               Sarvam AI
             </Text>
             <Feather name="external-link" size={14} color={theme.textMuted} />
@@ -329,6 +504,83 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     lineHeight: 18,
     marginTop: 2,
+  },
+  profileRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  avatarPlaceholder: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileName: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+  },
+  profileEmail: {
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+    marginTop: 1,
+  },
+  signedInBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  signedInText: {
+    fontSize: 11,
+    fontFamily: "Inter_600SemiBold",
+  },
+  signOutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 9,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  signOutText: {
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
+  },
+  signInPromptRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  signInIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  googleBtnText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    color: "#202124",
   },
   creditsRow: {
     flexDirection: "row",
