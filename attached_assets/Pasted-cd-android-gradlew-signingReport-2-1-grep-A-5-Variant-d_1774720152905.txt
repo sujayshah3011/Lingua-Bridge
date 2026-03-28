@@ -1,0 +1,197 @@
+cd android && ./gradlew signingReport 2>&1 | grep -A 5 "Variant: debug"
+```
+Copy the `SHA1:` line exactly.
+
+**Step 2 — Google Cloud Console** → `console.cloud.google.com` → project `261134857983`
+- APIs & Services → Credentials
+- Find or **create** an OAuth 2.0 Client ID of type **Android**
+- Package name: `com.bhaashai.app`
+- SHA-1: paste what you got above
+- Save
+
+**Step 3 — Firebase Console** → Project Settings → Your Android app
+- Add fingerprint → paste SHA-1 → Save
+- Re-download `google-services.json` → replace file in project root
+
+**Step 4 — OAuth Consent Screen** → Check Publishing status
+- If "Testing" → Add your Gmail under "Test users" OR click "Publish App"
+
+---
+
+## Part 2 — Rork Prompt (All Fixes)
+```
+Apply the following precise changes to BhaashAI.
+Fix the Google Sign-In for Android native builds,
+and apply 4 UI cleanup changes. Nothing else should change.
+
+════════════════════════════════════════════════════
+FIX 1 — GOOGLE SIGN-IN: NATIVE ANDROID (Critical)
+════════════════════════════════════════════════════
+
+The current sign-in works in web/browser preview but fails on 
+Android mobile with "Access blocked: Authorization Error".
+
+Root cause: The app is using a web-based OAuth flow on Android
+instead of the native Google Sign-In SDK flow.
+
+Replace the entire Google Sign-In implementation in lib/auth.ts:
+
+REMOVE any usage of:
+  - expo-auth-session
+  - AuthSession.useAuthRequest
+  - promptAsync()
+  - AuthSession.makeRedirectUri()
+  - WebBrowser.openAuthSessionAsync()
+  - fetch('https://oauth2.googleapis.com/token', ...)
+  Any web-redirect-based OAuth approach
+
+REPLACE WITH this exact native implementation:
+
+  import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+  import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+
+  // ─── INIT (call once in App.tsx useEffect on mount) ────────────
+  export const initGoogleSignIn = () => {
+    GoogleSignin.configure({
+      // MUST be Web Application type client ID from Google Cloud Console
+      // NOT the Android client ID
+      webClientId: '<YOUR_WEB_CLIENT_ID>.apps.googleusercontent.com',
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+      // Do NOT set: iosClientId, accountName, hostedDomain unless needed
+    });
+  };
+
+  // ─── SIGN IN ────────────────────────────────────────────────────
+  export const signInWithGoogle = async () => {
+    try {
+      // 1. Ensure Google Play Services available (Android only, no-op on iOS)
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      
+      // 2. Force account picker every time (prevents auto-sign-in confusion)
+      try { await GoogleSignin.signOut(); } catch (_) {}
+      
+      // 3. Native Google account picker appears
+      const signInResult = await GoogleSignin.signIn();
+      
+      // 4. Get tokens after sign in
+      const { idToken } = await GoogleSignin.getTokens();
+      
+      if (!idToken) throw new Error('NO_ID_TOKEN');
+      
+      // 5. Create Firebase credential from Google ID token
+      const credential = GoogleAuthProvider.credential(idToken);
+      
+      // 6. Sign in to Firebase
+      const firebaseResult = await signInWithCredential(auth, credential);
+      
+      return firebaseResult;
+      
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        return null; // User cancelled — silent
+      }
+      if (error.code === statusCodes.IN_PROGRESS) {
+        return null; // Already in progress — silent
+      }
+      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        throw new Error('PLAY_SERVICES_UNAVAILABLE');
+      }
+      // Log the actual error code for debugging
+      console.error('[AUTH] Google Sign-In error code:', error.code, error.message);
+      throw error;
+    }
+  };
+
+Also update app.json plugins array to include:
+  "plugins": [
+    [
+      "@react-native-google-signin/google-signin",
+      {
+        "iosUrlScheme": "com.googleusercontent.apps.<YOUR_IOS_CLIENT_ID>"
+      }
+    ],
+    "@react-native-firebase/app",
+    [
+      "expo-av",
+      {
+        "microphonePermission": "BhaashAI needs mic access for voice translation."
+      }
+    ]
+  ]
+
+Also ensure google-services.json is in the android/app/ directory
+(NOT just the project root). If it's only in root, copy it:
+  android/app/google-services.json
+
+And verify android/app/build.gradle contains AT THE BOTTOM:
+  apply plugin: 'com.google.gms.google-services'
+
+And verify android/build.gradle contains in dependencies:
+  classpath 'com.google.gms:google-services:4.4.0'
+
+════════════════════════════════════════════════════
+FIX 2 — HEADER: REMOVE SPENDING LOG
+════════════════════════════════════════════════════
+
+In the header of Translate, Voice, and Conversation tabs:
+
+REMOVE these elements entirely:
+  - Any "Spent: ₹X.XX" text
+  - Any "Used: ₹X.XX" text  
+  - Any spending counter, deduction log, or "total spent" display
+  - Any secondary text below the credit balance showing spend history
+
+KEEP only:
+  - The credit balance badge showing "₹{credits.toFixed(2)}"
+  - Its color coding (green/orange/red)
+  - Its tap → TopUp navigation
+
+The header credit badge should show ONE piece of information only:
+current balance. Nothing about what was spent.
+
+════════════════════════════════════════════════════
+FIX 3 — ADD CREDITS SCREEN: REMOVE DUPLICATE HEADER
+════════════════════════════════════════════════════
+
+In TopUpScreen (the Add Credits screen):
+
+Currently there are TWO "Add Credits" headers:
+  1. The navigation/stack header at the top of the screen
+  2. A second "Add Credits" title rendered inside the screen body
+
+KEEP: The navigation stack header (the one with the back arrow ←)
+REMOVE: The second "Add Credits" title that appears in the screen body
+         below the navigation header
+
+After removing, the screen body should start directly with
+the balance card or package grid — not another title.
+
+════════════════════════════════════════════════════
+FIX 4 — SETTINGS SCREEN: REMOVE UNWANTED SECTIONS
+════════════════════════════════════════════════════
+
+In SettingsScreen, COMPLETELY REMOVE these sections/components:
+
+1. REMOVE the entire "Rate Card" section
+   (the collapsible/expandable pricing table)
+   Delete: the Rate Card view, its toggle state, chevron icon,
+   and all pricing rows inside it.
+
+2. REMOVE the entire "Translation Modes" section
+   (formal/colloquial toggle or any translation mode selector
+   that appears as a settings section)
+
+3. REMOVE the entire "About" section which contains:
+   - "Powered by Sarvam AI" text
+   - "Sarvam AI" label/link
+   - Any version info or attribution block in settings
+
+After removing, the Settings screen should contain ONLY:
+  A. Profile card (avatar, name, email, sign out button)
+  B. Wallet card (balance, progress bar, Add Credits button)
+  C. Usage stats card (chars translated, audio minutes, etc.)
+  D. App preferences (theme toggle, default language, voice gender)
+  E. Transaction history link
+
+Nothing else. No rate card, no translation modes, no about section.

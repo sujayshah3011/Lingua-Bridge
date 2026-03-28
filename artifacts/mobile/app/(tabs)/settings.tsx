@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -21,13 +20,6 @@ import { useTheme } from "@/hooks/useTheme";
 
 type ThemeOption = "system" | "light" | "dark";
 
-const RATE_ROWS = [
-  { label: "Text Translation", value: "₹4.00 per 1,000 chars" },
-  { label: "Voice Input (STT)", value: "₹1.00 per minute" },
-  { label: "Voice Output (TTS)", value: "₹3.00 per 1,000 chars" },
-  { label: "Transliteration", value: "₹4.00 per 1,000 chars" },
-];
-
 export default function SettingsScreen() {
   const {
     user,
@@ -39,15 +31,12 @@ export default function SettingsScreen() {
     stats,
     themeMode,
     setThemeMode,
-    formalMode,
-    setFormalMode,
   } = useApp();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
   const [signingIn, setSigningIn] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-  const [rateCardOpen, setRateCardOpen] = useState(false);
 
   const creditColor =
     credits > 20 ? "#16A34A" : credits > 5 ? "#EA580C" : "#DC2626";
@@ -268,10 +257,10 @@ export default function SettingsScreen() {
           </View>
           <View style={styles.progressLabels}>
             <Text style={[styles.progressLabel, { color: theme.textMuted }]}>
-              Spent: ₹{totalUsed.toFixed(2)}
+              Remaining: ₹{credits.toFixed(2)}
             </Text>
             <Text style={[styles.progressLabel, { color: theme.textMuted }]}>
-              Remaining: ₹{credits.toFixed(2)}
+              Total loaded: ₹{totalEver.toFixed(2)}
             </Text>
           </View>
 
@@ -339,54 +328,6 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Rate Card */}
-        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
-          PRICING
-        </Text>
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
-        >
-          <Pressable
-            onPress={() => {
-              Haptics.selectionAsync();
-              setRateCardOpen((v) => !v);
-            }}
-            style={styles.rateCardHeader}
-          >
-            <Text style={[styles.cardLabel, { color: theme.text }]}>Rate Card</Text>
-            <Feather
-              name={rateCardOpen ? "chevron-up" : "chevron-down"}
-              size={18}
-              color={theme.textSecondary}
-            />
-          </Pressable>
-
-          {rateCardOpen && (
-            <>
-              <View style={[styles.divider, { backgroundColor: theme.border }]} />
-              {RATE_ROWS.map((row) => (
-                <View key={row.label} style={styles.rateRow}>
-                  <Text style={[styles.rateLabel, { color: theme.textSecondary }]}>
-                    {row.label}
-                  </Text>
-                  <Text style={[styles.rateValue, { color: theme.text }]}>
-                    {row.value}
-                  </Text>
-                </View>
-              ))}
-              <View style={[styles.rateNote, { backgroundColor: theme.primary + "10", borderColor: theme.primary + "30" }]}>
-                <Feather name="info" size={13} color={theme.primary} />
-                <Text style={[styles.rateNoteText, { color: theme.textSecondary }]}>
-                  ₹100 signup credits ≈ 25,000 translated characters
-                </Text>
-              </View>
-            </>
-          )}
-        </View>
-
         {/* Appearance */}
         <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
           APPEARANCE
@@ -435,89 +376,6 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Translation Preferences */}
-        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
-          TRANSLATION
-        </Text>
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
-        >
-          <Pressable
-            onPress={() => setFormalMode(!formalMode)}
-            style={styles.prefRow}
-          >
-            <View>
-              <Text style={[styles.cardLabel, { color: theme.text }]}>
-                Default Mode
-              </Text>
-              <Text style={[styles.cardDesc, { color: theme.textSecondary }]}>
-                {formalMode
-                  ? "Formal — professional register"
-                  : "Colloquial — conversational register"}
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.modeBadge,
-                {
-                  backgroundColor: formalMode
-                    ? theme.primary + "18"
-                    : theme.surfaceSecondary,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.modeBadgeText,
-                  { color: formalMode ? theme.primary : theme.textMuted },
-                ]}
-              >
-                {formalMode ? "Formal" : "Casual"}
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-
-        {/* About */}
-        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
-          ABOUT
-        </Text>
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
-        >
-          <View style={styles.aboutRow}>
-            <View style={[styles.aboutIcon, { backgroundColor: theme.primary }]}>
-              <Feather name="globe" size={20} color="#fff" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.cardLabel, { color: theme.text }]}>
-                BhaashAI
-              </Text>
-              <Text style={[styles.cardDesc, { color: theme.textSecondary }]}>
-                Real-Time Indian Language Translator
-              </Text>
-              <Text style={[styles.version, { color: theme.textMuted }]}>
-                Version 1.0.0 · Powered by Sarvam AI
-              </Text>
-            </View>
-          </View>
-          <View style={[styles.divider, { backgroundColor: theme.border }]} />
-          <Pressable
-            onPress={() => Linking.openURL("https://sarvam.ai")}
-            style={[styles.aboutLink, { borderColor: theme.border }]}
-          >
-            <Text style={[styles.aboutLinkText, { color: theme.textSecondary }]}>
-              Sarvam AI
-            </Text>
-            <Feather name="external-link" size={14} color={theme.textMuted} />
-          </Pressable>
-        </View>
       </ScrollView>
     </View>
   );

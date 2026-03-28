@@ -1,5 +1,4 @@
 import { Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -58,23 +57,6 @@ export default function TopUpScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <View
-        style={[
-          styles.header,
-          { borderBottomColor: theme.border, paddingTop: insets.top + 12 },
-        ]}
-      >
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={12}
-          style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
-        >
-          <Feather name="x" size={22} color={theme.text} />
-        </Pressable>
-        <Text style={[styles.title, { color: theme.text }]}>Add Credits</Text>
-        <View style={{ width: 22 }} />
-      </View>
-
       <ScrollView
         contentContainerStyle={[
           styles.content,
