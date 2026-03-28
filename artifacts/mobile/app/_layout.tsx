@@ -25,7 +25,7 @@ const queryClient = new QueryClient();
 function AppSplash() {
   return (
     <View style={splash.root}>
-      <Text style={splash.text}>भाषAI</Text>
+      <Text style={splash.text}>भाषा-AI</Text>
       <ActivityIndicator color="#fff" size="large" style={splash.indicator} />
     </View>
   );

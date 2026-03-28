@@ -49,7 +49,7 @@ export function WelcomeScreen() {
             <Feather name="globe" size={36} color="#FF6B00" />
           </View>
           <Text style={styles.logoText}>BhaashAI</Text>
-          <Text style={styles.devanagari}>भाषAI</Text>
+          <Text style={styles.devanagari}>भाषा-AI</Text>
         </View>
 
         <Text style={styles.tagline}>
