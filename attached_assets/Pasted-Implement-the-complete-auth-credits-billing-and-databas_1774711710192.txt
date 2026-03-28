@@ -1,0 +1,859 @@
+Implement the complete auth, credits, billing, and database system 
+for BhaashAI. Remove all API key input UI. This is the full production build.
+NO phone OTP for now — Google Sign-In only.
+
+════════════════════════════════════════════
+SECTION 0 — MASTER CONSTANTS (create first)
+════════════════════════════════════════════
+
+Create lib/constants.ts:
+
+  // ─── SARVAM COSTS (what Sarvam charges us) ───────────────────────
+  export const SARVAM_COST = {
+    translate: {
+      perChar: 20 / 10000,         // ₹0.002 per character
+    },
+    tts: {
+      perChar: 15 / 10000,         // ₹0.0015 per character
+    },
+    stt: {
+      perSecond: 30 / 3600,        // ₹0.008333 per second
+    },
+    transliterate: {
+      perChar: 20 / 10000,         // ₹0.002 per character (same as translate)
+    },
+    detectLanguage: {
+      perChar: 4.1 / 10000,        // ₹0.00041 per character
+    },
+  };
+
+  // ─── USER-FACING PRICE (2x markup = our margin covers infra+profit) ─
+  export const USER_PRICE = {
+    translate: {
+      perChar:   SARVAM_COST.translate.perChar   * 2,   // ₹0.004/char
+      per10k:    40,                                     // ₹40/10K chars
+    },
+    tts: {
+      perChar:   SARVAM_COST.tts.perChar         * 2,   // ₹0.003/char
+      per10k:    30,                                     // ₹30/10K chars
+    },
+    stt: {
+      perSecond: SARVAM_COST.stt.perSecond       * 2,   // ₹0.016667/sec
+      perMinute: (SARVAM_COST.stt.perSecond * 2) * 60,  // ₹1.00/min
+      perHour:   60,                                     // ₹60/hour
+    },
+    transliterate: {
+      perChar:   SARVAM_COST.transliterate.perChar * 2, // ₹0.004/char
+    },
+    detectLanguage: {
+      perChar:   SARVAM_COST.detectLanguage.perChar * 2, // ₹0.00082/char
+    },
+  };
+
+  // ─── WELCOME CREDIT ──────────────────────────────────────────────
+  export const WELCOME_CREDIT_INR = 100.00;
+
+  // ─── MINIMUM BALANCE THRESHOLD ───────────────────────────────────
+  export const LOW_BALANCE_WARN_INR = 5.00;
+  export const BLOCK_AT_INR = 0.00;
+
+  // ─── SARVAM API KEY (developer key, hidden from users) ───────────
+  export const SARVAM_API_KEY = "<YOUR_SARVAM_API_KEY_HERE>";
+
+  // ─── RAZORPAY ────────────────────────────────────────────────────
+  export const RAZORPAY_KEY_ID = "<YOUR_RAZORPAY_KEY_ID>";
+
+  // ─── TOP-UP PACKAGES ─────────────────────────────────────────────
+  export const TOPUP_PACKAGES = [
+    { id: 'p99',   amount: 99,   bonus: 0,   label: 'Starter', tag: null },
+    { id: 'p299',  amount: 299,  bonus: 30,  label: 'Basic',   tag: '10% bonus' },
+    { id: 'p599',  amount: 599,  bonus: 90,  label: 'Popular', tag: '15% bonus ⭐' },
+    { id: 'p999',  amount: 999,  bonus: 200, label: 'Pro',     tag: '20% bonus' },
+  ];
+
+════════════════════════════════════════════
+SECTION 1 — FIREBASE SETUP
+════════════════════════════════════════════
+
+Install packages:
+  firebase
+  @react-native-google-signin/google-signin
+
+Create lib/firebase.ts:
+
+  import { initializeApp, getApps } from 'firebase/app';
+  import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+  import { getFirestore } from 'firebase/firestore';
+  import AsyncStorage from '@react-native-async-storage/async-storage';
+
+  const firebaseConfig = {
+    apiKey: "<FIREBASE_API_KEY>",
+    authDomain: "<PROJECT>.firebaseapp.com",
+    projectId: "<PROJECT_ID>",
+    storageBucket: "<PROJECT>.appspot.com",
+    messagingSenderId: "<SENDER_ID>",
+    appId: "<APP_ID>",
+  };
+
+  const app = getApps().length === 0 
+    ? initializeApp(firebaseConfig) 
+    : getApps()[0];
+
+  export const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+
+  export const db = getFirestore(app);
+  export default app;
+
+════════════════════════════════════════════
+SECTION 2 — FIRESTORE DATA SCHEMA
+════════════════════════════════════════════
+
+Create EXACTLY these Firestore collections.
+Do not deviate from field names — the credit engine depends on them.
+
+Collection: users/{uid}
+  {
+    uid:              string,
+    email:            string,
+    displayName:      string,
+    photoURL:         string,
+    createdAt:        Timestamp,
+    
+    // Credit fields
+    credits:          number,    // current balance in ₹ (starts 100.00)
+    totalCredited:    number,    // total ₹ ever added (starts 100.00)
+    totalDebited:     number,    // total ₹ ever spent (starts 0.00)
+    
+    // Usage counters (for dashboard)
+    stats: {
+      charsTranslated:    number,   // cumulative
+      charsTTS:           number,   // cumulative
+      secondsSTT:         number,   // cumulative
+      charsTransliterated: number,  // cumulative
+      sessionCount:       number,   // number of app opens
+    },
+    
+    plan: 'pay-as-you-go',
+    isActive: boolean,
+  }
+
+Collection: transactions/{auto-id}
+  {
+    uid:          string,
+    type:         'translate' | 'tts' | 'stt' | 'transliterate' | 'detect' | 'topup',
+    
+    // Quantity fields (only relevant ones populated)
+    chars:        number | null,     // for translate, tts, transliterate, detect
+    seconds:      number | null,     // for stt
+    
+    // Cost fields
+    sarvamCost:   number,    // what Sarvam charged us (₹)
+    userCharged:  number,    // what we charged user (₹) — always 2x sarvamCost
+    
+    // Balance snapshot
+    balanceBefore: number,   // user's balance before this transaction
+    balanceAfter:  number,   // user's balance after
+    
+    // Metadata
+    sourceLang:   string | null,
+    targetLang:   string | null,
+    success:      boolean,
+    timestamp:    Timestamp,
+  }
+
+Collection: topups/{auto-id}
+  {
+    uid:               string,
+    amountPaid:        number,    // actual ₹ paid by user
+    creditsAdded:      number,    // ₹ credits added (amount + bonus)
+    bonusCredits:      number,
+    razorpayOrderId:   string,
+    razorpayPaymentId: string,
+    status:            'success' | 'failed' | 'pending',
+    timestamp:         Timestamp,
+  }
+
+════════════════════════════════════════════
+SECTION 3 — CREDIT ENGINE (lib/credits.ts)
+════════════════════════════════════════════
+
+Create lib/credits.ts with these exact functions:
+
+  import { db } from './firebase';
+  import { 
+    doc, getDoc, updateDoc, addDoc, 
+    collection, increment, serverTimestamp, runTransaction 
+  } from 'firebase/firestore';
+  import { USER_PRICE, SARVAM_COST } from './constants';
+
+  // ─── CHECK BALANCE ────────────────────────────────────────────────
+  export const getBalance = async (uid: string): Promise<number> => {
+    const snap = await getDoc(doc(db, 'users', uid));
+    return snap.data()?.credits ?? 0;
+  };
+
+  export const hasEnoughCredits = async (
+    uid: string, 
+    estimatedCost: number
+  ): Promise<boolean> => {
+    const balance = await getBalance(uid);
+    return balance > estimatedCost;
+  };
+
+  // ─── CORE DEDUCT FUNCTION ─────────────────────────────────────────
+  // Uses Firestore transaction to prevent race conditions
+  const deductCredits = async ({
+    uid,
+    type,
+    chars = null,
+    seconds = null,
+    userCharged,
+    sarvamCost,
+    sourceLang = null,
+    targetLang = null,
+  }: {
+    uid: string;
+    type: string;
+    chars?: number | null;
+    seconds?: number | null;
+    userCharged: number;
+    sarvamCost: number;
+    sourceLang?: string | null;
+    targetLang?: string | null;
+  }) => {
+    const userRef = doc(db, 'users', uid);
+    
+    await runTransaction(db, async (txn) => {
+      const userSnap = await txn.get(userRef);
+      if (!userSnap.exists()) throw new Error('User not found');
+      
+      const balanceBefore = userSnap.data().credits;
+      const balanceAfter = parseFloat((balanceBefore - userCharged).toFixed(6));
+      
+      // Update user document
+      txn.update(userRef, {
+        credits: balanceAfter,
+        totalDebited: increment(userCharged),
+      });
+      
+      // Write transaction record
+      const txnRef = doc(collection(db, 'transactions'));
+      txn.set(txnRef, {
+        uid,
+        type,
+        chars,
+        seconds,
+        sarvamCost: parseFloat(sarvamCost.toFixed(6)),
+        userCharged: parseFloat(userCharged.toFixed(6)),
+        balanceBefore: parseFloat(balanceBefore.toFixed(6)),
+        balanceAfter,
+        sourceLang,
+        targetLang,
+        success: true,
+        timestamp: serverTimestamp(),
+      });
+    });
+  };
+
+  // ─── UPDATE STATS ─────────────────────────────────────────────────
+  const updateStats = async (uid: string, statsUpdate: Record<string, any>) => {
+    await updateDoc(doc(db, 'users', uid), statsUpdate);
+  };
+
+  // ─── PUBLIC API: CHARGE FOR TRANSLATE ────────────────────────────
+  export const chargeTranslate = async (
+    uid: string,
+    inputText: string,
+    sourceLang: string,
+    targetLang: string,
+  ) => {
+    const chars = inputText.length;
+    const sarvamCost = chars * SARVAM_COST.translate.perChar;
+    const userCharged = chars * USER_PRICE.translate.perChar;
+    
+    await deductCredits({ uid, type: 'translate', chars, sarvamCost, userCharged, sourceLang, targetLang });
+    await updateStats(uid, { 'stats.charsTranslated': increment(chars) });
+    
+    return { chars, cost: userCharged };
+  };
+
+  // ─── PUBLIC API: CHARGE FOR TTS ──────────────────────────────────
+  export const chargeTTS = async (
+    uid: string,
+    text: string,
+    targetLang: string,
+  ) => {
+    const chars = text.length;
+    const sarvamCost = chars * SARVAM_COST.tts.perChar;
+    const userCharged = chars * USER_PRICE.tts.perChar;
+    
+    await deductCredits({ uid, type: 'tts', chars, sarvamCost, userCharged, targetLang });
+    await updateStats(uid, { 'stats.charsTTS': increment(chars) });
+    
+    return { chars, cost: userCharged };
+  };
+
+  // ─── PUBLIC API: CHARGE FOR STT ──────────────────────────────────
+  export const chargeSTT = async (
+    uid: string,
+    audioSeconds: number,
+    sourceLang: string,
+  ) => {
+    const seconds = parseFloat(audioSeconds.toFixed(2));
+    const sarvamCost = seconds * SARVAM_COST.stt.perSecond;
+    const userCharged = seconds * USER_PRICE.stt.perSecond;
+    
+    await deductCredits({ uid, type: 'stt', seconds, sarvamCost, userCharged, sourceLang });
+    await updateStats(uid, { 'stats.secondsSTT': increment(seconds) });
+    
+    return { seconds, cost: userCharged };
+  };
+
+  // ─── PUBLIC API: CHARGE FOR TRANSLITERATE ────────────────────────
+  export const chargeTransliterate = async (uid: string, text: string) => {
+    const chars = text.length;
+    const sarvamCost = chars * SARVAM_COST.transliterate.perChar;
+    const userCharged = chars * USER_PRICE.transliterate.perChar;
+    
+    await deductCredits({ uid, type: 'transliterate', chars, sarvamCost, userCharged });
+    await updateStats(uid, { 'stats.charsTransliterated': increment(chars) });
+    
+    return { chars, cost: userCharged };
+  };
+
+  // ─── PRE-FLIGHT CHECK + COST ESTIMATE ────────────────────────────
+  // Call this BEFORE making any API call to show user estimated cost
+  export const estimateCost = (
+    type: 'translate' | 'tts' | 'stt' | 'transliterate',
+    quantity: number  // chars for text, seconds for stt
+  ): number => {
+    switch (type) {
+      case 'translate':    return quantity * USER_PRICE.translate.perChar;
+      case 'tts':          return quantity * USER_PRICE.tts.perChar;
+      case 'stt':          return quantity * USER_PRICE.stt.perSecond;
+      case 'transliterate': return quantity * USER_PRICE.transliterate.perChar;
+      default: return 0;
+    }
+  };
+
+════════════════════════════════════════════
+SECTION 4 — WRAP ALL SARVAM API CALLS
+════════════════════════════════════════════
+
+In every existing API call function, add credit check BEFORE 
+and credit deduction AFTER. Pattern to apply to all:
+
+  // translate.ts — wrap callSarvamTranslate:
+  export const callSarvamTranslate = async (
+    uid: string,
+    text: string, 
+    sourceLang: string, 
+    targetLang: string,
+  ) => {
+    // 1. Estimate cost
+    const estimatedCost = estimateCost('translate', text.length);
+    
+    // 2. Check balance
+    const canProceed = await hasEnoughCredits(uid, estimatedCost);
+    if (!canProceed) throw new Error('INSUFFICIENT_CREDITS');
+    
+    // 3. Call Sarvam API
+    const response = await fetch('https://api.sarvam.ai/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-subscription-key': SARVAM_API_KEY,
+      },
+      body: JSON.stringify({
+        input: text,
+        source_language_code: sourceLang,
+        target_language_code: targetLang,
+        model: 'sarvam-translate:v1',
+        enable_preprocessing: true,
+      }),
+    });
+    
+    if (!response.ok) throw new Error(`TRANSLATE_ERROR_${response.status}`);
+    const data = await response.json();
+    
+    // 4. Charge AFTER successful response only
+    const actualChars = text.length;  // charge on input chars
+    await chargeTranslate(uid, text, sourceLang, targetLang);
+    
+    return data.translated_text;
+  };
+
+  // stt.ts — wrap transcribeAudio, charge AFTER audio stops:
+  // Track recording start time with: const startTime = Date.now();
+  // After STT returns: const audioSeconds = (Date.now() - startTime) / 1000;
+  // Then: await chargeSTT(uid, audioSeconds, sourceLang);
+
+  // tts.ts — wrap synthesizeSpeech:
+  // After successful TTS: await chargeTTS(uid, text, targetLang);
+
+  // CRITICAL RULE: NEVER charge if API call fails.
+  // Only deduct credits on HTTP 200 success responses.
+
+════════════════════════════════════════════
+SECTION 5 — GOOGLE SIGN-IN AUTH FLOW
+════════════════════════════════════════════
+
+Screen: WelcomeScreen (shown when user not logged in)
+
+Full screen layout:
+  - Background: vertical gradient saffron #FF6B00 → deep navy #0A1628
+  - Center: BhaashAI logo (text-based: "भाषAI" in white, 48px bold)
+  - Subtitle: "Translate across all 22 Indian languages" in white 16px
+  - Spacer
+  - White card at bottom (rounded top corners, 300px tall):
+    - "Get started" in dark 24px bold
+    - "₹100 free credits on signup. No subscription." in grey 14px
+    - Google Sign-In button:
+        [ G  Continue with Google ]
+        Full width, white background, border, Google blue text
+        Height 54px, borderRadius 12px
+    - Below button: 3 feature pills in a row:
+        [🌐 22 Languages]  [🎙️ Voice]  [💬 Real-time]
+    - Terms text at bottom in grey 11px:
+        "By continuing you agree to Terms of Service & Privacy Policy"
+
+Google Sign-In Logic:
+  GoogleSignin.configure({
+    webClientId: '<WEB_CLIENT_ID_FROM_FIREBASE_CONSOLE>',
+  });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const { idToken } = await GoogleSignin.signIn();
+      const credential = GoogleAuthProvider.credential(idToken);
+      const result = await signInWithCredential(auth, credential);
+      const isNew = result.additionalUserInfo?.isNewUser;
+      
+      if (isNew) {
+        // Create user doc with ₹100 welcome credits
+        await setDoc(doc(db, 'users', result.user.uid), {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+          createdAt: serverTimestamp(),
+          credits: WELCOME_CREDIT_INR,
+          totalCredited: WELCOME_CREDIT_INR,
+          totalDebited: 0,
+          stats: {
+            charsTranslated: 0,
+            charsTTS: 0,
+            secondsSTT: 0,
+            charsTransliterated: 0,
+            sessionCount: 1,
+          },
+          plan: 'pay-as-you-go',
+          isActive: true,
+        });
+        
+        // Log welcome credit as a transaction
+        await addDoc(collection(db, 'transactions'), {
+          uid: result.user.uid,
+          type: 'topup',
+          chars: null,
+          seconds: null,
+          sarvamCost: 0,
+          userCharged: -100,   // negative = credit added
+          balanceBefore: 0,
+          balanceAfter: 100,
+          sourceLang: null,
+          targetLang: null,
+          success: true,
+          note: 'Welcome credit',
+          timestamp: serverTimestamp(),
+        });
+      } else {
+        // Existing user: increment session count
+        await updateDoc(doc(db, 'users', result.user.uid), {
+          'stats.sessionCount': increment(1),
+        });
+      }
+    } catch (error) {
+      Alert.alert('Sign-in failed', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+Auth Navigation Guard in App.tsx:
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) return <SplashScreen />;
+  return user ? <MainApp /> : <WelcomeScreen />;
+
+════════════════════════════════════════════
+SECTION 6 — REAL-TIME CREDIT HEADER
+════════════════════════════════════════════
+
+Add to every main screen's header (Translate, Voice, Conversation tabs):
+
+  const [credits, setCredits] = useState(0);
+  
+  useEffect(() => {
+    if (!user?.uid) return;
+    // Real-time listener — updates instantly after every API call
+    const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+      setCredits(snap.data()?.credits ?? 0);
+    });
+    return unsub;
+  }, [user?.uid]);
+
+  // Credit badge in header (top right):
+  const creditColor = credits > 20 ? '#22C55E'   // green
+                    : credits > 5  ? '#F97316'   // orange  
+                    : '#EF4444';                  // red
+
+  <View style={styles.creditBadge}>
+    <Text style={{ color: creditColor, fontWeight: '700', fontSize: 13 }}>
+      ₹{credits.toFixed(2)}
+    </Text>
+    <Text style={{ color: '#999', fontSize: 10 }}>credits</Text>
+  </View>
+
+Low balance persistent banner (show on all main screens when credits < ₹5):
+  {credits < 5 && credits > 0 && (
+    <TouchableOpacity 
+      onPress={() => navigate('TopUp')}
+      style={{
+        backgroundColor: '#FEF3C7', 
+        borderLeftWidth: 4, 
+        borderLeftColor: '#F97316',
+        padding: 10, 
+        flexDirection: 'row', 
+        alignItems: 'center'
+      }}>
+      <Text style={{ color: '#92400E', flex: 1, fontSize: 13 }}>
+        ⚠️ Low balance: ₹{credits.toFixed(2)} — Tap to add credits
+      </Text>
+      <Text style={{ color: '#F97316', fontWeight: '700' }}>Top Up →</Text>
+    </TouchableOpacity>
+  )}
+
+Zero balance full block (when credits ≤ 0):
+  {credits <= 0 && (
+    <View style={styles.zeroBalanceOverlay}>
+      <Text style={styles.zeroTitle}>No Credits Left</Text>
+      <Text style={styles.zeroSub}>Add credits to continue translating</Text>
+      <TouchableOpacity onPress={() => navigate('TopUp')} style={styles.topUpBtn}>
+        <Text style={styles.topUpBtnText}>Add Credits</Text>
+      </TouchableOpacity>
+    </View>
+  )}
+
+════════════════════════════════════════════
+SECTION 7 — TOP-UP SCREEN (TopUpScreen.tsx)
+════════════════════════════════════════════
+
+Install: react-native-razorpay
+
+Full screen layout:
+
+Header: "Add Credits" with back button
+
+Current balance card:
+  <View style={styles.balanceCard}>
+    <Text style={styles.balanceLabel}>Current Balance</Text>
+    <Text style={styles.balanceAmount}>₹{credits.toFixed(2)}</Text>
+    <Text style={styles.balanceSub}>Credits never expire</Text>
+  </View>
+
+Packages grid (2 columns):
+  const TOPUP_PACKAGES = [
+    { id: 'p99',  amount: 99,  bonus: 0,   label: 'Starter', tag: null },
+    { id: 'p299', amount: 299, bonus: 30,  label: 'Basic',   tag: '10% bonus' },
+    { id: 'p599', amount: 599, bonus: 90,  label: 'Popular', tag: '15% bonus ⭐', highlight: true },
+    { id: 'p999', amount: 999, bonus: 200, label: 'Pro',     tag: '20% bonus' },
+  ];
+
+  Each package card:
+    - Label in 13px grey
+    - "₹{amount}" in 28px bold dark
+    - "Get ₹{amount+bonus} credits" in 14px green
+    - Bonus badge (orange pill) if bonus > 0
+    - Highlighted card (Popular): saffron border + "Most Popular" top badge
+    - Tap → initiate Razorpay payment
+
+Razorpay integration:
+  import RazorpayCheckout from 'react-native-razorpay';
+
+  const handlePurchase = async (pkg) => {
+    const options = {
+      key: RAZORPAY_KEY_ID,
+      amount: pkg.amount * 100,    // in paise
+      currency: 'INR',
+      name: 'BhaashAI',
+      description: `${pkg.amount + pkg.bonus} Credits`,
+      image: 'https://your-logo-url.png',
+      prefill: {
+        name: user.displayName,
+        email: user.email,
+      },
+      theme: { color: '#FF6B00' },
+    };
+
+    try {
+      const paymentData = await RazorpayCheckout.open(options);
+      
+      const creditsToAdd = pkg.amount + pkg.bonus;
+      
+      // Firestore transaction to add credits atomically
+      await runTransaction(db, async (txn) => {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await txn.get(userRef);
+        const balanceBefore = userSnap.data().credits;
+        const balanceAfter = balanceBefore + creditsToAdd;
+        
+        txn.update(userRef, {
+          credits: balanceAfter,
+          totalCredited: increment(creditsToAdd),
+        });
+        
+        const topupRef = doc(collection(db, 'topups'));
+        txn.set(topupRef, {
+          uid: user.uid,
+          amountPaid: pkg.amount,
+          creditsAdded: creditsToAdd,
+          bonusCredits: pkg.bonus,
+          razorpayOrderId: paymentData.razorpay_order_id ?? null,
+          razorpayPaymentId: paymentData.razorpay_payment_id,
+          status: 'success',
+          timestamp: serverTimestamp(),
+        });
+        
+        // Also log as transaction
+        const txnRef = doc(collection(db, 'transactions'));
+        txn.set(txnRef, {
+          uid: user.uid,
+          type: 'topup',
+          chars: null,
+          seconds: null,
+          sarvamCost: 0,
+          userCharged: -creditsToAdd,   // negative = credit
+          balanceBefore,
+          balanceAfter,
+          note: `Razorpay topup ₹${pkg.amount} + ₹${pkg.bonus} bonus`,
+          success: true,
+          timestamp: serverTimestamp(),
+        });
+      });
+      
+      Alert.alert('✅ Credits Added!', `₹${creditsToAdd} added to your wallet.`);
+    } catch (error) {
+      if (error.code !== 'PAYMENT_CANCELLED') {
+        Alert.alert('Payment Failed', 'Please try again.');
+      }
+    }
+  };
+
+"What can I do with ₹X?" section below packages:
+  Dynamically calculate and show for each package amount:
+    "₹99 ≈ 24,750 translated characters"
+    "₹99 ≈ 33,000 TTS characters (spoken)"
+    "₹99 ≈ 99 minutes of voice input"
+  Formula: amount / USER_PRICE.translate.perChar / 1000 + "K chars"
+
+════════════════════════════════════════════
+SECTION 8 — WALLET & HISTORY SCREEN
+════════════════════════════════════════════
+
+Add a "Wallet" section inside Settings tab:
+
+  1. BALANCE CARD (top)
+     ┌──────────────────────────────┐
+     │  Available Balance           │
+     │  ₹{credits}   [Add Credits →]│
+     │  ████████░░░░ 68% used       │
+     │  Total added: ₹{totalCredited}│
+     │  Total spent: ₹{totalDebited}│
+     └──────────────────────────────┘
+     Progress bar = totalDebited / totalCredited
+
+  2. USAGE STATS CARD
+     Real-time from Firestore stats object:
+     ┌──────────────────────────────┐
+     │ 📝 Chars Translated: 12,400  │
+     │ 🔊 Chars Spoken (TTS): 4,200 │
+     │ 🎙️ Audio Transcribed: 18 min │
+     │ 💰 Total Spent: ₹3.82        │
+     └──────────────────────────────┘
+
+  3. TRANSACTION HISTORY LIST
+     Query: collection('transactions') where uid == user.uid
+             orderBy('timestamp', 'desc') limit 50
+     
+     Each row:
+       Icon: 🌐 translate | 🔊 tts | 🎙️ stt | ➕ topup
+       Title: "Translation (hi-IN → ta-IN)"
+       Subtitle: "245 chars · 3 seconds ago"
+       Right: "-₹0.0098" in red  OR  "+₹99" in green for topups
+     
+     Load more button at bottom (pagination)
+
+  Real-time listener for transaction list:
+    const q = query(
+      collection(db, 'transactions'),
+      where('uid', '==', user.uid),
+      orderBy('timestamp', 'desc'),
+      limit(20)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setTransactions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+════════════════════════════════════════════
+SECTION 9 — UPDATED SETTINGS SCREEN
+════════════════════════════════════════════
+
+REMOVE: API key input field entirely
+REMOVE: Usage counters from AsyncStorage (now from Firestore)
+
+REPLACE WITH these sections:
+
+  A. PROFILE CARD
+     - Google avatar (circular, 56px)
+     - displayName in 18px bold
+     - email in 14px grey
+     - [Sign Out] button → GoogleSignin.signOut() + auth.signOut()
+
+  B. WALLET CARD (real-time)
+     - Balance: ₹{credits.toFixed(2)} in large green
+     - [Add Credits →] button → navigate to TopUpScreen
+     - [Transaction History →] → navigate to history list
+
+  C. RATE CARD (expandable)
+     Title: "What do credits cost?"
+     Expandable section showing:
+       Translation:  ₹40 per 10,000 characters
+       Voice Input:  ₹1.00 per minute
+       Voice Output: ₹30 per 10,000 characters
+       Transliterate:₹40 per 10,000 characters
+
+  D. APP SETTINGS (unchanged)
+     - Theme toggle (Light/Dark)
+     - Default source/target language
+     - Voice gender preference
+
+════════════════════════════════════════════
+SECTION 10 — PLAY STORE READINESS
+════════════════════════════════════════════
+
+Update app.json to this exact config:
+
+  {
+    "expo": {
+      "name": "BhaashAI",
+      "slug": "bhaashai",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "userInterfaceStyle": "automatic",
+      "splash": {
+        "backgroundColor": "#FF6B00"
+      },
+      "android": {
+        "package": "com.bhaashai.app",
+        "versionCode": 1,
+        "googleServicesFile": "./google-services.json",
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/adaptive-icon.png",
+          "backgroundColor": "#FF6B00"
+        },
+        "permissions": [
+          "RECORD_AUDIO",
+          "INTERNET",
+          "ACCESS_NETWORK_STATE"
+        ]
+      },
+      "ios": {
+        "bundleIdentifier": "com.bhaashai.app",
+        "infoPlist": {
+          "NSMicrophoneUsageDescription": "BhaashAI uses the microphone for voice translation"
+        }
+      },
+      "plugins": [
+        "@react-native-google-signin/google-signin",
+        [
+          "expo-av",
+          { "microphonePermission": "BhaashAI needs mic access for voice translation." }
+        ]
+      ]
+    }
+  }
+
+Create eas.json in root:
+  {
+    "cli": { "version": ">= 5.0.0" },
+    "build": {
+      "development": {
+        "developmentClient": true,
+        "distribution": "internal"
+      },
+      "production": {
+        "android": { "buildType": "app-bundle" },
+        "ios": { "simulator": false }
+      }
+    }
+  }
+
+Build command to run in Replit shell:
+  npm install -g eas-cli
+  eas login
+  eas build --platform android --profile production
+
+════════════════════════════════════════════
+SECTION 11 — INSUFFICIENT CREDITS HANDLER
+════════════════════════════════════════════
+
+Create a reusable hook: hooks/useCredits.ts
+
+  export const useCredits = (uid: string) => {
+    const [credits, setCredits] = useState(0);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+      const unsub = onSnapshot(doc(db, 'users', uid), (snap) => {
+        setCredits(snap.data()?.credits ?? 0);
+        setLoading(false);
+      });
+      return unsub;
+    }, [uid]);
+    
+    const requireCredits = useCallback(async (
+      estimatedCost: number,
+      onInsufficent: () => void
+    ) => {
+      if (credits <= estimatedCost) {
+        onInsufficent();
+        return false;
+      }
+      return true;
+    }, [credits]);
+    
+    return { credits, loading, requireCredits };
+  };
+
+Use in every screen that calls APIs:
+  const { credits, requireCredits } = useCredits(user.uid);
+  
+  const handleTranslate = async () => {
+    const est = estimateCost('translate', inputText.length);
+    const ok = await requireCredits(est, () => navigate('TopUp'));
+    if (!ok) return;
+    // proceed with translation
+  };
