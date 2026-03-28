@@ -1,14 +1,3 @@
-/**
- * Conversation Screen — Dual-speaker live voice translation.
- *
- * The screen is split into two halves:
- *  - TOP (Speaker A): right-side mic, records and translates to Speaker B's language
- *  - BOTTOM (Speaker B): left-side mic, flipped 180°, records and translates back
- *
- * Each speaker taps their mic button to record, releases to get the transcript
- * and translation. TTS plays the result automatically for the opposite speaker.
- */
-
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -41,7 +30,7 @@ type Speaker = "A" | "B";
 type SpeakerState = "idle" | "recording" | "processing";
 
 export default function ConversationScreen() {
-  const { apiKey, isDark } = useApp();
+  const { credits, setCredits, isDark } = useApp();
   const C = isDark ? Colors.dark : Colors.light;
 
   const [langA, setLangA] = useState("hi-IN");
@@ -85,18 +74,14 @@ export default function ConversationScreen() {
 
   const recordAndTranslate = useCallback(
     async (speaker: Speaker) => {
-      if (!apiKey) {
-        Alert.alert(
-          "API Key Required",
-          "Add your Sarvam API key in Settings."
-        );
+      if (credits <= 0) {
+        Alert.alert("No Credits", "You have no credits remaining. Check Settings for more info.");
         return;
       }
-      if (activeRecorder !== null) return; // another speaker is active
+      if (activeRecorder !== null) return;
       if (!(await ensurePermission())) return;
 
-      const setSpeakerState =
-        speaker === "A" ? setStateA : setStateB;
+      const setSpeakerState = speaker === "A" ? setStateA : setStateB;
       const sourceLang = speaker === "A" ? langA : langB;
       const targetLangCode = speaker === "A" ? langB : langA;
 
@@ -119,14 +104,12 @@ export default function ConversationScreen() {
         await recording.startAsync();
         recordingRef.current = recording;
 
-        // Record for up to 10 seconds, then auto-stop
         const timer = setTimeout(async () => {
           if (recordingRef.current === recording) {
             await finalize(recording, speaker, sourceLang, targetLangCode, setSpeakerState);
           }
         }, 10000);
 
-        // Store timer so we can clear on manual stop
         (recording as unknown as { _autoStopTimer?: ReturnType<typeof setTimeout> })._autoStopTimer = timer;
       } catch (err) {
         console.error("Recording start error:", err);
@@ -134,7 +117,7 @@ export default function ConversationScreen() {
         setActiveRecorder(null);
       }
     },
-    [apiKey, activeRecorder, langA, langB, ensurePermission]
+    [credits, activeRecorder, langA, langB, ensurePermission]
   );
 
   const stopRecording = useCallback(
@@ -142,12 +125,10 @@ export default function ConversationScreen() {
       const recording = recordingRef.current;
       if (!recording || activeRecorder !== speaker) return;
 
-      const setSpeakerState =
-        speaker === "A" ? setStateA : setStateB;
+      const setSpeakerState = speaker === "A" ? setStateA : setStateB;
       const sourceLang = speaker === "A" ? langA : langB;
       const targetLangCode = speaker === "A" ? langB : langA;
 
-      // Clear auto-stop timer
       const autoTimer = (recording as unknown as { _autoStopTimer?: ReturnType<typeof setTimeout> })._autoStopTimer;
       if (autoTimer) clearTimeout(autoTimer);
 
@@ -176,44 +157,40 @@ export default function ConversationScreen() {
         const uri = recording.getURI();
         if (!uri) throw new Error("No audio");
 
-        const result = await transcribeAudio(uri, apiKey, sourceLang);
-        if (!result.transcript) {
+        const sttResult = await transcribeAudio(uri, sourceLang);
+        if (typeof sttResult.credits === "number") setCredits(sttResult.credits);
+
+        if (!sttResult.transcript) {
           setSpeakerState("idle");
           setActiveRecorder(null);
           return;
         }
 
-        const { translatedText: translated } = await translateText({
-          input: result.transcript,
-          sourceLanguageCode: result.languageCode ?? sourceLang,
+        const { translatedText: translated, credits: newCredits } = await translateText({
+          input: sttResult.transcript,
+          sourceLanguageCode: sttResult.languageCode ?? sourceLang,
           targetLanguageCode: targetLangCode,
           formalMode: true,
-          apiKey,
         });
+        if (typeof newCredits === "number") setCredits(newCredits);
 
         const msg: Message = {
           id: `${Date.now()}_${speaker}`,
           speaker,
-          original: result.transcript,
+          original: sttResult.transcript,
           translated: translated ?? "Translation unavailable.",
           sourceLangLabel:
             LANGUAGES.find((l) => l.code === sourceLang)?.name ?? sourceLang,
           targetLangLabel:
-            LANGUAGES.find((l) => l.code === targetLangCode)?.name ??
-            targetLangCode,
+            LANGUAGES.find((l) => l.code === targetLangCode)?.name ?? targetLangCode,
           timestamp: Date.now(),
         };
         addMessage(msg);
 
-        // Auto-play TTS for the other speaker
         if (translated) {
           try {
             await soundRef.current?.unloadAsync();
-            const fileUri = await synthesizeSpeech(
-              translated,
-              targetLangCode,
-              apiKey
-            );
+            const fileUri = await synthesizeSpeech(translated, targetLangCode);
             const { sound } = await Audio.Sound.createAsync(
               { uri: fileUri },
               { shouldPlay: true }
@@ -226,15 +203,15 @@ export default function ConversationScreen() {
               }
             });
           } catch {
-            // TTS failure is non-fatal — user sees the translation text
+            // TTS failure is non-fatal
           }
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "";
         Alert.alert(
           "Error",
-          msg === "INVALID_KEY"
-            ? "Invalid API key. Update it in Settings."
+          msg === "INSUFFICIENT_CREDITS"
+            ? "No credits remaining. Check Settings."
             : "Translation failed. Please try again."
         );
       } finally {
@@ -242,7 +219,7 @@ export default function ConversationScreen() {
         setActiveRecorder(null);
       }
     },
-    [apiKey, addMessage]
+    [addMessage, setCredits]
   );
 
   const langALabel = LANGUAGES.find((l) => l.code === langA)?.name ?? langA;
@@ -256,12 +233,9 @@ export default function ConversationScreen() {
       style={[styles.safe, { backgroundColor: C.background }]}
       edges={["top", "left", "right", "bottom"]}
     >
-      {/* Nav bar */}
       <View style={[styles.navBar, { borderBottomColor: C.border }]}>
         <Pressable
           onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
           style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
         >
           <Feather name="arrow-left" size={22} color={C.text} />
@@ -269,8 +243,6 @@ export default function ConversationScreen() {
         <Text style={[styles.navTitle, { color: C.text }]}>Conversation</Text>
         <Pressable
           onPress={() => setMessages([])}
-          accessibilityRole="button"
-          accessibilityLabel="Clear conversation"
           style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
         >
           <Feather name="trash-2" size={20} color={C.textMuted} />
@@ -286,35 +258,32 @@ export default function ConversationScreen() {
         </View>
       ) : (
         <View style={styles.body}>
-          {/* === SPEAKER B (bottom, physically flipped) === */}
+          {/* Speaker B (bottom, flipped) */}
           <View
             style={[
               styles.half,
-              { backgroundColor: C.surface, borderColor: C.border, transform: [{ rotate: "180deg" }] },
+              {
+                backgroundColor: C.surface,
+                borderColor: C.border,
+                transform: [{ rotate: "180deg" }],
+              },
             ]}
           >
-            {/* Language selector */}
             <Pressable
               onPress={() => setShowPickerB(true)}
               style={[styles.langRow, { borderColor: C.border }]}
-              accessibilityRole="button"
-              accessibilityLabel={`Speaker B language: ${langBLabel}`}
             >
               <Feather name="globe" size={14} color={C.primary} />
-              <Text style={[styles.langLabel, { color: C.text }]}>
-                {langBLabel}
-              </Text>
+              <Text style={[styles.langLabel, { color: C.text }]}>{langBLabel}</Text>
               <Feather name="chevron-down" size={12} color={C.textMuted} />
             </Pressable>
 
-            {/* Bubble feed (last 3 messages from B) */}
             <ScrollView style={styles.bubbleFeed} ref={scrollRef}>
               {messagesB.slice(-3).map((msg) => (
                 <ConversationBubble key={msg.id} message={msg} />
               ))}
             </ScrollView>
 
-            {/* Mic + state */}
             <View style={styles.micRow}>
               {stateB === "processing" ? (
                 <ActivityIndicator color="#FF6B00" size="small" />
@@ -322,11 +291,9 @@ export default function ConversationScreen() {
                 <MicButton
                   isRecording={stateB === "recording"}
                   onPress={() =>
-                    stateB === "recording"
-                      ? stopRecording("B")
-                      : recordAndTranslate("B")
+                    stateB === "recording" ? stopRecording("B") : recordAndTranslate("B")
                   }
-                  disabled={activeRecorder === "A"}
+                  disabled={activeRecorder === "A" || credits <= 0}
                   size={56}
                 />
               )}
@@ -336,38 +303,30 @@ export default function ConversationScreen() {
             </View>
           </View>
 
-          {/* Divider */}
           <View style={[styles.divider, { backgroundColor: C.border }]} />
 
-          {/* === SPEAKER A (top) === */}
+          {/* Speaker A (top) */}
           <View
             style={[
               styles.half,
               { backgroundColor: C.background, borderColor: C.border },
             ]}
           >
-            {/* Language selector */}
             <Pressable
               onPress={() => setShowPickerA(true)}
               style={[styles.langRow, { borderColor: C.border }]}
-              accessibilityRole="button"
-              accessibilityLabel={`Speaker A language: ${langALabel}`}
             >
               <Feather name="globe" size={14} color={C.primary} />
-              <Text style={[styles.langLabel, { color: C.text }]}>
-                {langALabel}
-              </Text>
+              <Text style={[styles.langLabel, { color: C.text }]}>{langALabel}</Text>
               <Feather name="chevron-down" size={12} color={C.textMuted} />
             </Pressable>
 
-            {/* Bubble feed */}
             <ScrollView style={styles.bubbleFeed}>
               {messagesA.slice(-3).map((msg) => (
                 <ConversationBubble key={msg.id} message={msg} />
               ))}
             </ScrollView>
 
-            {/* Mic + state */}
             <View style={styles.micRow}>
               {stateA === "processing" ? (
                 <ActivityIndicator color="#FF6B00" size="small" />
@@ -375,11 +334,9 @@ export default function ConversationScreen() {
                 <MicButton
                   isRecording={stateA === "recording"}
                   onPress={() =>
-                    stateA === "recording"
-                      ? stopRecording("A")
-                      : recordAndTranslate("A")
+                    stateA === "recording" ? stopRecording("A") : recordAndTranslate("A")
                   }
-                  disabled={activeRecorder === "B"}
+                  disabled={activeRecorder === "B" || credits <= 0}
                   size={56}
                 />
               )}
@@ -394,20 +351,14 @@ export default function ConversationScreen() {
       <LanguagePickerModal
         visible={showPickerA}
         onClose={() => setShowPickerA(false)}
-        onSelect={(lang) => {
-          setLangA(lang.code);
-          setShowPickerA(false);
-        }}
+        onSelect={(lang) => { setLangA(lang.code); setShowPickerA(false); }}
         mode="source"
         selectedCode={langA}
       />
       <LanguagePickerModal
         visible={showPickerB}
         onClose={() => setShowPickerB(false)}
-        onSelect={(lang) => {
-          setLangB(lang.code);
-          setShowPickerB(false);
-        }}
+        onSelect={(lang) => { setLangB(lang.code); setShowPickerB(false); }}
         mode="target"
         selectedCode={langB}
       />

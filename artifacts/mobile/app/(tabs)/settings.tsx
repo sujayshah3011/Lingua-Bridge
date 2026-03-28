@@ -1,7 +1,6 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Alert,
   Linking,
@@ -10,7 +9,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,81 +16,32 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/hooks/useTheme";
 
-const USAGE_KEY = "bhaashai_usage";
-
-interface UsageData {
-  charsTranslated: number;
-  audioSeconds: number;
-}
-
 type ThemeOption = "system" | "light" | "dark";
 
 export default function SettingsScreen() {
   const {
-    apiKey,
-    setApiKey,
+    credits,
+    refreshCredits,
     themeMode,
     setThemeMode,
     formalMode,
     setFormalMode,
-    sourceLang,
-    targetLang,
   } = useApp();
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
 
-  const [keyInput, setKeyInput] = useState(apiKey);
-  const [showKey, setShowKey] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [usage, setUsage] = useState<UsageData>({ charsTranslated: 0, audioSeconds: 0 });
-
-  useEffect(() => {
-    AsyncStorage.getItem(USAGE_KEY).then((raw) => {
-      if (!raw) return;
-      try {
-        const parsed = JSON.parse(raw);
-        // Merge with defaults so any missing fields stay 0 rather than undefined
-        setUsage((prev) => ({ ...prev, ...parsed }));
-      } catch {}
-    });
-  }, []);
-
-  const resetUsage = () => {
-    Alert.alert("Reset Usage", "Clear all usage counters?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Reset",
-        style: "destructive",
-        onPress: async () => {
-          const empty: UsageData = { charsTranslated: 0, audioSeconds: 0 };
-          await AsyncStorage.setItem(USAGE_KEY, JSON.stringify(empty));
-          setUsage(empty);
-        },
-      },
-    ]);
+  const handleRefreshCredits = async () => {
+    await Haptics.selectionAsync();
+    await refreshCredits();
   };
 
-  const handleSaveKey = async () => {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await setApiKey(keyInput.trim());
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
-
-  const handleClearKey = () => {
-    Alert.alert("Remove API Key", "Are you sure you want to remove your API key?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        style: "destructive",
-        onPress: async () => {
-          setKeyInput("");
-          await setApiKey("");
-        },
-      },
-    ]);
-  };
+  const creditColor =
+    credits > 20
+      ? theme.success
+      : credits > 5
+      ? "#F59E0B"
+      : theme.error;
 
   const themeOptions: { label: string; value: ThemeOption; icon: string }[] = [
     { label: "System", value: "system", icon: "monitor" },
@@ -127,9 +76,9 @@ export default function SettingsScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* API Key Section */}
+        {/* Credits */}
         <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
-          SARVAM AI
+          CREDITS
         </Text>
         <View
           style={[
@@ -137,94 +86,64 @@ export default function SettingsScreen() {
             { backgroundColor: theme.surface, borderColor: theme.border },
           ]}
         >
-          <Text style={[styles.cardLabel, { color: theme.text }]}>API Key</Text>
-          <Text style={[styles.cardDesc, { color: theme.textSecondary }]}>
-            Stored securely using device encryption. Required to use translation features.
-          </Text>
-          <View
-            style={[
-              styles.keyInput,
-              {
-                backgroundColor: theme.surfaceSecondary,
-                borderColor: theme.border,
-              },
-            ]}
-          >
-            <TextInput
-              value={keyInput}
-              onChangeText={setKeyInput}
-              placeholder="Enter your Sarvam API key..."
-              placeholderTextColor={theme.textMuted}
-              secureTextEntry={!showKey}
-              style={[styles.keyTextField, { color: theme.text }]}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <Pressable onPress={() => setShowKey((v) => !v)} hitSlop={8}>
-              <Feather
-                name={showKey ? "eye-off" : "eye"}
-                size={17}
-                color={theme.textMuted}
-              />
-            </Pressable>
-          </View>
-
-          <View style={styles.keyActions}>
-            {apiKey ? (
-              <Pressable
-                onPress={handleClearKey}
-                style={[
-                  styles.btn,
-                  { backgroundColor: theme.error + "18", flex: 0.4 },
-                ]}
-              >
-                <Text style={[styles.btnText, { color: theme.error }]}>
-                  Remove
-                </Text>
-              </Pressable>
-            ) : null}
-            <Pressable
-              onPress={handleSaveKey}
-              disabled={!keyInput.trim() || keyInput === apiKey}
+          <View style={styles.creditsRow}>
+            <View
               style={[
-                styles.btn,
-                {
-                  backgroundColor:
-                    keyInput.trim() && keyInput !== apiKey
-                      ? saved
-                        ? theme.success
-                        : theme.primary
-                      : theme.surfaceSecondary,
-                  flex: 1,
-                  opacity: !keyInput.trim() || keyInput === apiKey ? 0.5 : 1,
-                },
+                styles.creditsBadge,
+                { backgroundColor: creditColor + "18" },
               ]}
             >
-              <Text
-                style={[
-                  styles.btnText,
-                  {
-                    color:
-                      keyInput.trim() && keyInput !== apiKey
-                        ? "#fff"
-                        : theme.textMuted,
-                  },
-                ]}
-              >
-                {saved ? "Saved" : apiKey ? "Update Key" : "Save Key"}
+              <Feather name="zap" size={22} color={creditColor} />
+              <Text style={[styles.creditsNumber, { color: creditColor }]}>
+                {credits}
               </Text>
-            </Pressable>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.cardLabel, { color: theme.text }]}>
+                Translation Credits
+              </Text>
+              <Text
+                style={[styles.cardDesc, { color: theme.textSecondary }]}
+              >
+                Each translation costs 1 credit. Voice recognition costs 2.
+                New devices start with 50 free credits.
+              </Text>
+            </View>
           </View>
 
           <Pressable
-            onPress={() => Linking.openURL("https://sarvam.ai")}
-            style={styles.linkRow}
+            onPress={handleRefreshCredits}
+            style={({ pressed }) => [
+              styles.refreshBtn,
+              {
+                borderColor: theme.border,
+                opacity: pressed ? 0.6 : 1,
+              },
+            ]}
           >
-            <Feather name="external-link" size={12} color={theme.primary} />
-            <Text style={[styles.linkText, { color: theme.primary }]}>
-              Get API key from Sarvam AI
+            <Feather name="refresh-cw" size={13} color={theme.textMuted} />
+            <Text style={[styles.refreshBtnText, { color: theme.textMuted }]}>
+              Refresh balance
             </Text>
           </Pressable>
+
+          {credits <= 5 && (
+            <View
+              style={[
+                styles.lowCreditsBanner,
+                { backgroundColor: theme.error + "12", borderColor: theme.error + "30" },
+              ]}
+            >
+              <Feather name="alert-triangle" size={13} color={theme.error} />
+              <Text
+                style={[styles.lowCreditsText, { color: theme.error }]}
+              >
+                {credits === 0
+                  ? "No credits remaining. More credits coming soon."
+                  : `Only ${credits} credit${credits === 1 ? "" : "s"} left.`}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Appearance */}
@@ -296,7 +215,9 @@ export default function SettingsScreen() {
                 Default Mode
               </Text>
               <Text style={[styles.cardDesc, { color: theme.textSecondary }]}>
-                {formalMode ? "Formal — professional register" : "Colloquial — conversational register"}
+                {formalMode
+                  ? "Formal — professional register"
+                  : "Colloquial — conversational register"}
               </Text>
             </View>
             <View
@@ -318,61 +239,6 @@ export default function SettingsScreen() {
                 {formalMode ? "Formal" : "Casual"}
               </Text>
             </View>
-          </Pressable>
-        </View>
-
-        {/* Usage */}
-        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
-          USAGE
-        </Text>
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
-        >
-          <View style={styles.usageRow}>
-            <View style={styles.usageStat}>
-              <Feather name="type" size={16} color={theme.primary} />
-              <Text style={[styles.usageValue, { color: theme.text }]}>
-                {(usage?.charsTranslated ?? 0).toLocaleString()}
-              </Text>
-              <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
-                Characters translated
-              </Text>
-            </View>
-            <View style={[styles.usageDivider, { backgroundColor: theme.border }]} />
-            <View style={styles.usageStat}>
-              <Feather name="mic" size={16} color={theme.primary} />
-              <Text style={[styles.usageValue, { color: theme.text }]}>
-                {Math.round(usage?.audioSeconds ?? 0)}s
-              </Text>
-              <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
-                Audio transcribed
-              </Text>
-            </View>
-            <View style={[styles.usageDivider, { backgroundColor: theme.border }]} />
-            <View style={styles.usageStat}>
-              <Feather name="credit-card" size={16} color={theme.primary} />
-              <Text style={[styles.usageValue, { color: theme.text }]}>
-                ~₹{(((usage?.charsTranslated ?? 0) / 10000) * 30).toFixed(2)}
-              </Text>
-              <Text style={[styles.usageLabel, { color: theme.textMuted }]}>
-                Est. API cost
-              </Text>
-            </View>
-          </View>
-          <Pressable
-            onPress={resetUsage}
-            style={({ pressed }) => [
-              styles.resetBtn,
-              { borderColor: theme.border, opacity: pressed ? 0.6 : 1 },
-            ]}
-          >
-            <Feather name="rotate-ccw" size={13} color={theme.textMuted} />
-            <Text style={[styles.resetBtnText, { color: theme.textMuted }]}>
-              Reset counters
-            </Text>
           </Pressable>
         </View>
 
@@ -464,41 +330,47 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 2,
   },
-  keyInput: {
+  creditsRow: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 10,
+    gap: 14,
+  },
+  creditsBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+  },
+  creditsNumber: {
+    fontSize: 20,
+    fontFamily: "Inter_700Bold",
+  },
+  refreshBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 8,
+    borderRadius: 8,
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
   },
-  keyTextField: {
+  refreshBtnText: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+  },
+  lowCreditsBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  lowCreditsText: {
     flex: 1,
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-    paddingVertical: 0,
-  },
-  keyActions: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  btn: {
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  btnText: {
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-  },
-  linkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  linkText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "Inter_500Medium",
   },
   themeRow: {
@@ -563,41 +435,5 @@ const styles = StyleSheet.create({
   aboutLinkText: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
-  },
-  usageRow: {
-    flexDirection: "row",
-    alignItems: "stretch",
-  },
-  usageStat: {
-    flex: 1,
-    alignItems: "center",
-    gap: 4,
-    paddingVertical: 4,
-  },
-  usageDivider: {
-    width: StyleSheet.hairlineWidth,
-    marginVertical: 4,
-  },
-  usageValue: {
-    fontSize: 18,
-    fontFamily: "Inter_700Bold",
-  },
-  usageLabel: {
-    fontSize: 10,
-    fontFamily: "Inter_400Regular",
-    textAlign: "center",
-  },
-  resetBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  resetBtnText: {
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
   },
 });

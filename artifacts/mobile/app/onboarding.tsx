@@ -1,33 +1,18 @@
-/**
- * Onboarding — 3-screen carousel shown on first app launch.
- *
- * Screens:
- *  1. Speak any Indian language
- *  2. Instant real-time translation
- *  3. Enter your Sarvam API key
- *
- * Stores `onboarding_completed` in AsyncStorage on finish.
- * Root layout checks this flag and redirects here if false.
- */
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Keyboard,
   Platform,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
   ViewToken,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-import { useApp } from "@/context/AppContext";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 const ONBOARDING_KEY = "onboarding_completed";
@@ -38,7 +23,6 @@ interface Slide {
   iconColor: string;
   title: string;
   subtitle: string;
-  isApiSlide?: boolean;
 }
 
 const SLIDES: Slide[] = [
@@ -60,20 +44,16 @@ const SLIDES: Slide[] = [
   },
   {
     id: "s3",
-    icon: "key",
-    iconColor: "#0D1B2A",
-    title: "Enter your\nSarvam API key",
+    icon: "zap",
+    iconColor: "#FF6B00",
+    title: "Start translating\nfor free",
     subtitle:
-      "Get a free key at sarvam.ai. Your key is stored securely on your device and never sent anywhere else.",
-    isApiSlide: true,
+      "Your account starts with 50 free translation credits. Each translation costs 1 credit, voice recognition costs 2. No sign-up required.",
   },
 ];
 
 export default function OnboardingScreen() {
-  const { setApiKey } = useApp();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [keyInput, setKeyInput] = useState("");
-  const [saving, setSaving] = useState(false);
   const listRef = useRef<FlatList>(null);
 
   const onViewableItemsChanged = useRef(
@@ -91,18 +71,8 @@ export default function OnboardingScreen() {
   };
 
   const finish = async () => {
-    Keyboard.dismiss();
-    setSaving(true);
-    try {
-      if (keyInput.trim()) {
-        await setApiKey(keyInput.trim());
-      }
-      await AsyncStorage.setItem(ONBOARDING_KEY, "true");
-      router.replace("/(tabs)");
-    } catch {
-      await AsyncStorage.setItem(ONBOARDING_KEY, "true");
-      router.replace("/(tabs)");
-    }
+    await AsyncStorage.setItem(ONBOARDING_KEY, "true");
+    router.replace("/(tabs)");
   };
 
   const skip = async () => {
@@ -114,7 +84,6 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Skip button */}
       <View style={styles.skipRow}>
         <Pressable
           onPress={skip}
@@ -126,7 +95,6 @@ export default function OnboardingScreen() {
         </Pressable>
       </View>
 
-      {/* Slides */}
       <FlatList
         ref={listRef}
         data={SLIDES}
@@ -139,37 +107,25 @@ export default function OnboardingScreen() {
         viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
         renderItem={({ item }) => (
           <View style={[styles.slide, { width: SCREEN_W }]}>
-            {/* Icon circle */}
             <View style={[styles.iconCircle, { borderColor: item.iconColor }]}>
               <Feather name={item.icon} size={56} color={item.iconColor} />
             </View>
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.subtitle}>{item.subtitle}</Text>
 
-            {/* API key input on last slide */}
-            {item.isApiSlide && (
-              <View style={styles.apiInputWrap}>
-                <TextInput
-                  style={styles.apiInput}
-                  placeholder="sk-xxxxxxxxxxxxxxxx"
-                  placeholderTextColor="#9AA5B1"
-                  value={keyInput}
-                  onChangeText={setKeyInput}
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  secureTextEntry
-                  returnKeyType="done"
-                  onSubmitEditing={finish}
-                  accessible
-                  accessibilityLabel="Sarvam API key input"
-                />
+            {item.id === "s3" && (
+              <View style={styles.creditsRow}>
+                <View style={styles.creditBadge}>
+                  <Feather name="zap" size={14} color="#FF6B00" />
+                  <Text style={styles.creditBadgeText}>50 free credits</Text>
+                </View>
+                <Text style={styles.creditDetail}>Translate · Voice · Conversation</Text>
               </View>
             )}
           </View>
         )}
       />
 
-      {/* Dot indicators */}
       <View style={styles.dotsRow}>
         {SLIDES.map((_, i) => (
           <View
@@ -182,20 +138,18 @@ export default function OnboardingScreen() {
         ))}
       </View>
 
-      {/* CTA button */}
       <View style={styles.footer}>
         <Pressable
           onPress={isLastSlide ? finish : next}
-          disabled={saving}
           accessibilityRole="button"
           accessibilityLabel={isLastSlide ? "Get started" : "Next"}
           style={({ pressed }) => [
             styles.btn,
-            { opacity: pressed || saving ? 0.75 : 1 },
+            { opacity: pressed ? 0.75 : 1 },
           ]}
         >
           <Text style={styles.btnText}>
-            {isLastSlide ? (saving ? "Saving…" : "Get Started") : "Next"}
+            {isLastSlide ? "Get Started" : "Next"}
           </Text>
           <Feather
             name={isLastSlide ? "check" : "arrow-right"}
@@ -258,20 +212,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 24,
   },
-  apiInputWrap: {
-    width: "100%",
-    marginTop: 8,
+  creditsRow: {
+    alignItems: "center",
+    gap: 8,
+    marginTop: 4,
   },
-  apiInput: {
-    height: 52,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: "#E2E8F0",
-    paddingHorizontal: 16,
+  creditBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#FFF3E8",
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+  },
+  creditBadgeText: {
     fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    color: "#FF6B00",
+  },
+  creditDetail: {
+    fontSize: 13,
     fontFamily: "Inter_400Regular",
-    color: "#0D1B2A",
-    backgroundColor: "#F8F9FA",
+    color: "#9AA5B1",
   },
   dotsRow: {
     flexDirection: "row",

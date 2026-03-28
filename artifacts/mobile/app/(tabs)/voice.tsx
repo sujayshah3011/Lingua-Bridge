@@ -1,16 +1,3 @@
-/**
- * Voice Tab — Real-time voice translation screen.
- *
- * Flow:
- *  1. User taps the mic → expo-av starts recording (WAV on iOS, M4A on Android)
- *  2. User taps again → recording stops → audio sent to Sarvam STT REST API
- *  3. Transcript displayed → auto-translated via /translate
- *  4. "Speak" button synthesizes TTS and plays it back via expo-av
- *
- * Web note: expo-av recording is not reliably supported on web.
- * The mic section is replaced with an informational message on web.
- */
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
@@ -57,7 +44,8 @@ async function incrementUsage(
 
 export default function VoiceScreen() {
   const {
-    apiKey,
+    credits,
+    setCredits,
     targetLang,
     setTargetLang,
     addToHistory,
@@ -95,7 +83,7 @@ export default function VoiceScreen() {
     if (status !== "granted") {
       Alert.alert(
         "Microphone Required",
-        "BhaashAI needs microphone access for voice translation.\n\nPlease enable it in your device Settings → Privacy → Microphone.",
+        "BhaashAI needs microphone access for voice translation.\n\nPlease enable it in your device Settings.",
         [{ text: "OK" }]
       );
       return false;
@@ -104,11 +92,8 @@ export default function VoiceScreen() {
   }, []);
 
   const startRecording = useCallback(async () => {
-    if (!apiKey) {
-      Alert.alert(
-        "API Key Required",
-        "Add your Sarvam API key in Settings to use voice translation."
-      );
+    if (credits <= 0) {
+      Alert.alert("No Credits", "You have no credits remaining. Check Settings for more info.");
       return;
     }
     if (!(await ensurePermission())) return;
@@ -141,7 +126,7 @@ export default function VoiceScreen() {
       setState("error");
       setStatusText("Could not start microphone. Please try again.");
     }
-  }, [apiKey, ensurePermission]);
+  }, [credits, ensurePermission]);
 
   const stopRecording = useCallback(async () => {
     const recording = recordingRef.current;
@@ -154,7 +139,6 @@ export default function VoiceScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
-    // Measure duration BEFORE stopping — the recording is invalid after unload
     const durationMs = Date.now() - recordingStartRef.current;
 
     try {
@@ -165,12 +149,12 @@ export default function VoiceScreen() {
       recordingRef.current = null;
       if (!uri) throw new Error("NO_AUDIO");
 
-      // Track audio seconds for the usage dashboard
       const seconds = Math.round(durationMs / 1000);
       incrementUsage("audioSeconds", seconds);
 
       setStatusText("Transcribing…");
-      const result = await transcribeAudio(uri, apiKey, voiceSourceLang);
+      const result = await transcribeAudio(uri, voiceSourceLang);
+      if (typeof result.credits === "number") setCredits(result.credits);
 
       if (!result.transcript.trim()) {
         setStatusText("No speech detected. Tap the mic and try again.");
@@ -182,13 +166,13 @@ export default function VoiceScreen() {
       if (result.languageCode) setDetectedLang(result.languageCode);
       setStatusText("Translating…");
 
-      const { translatedText, detectedSourceLang } = await translateText({
+      const { translatedText, detectedSourceLang, credits: newCredits } = await translateText({
         input: result.transcript,
         sourceLanguageCode: result.languageCode ?? voiceSourceLang,
         targetLanguageCode: targetLang,
         formalMode: true,
-        apiKey,
       });
+      if (typeof newCredits === "number") setCredits(newCredits);
 
       if (detectedSourceLang) setDetectedLang(detectedSourceLang);
       setTranslation(translatedText || "Translation unavailable.");
@@ -210,8 +194,9 @@ export default function VoiceScreen() {
     } catch (err: unknown) {
       recordingRef.current = null;
       const msg = err instanceof Error ? err.message : "";
-      if (msg === "INVALID_KEY") {
-        setStatusText("Invalid API key — update it in Settings.");
+      if (msg === "INSUFFICIENT_CREDITS") {
+        setStatusText("No credits remaining.");
+        setCredits(0);
       } else if (msg === "RATE_LIMIT") {
         setStatusText("Rate limit reached. Try again in a moment.");
       } else if (msg === "NO_AUDIO") {
@@ -225,22 +210,22 @@ export default function VoiceScreen() {
       }
       setState("error");
     }
-  }, [apiKey, voiceSourceLang, targetLang, addToHistory]);
+  }, [voiceSourceLang, targetLang, addToHistory, setCredits]);
 
   const toggleRecording = useCallback(() => {
     if (state === "recording") {
       stopRecording();
-    } else if (
-      state === "idle" ||
-      state === "done" ||
-      state === "error"
-    ) {
+    } else if (state === "idle" || state === "done" || state === "error") {
       startRecording();
     }
   }, [state, startRecording, stopRecording]);
 
   const speakTranslation = useCallback(async () => {
     if (!translation || ttsLoading) return;
+    if (credits <= 0) {
+      Alert.alert("No Credits", "You have no credits remaining.");
+      return;
+    }
     setTtsLoading(true);
     try {
       if (soundRef.current) {
@@ -253,7 +238,7 @@ export default function VoiceScreen() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
       });
-      const fileUri = await synthesizeSpeech(translation, targetLang, apiKey, voiceGender);
+      const fileUri = await synthesizeSpeech(translation, targetLang, voiceGender);
       const { sound } = await Audio.Sound.createAsync(
         { uri: fileUri },
         { shouldPlay: true }
@@ -267,11 +252,10 @@ export default function VoiceScreen() {
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
-      console.error("[TTS] speakTranslation error:", msg);
       Alert.alert(
         "Playback Failed",
-        msg === "INVALID_KEY"
-          ? "Invalid API key — check Settings."
+        msg === "INSUFFICIENT_CREDITS"
+          ? "No credits remaining."
           : msg === "RATE_LIMIT"
           ? "Rate limit reached, please wait."
           : msg.startsWith("TTS_ERROR_")
@@ -283,7 +267,7 @@ export default function VoiceScreen() {
     } finally {
       setTtsLoading(false);
     }
-  }, [translation, targetLang, apiKey, ttsLoading]);
+  }, [translation, targetLang, voiceGender, ttsLoading, credits]);
 
   const isRecording = state === "recording";
   const isProcessing = state === "processing";
@@ -291,8 +275,7 @@ export default function VoiceScreen() {
   const sourceLabel =
     voiceSourceLang === "unknown"
       ? "Auto Detect"
-      : (LANGUAGES.find((l) => l.code === voiceSourceLang)?.name ??
-          voiceSourceLang);
+      : (LANGUAGES.find((l) => l.code === voiceSourceLang)?.name ?? voiceSourceLang);
   const targetLabel =
     LANGUAGES.find((l) => l.code === targetLang)?.name ?? targetLang;
   const detectedLabel = detectedLang
@@ -304,23 +287,57 @@ export default function VoiceScreen() {
       style={[styles.safe, { backgroundColor: C.background }]}
       edges={["top", "left", "right"]}
     >
-      {/* Header */}
       <View style={[styles.header, { borderBottomColor: C.border }]}>
         <Text style={[styles.headerTitle, { color: C.text }]}>Voice</Text>
-        <Pressable
-          onPress={() => router.push("/conversation")}
-          accessibilityRole="button"
-          accessibilityLabel="Open conversation mode"
-          style={({ pressed }) => [
-            styles.convBtn,
-            { opacity: pressed ? 0.6 : 1, borderColor: C.primary },
-          ]}
-        >
-          <Feather name="message-square" size={16} color={C.primary} />
-          <Text style={[styles.convBtnText, { color: C.primary }]}>
-            Conversation
-          </Text>
-        </Pressable>
+        <View style={styles.headerRight}>
+          <View
+            style={[
+              styles.creditsPill,
+              {
+                backgroundColor:
+                  credits > 20
+                    ? C.primary + "15"
+                    : credits > 5
+                    ? "#F59E0B15"
+                    : C.error + "15",
+              },
+            ]}
+          >
+            <Feather
+              name="zap"
+              size={11}
+              color={credits > 20 ? C.primary : credits > 5 ? "#F59E0B" : C.error}
+            />
+            <Text
+              style={[
+                styles.creditsText,
+                {
+                  color:
+                    credits > 20
+                      ? C.primary
+                      : credits > 5
+                      ? "#F59E0B"
+                      : C.error,
+                },
+              ]}
+            >
+              {credits}
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.push("/conversation")}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.convBtn,
+              { opacity: pressed ? 0.6 : 1, borderColor: C.primary },
+            ]}
+          >
+            <Feather name="message-square" size={16} color={C.primary} />
+            <Text style={[styles.convBtnText, { color: C.primary }]}>
+              Conversation
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView
@@ -328,21 +345,12 @@ export default function VoiceScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Language row */}
         <View style={styles.langRow}>
           <Pressable
-            style={[
-              styles.langBtn,
-              { backgroundColor: C.surface, borderColor: C.border },
-            ]}
+            style={[styles.langBtn, { backgroundColor: C.surface, borderColor: C.border }]}
             onPress={() => setShowSourcePicker(true)}
-            accessibilityRole="button"
-            accessibilityLabel={`Source language: ${sourceLabel}`}
           >
-            <Text
-              style={[styles.langBtnText, { color: C.text }]}
-              numberOfLines={1}
-            >
+            <Text style={[styles.langBtnText, { color: C.text }]} numberOfLines={1}>
               {sourceLabel}
             </Text>
             {voiceSourceLang === "unknown" && (
@@ -354,48 +362,31 @@ export default function VoiceScreen() {
           <Feather name="arrow-right" size={18} color={C.textMuted} />
 
           <Pressable
-            style={[
-              styles.langBtn,
-              { backgroundColor: C.surface, borderColor: C.border },
-            ]}
+            style={[styles.langBtn, { backgroundColor: C.surface, borderColor: C.border }]}
             onPress={() => setShowTargetPicker(true)}
-            accessibilityRole="button"
-            accessibilityLabel={`Target language: ${targetLabel}`}
           >
-            <Text
-              style={[styles.langBtnText, { color: C.text }]}
-              numberOfLines={1}
-            >
+            <Text style={[styles.langBtnText, { color: C.text }]} numberOfLines={1}>
               {targetLabel}
             </Text>
             <Feather name="chevron-down" size={14} color={C.textSecondary} />
           </Pressable>
         </View>
 
-        {/* Web: not supported */}
         {Platform.OS === "web" ? (
-          <View
-            style={[
-              styles.webNotice,
-              { backgroundColor: C.surfaceSecondary, borderColor: C.border },
-            ]}
-          >
+          <View style={[styles.webNotice, { backgroundColor: C.surfaceSecondary, borderColor: C.border }]}>
             <Feather name="info" size={20} color={C.textSecondary} />
             <Text style={[styles.webNoticeText, { color: C.textSecondary }]}>
-              Voice translation is available on iOS and Android. On web, please
-              use the Text Translate tab.
+              Voice translation is available on iOS and Android.
             </Text>
           </View>
         ) : (
           <>
-            {/* Voice selector */}
             <VoiceSelector
               targetLang={targetLang}
               gender={voiceGender}
               onGenderChange={setVoiceGender}
             />
 
-            {/* Mic area */}
             <View style={styles.micArea}>
               {isProcessing ? (
                 <View style={styles.processingWrap}>
@@ -409,13 +400,8 @@ export default function VoiceScreen() {
                   <MicButton
                     isRecording={isRecording}
                     onPress={toggleRecording}
-                    disabled={!apiKey}
+                    disabled={credits <= 0}
                     size={88}
-                    accessibilityLabel={
-                      isRecording
-                        ? "Stop recording"
-                        : "Start voice translation"
-                    }
                   />
                   <Text style={[styles.micHint, { color: C.textMuted }]}>
                     {state === "error"
@@ -428,51 +414,28 @@ export default function VoiceScreen() {
               )}
             </View>
 
-            {/* Transcript card */}
             {transcript ? (
-              <View
-                style={[
-                  styles.card,
-                  { backgroundColor: C.surface, borderColor: C.border },
-                ]}
-              >
+              <View style={[styles.card, { backgroundColor: C.surface, borderColor: C.border }]}>
                 <Text style={[styles.cardLabel, { color: C.textMuted }]}>
                   {detectedLabel ? `Detected: ${detectedLabel}` : "Transcript"}
                 </Text>
-                <Text
-                  style={[styles.transcriptText, { color: C.textSecondary }]}
-                >
+                <Text style={[styles.transcriptText, { color: C.textSecondary }]}>
                   {transcript}
                 </Text>
               </View>
             ) : null}
 
-            {/* Translation card */}
             {translation ? (
-              <View
-                style={[
-                  styles.card,
-                  { backgroundColor: C.surface, borderColor: C.border },
-                ]}
-              >
+              <View style={[styles.card, { backgroundColor: C.surface, borderColor: C.border }]}>
                 <View style={styles.cardHeaderRow}>
-                  <View
-                    style={[styles.langDot, { backgroundColor: C.primary }]}
-                  />
-                  <Text
-                    style={[styles.cardLabel, { color: C.textMuted, flex: 1 }]}
-                  >
+                  <View style={[styles.langDot, { backgroundColor: C.primary }]} />
+                  <Text style={[styles.cardLabel, { color: C.textMuted, flex: 1 }]}>
                     {targetLabel}
                   </Text>
                   <Pressable
                     onPress={speakTranslation}
                     disabled={ttsLoading}
-                    accessibilityRole="button"
-                    accessibilityLabel="Play translation aloud"
-                    style={({ pressed }) => ({
-                      opacity: pressed || ttsLoading ? 0.6 : 1,
-                      padding: 4,
-                    })}
+                    style={({ pressed }) => ({ opacity: pressed || ttsLoading ? 0.6 : 1, padding: 4 })}
                   >
                     {ttsLoading ? (
                       <ActivityIndicator size="small" color={C.primary} />
@@ -487,28 +450,6 @@ export default function VoiceScreen() {
               </View>
             ) : null}
           </>
-        )}
-
-        {/* No API key banner */}
-        {!apiKey && (
-          <Pressable
-            onPress={() => router.push("/(tabs)/settings")}
-            style={[
-              styles.banner,
-              {
-                backgroundColor: C.primary + "15",
-                borderColor: C.primary + "40",
-              },
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel="Go to Settings to add your API key"
-          >
-            <Feather name="alert-circle" size={16} color={C.primary} />
-            <Text style={[styles.bannerText, { color: C.primary }]}>
-              Add your Sarvam API key in Settings
-            </Text>
-            <Feather name="chevron-right" size={16} color={C.primary} />
-          </Pressable>
         )}
       </ScrollView>
 
@@ -550,6 +491,23 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 22,
+    fontFamily: "Inter_700Bold",
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  creditsPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 16,
+  },
+  creditsText: {
+    fontSize: 12,
     fontFamily: "Inter_700Bold",
   },
   convBtn: {
@@ -662,18 +620,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "Inter_500Medium",
     lineHeight: 28,
-  },
-  banner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  bannerText: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: "Inter_500Medium",
   },
 });

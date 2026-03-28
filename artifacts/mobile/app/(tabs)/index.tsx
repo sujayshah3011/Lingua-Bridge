@@ -33,7 +33,8 @@ import { VoiceSelector } from "@/components/VoiceSelector";
 
 export default function TranslateScreen() {
   const {
-    apiKey,
+    credits,
+    setCredits,
     sourceLang,
     setSourceLang,
     targetLang,
@@ -79,8 +80,8 @@ export default function TranslateScreen() {
 
   const runTranslation = useCallback(
     async (text: string) => {
-      if (!apiKey) {
-        showToast("Add your Sarvam API key in Settings", "error");
+      if (credits <= 0) {
+        showToast("No credits remaining", "error");
         return;
       }
       if (!text.trim() || text.length > 1000) return;
@@ -93,12 +94,14 @@ export default function TranslateScreen() {
           sourceLanguageCode: autoDetect ? "auto" : sourceLang,
           targetLanguageCode: targetLang,
           formalMode,
-          apiKey,
         });
 
         setTranslatedText(result.translatedText);
         if (result.detectedSourceLang) {
           setDetectedLang(result.detectedSourceLang);
+        }
+        if (typeof result.credits === "number") {
+          setCredits(result.credits);
         }
         lastTranslatedRef.current = text;
 
@@ -116,26 +119,28 @@ export default function TranslateScreen() {
               input: result.translatedText,
               sourceLanguageCode: targetLang,
               targetLanguageCode: "en-IN",
-              apiKey,
             });
             setTransliteratedText(tl);
           } catch {}
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
-        if (msg === "RATE_LIMIT") {
+        if (msg === "INSUFFICIENT_CREDITS") {
+          showToast("No credits remaining", "error");
+          setCredits(0);
+        } else if (msg === "RATE_LIMIT") {
           showToast("Translation limit reached, please wait", "error");
         } else if (msg.includes("Network") || msg.includes("fetch")) {
           showToast("Network error — please retry", "error");
         } else {
-          showToast("Translation failed — check your API key", "error");
+          showToast("Translation failed — please retry", "error");
         }
       } finally {
         setIsLoading(false);
       }
     },
     [
-      apiKey,
+      credits,
       autoDetect,
       sourceLang,
       targetLang,
@@ -143,6 +148,7 @@ export default function TranslateScreen() {
       transliteration,
       addToHistory,
       showToast,
+      setCredits,
     ]
   );
 
@@ -206,10 +212,13 @@ export default function TranslateScreen() {
   };
 
   const handleSpeak = useCallback(async () => {
-    if (!translatedText || !apiKey || isSpeaking) return;
+    if (!translatedText || isSpeaking) return;
+    if (credits <= 0) {
+      showToast("No credits remaining", "error");
+      return;
+    }
     try {
       setIsSpeaking(true);
-      // Unload any previously playing sound
       if (soundRef.current) {
         await soundRef.current.stopAsync().catch(() => {});
         await soundRef.current.unloadAsync().catch(() => {});
@@ -220,7 +229,7 @@ export default function TranslateScreen() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
       });
-      const uri = await synthesizeSpeech(translatedText, targetLang, apiKey, voiceGender);
+      const uri = await synthesizeSpeech(translatedText, targetLang, voiceGender);
       const { sound } = await Audio.Sound.createAsync(
         { uri },
         { shouldPlay: true }
@@ -236,9 +245,9 @@ export default function TranslateScreen() {
     } catch (err: unknown) {
       setIsSpeaking(false);
       const msg = err instanceof Error ? err.message : String(err);
-      console.error("[TTS] handleSpeak error:", msg);
-      if (msg === "INVALID_KEY") {
-        showToast("Invalid API key — check Settings", "error");
+      if (msg === "INSUFFICIENT_CREDITS") {
+        showToast("No credits remaining", "error");
+        setCredits(0);
       } else if (msg === "RATE_LIMIT") {
         showToast("Rate limit reached, please wait", "error");
       } else if (msg.startsWith("TTS_ERROR_")) {
@@ -249,9 +258,8 @@ export default function TranslateScreen() {
         showToast("Could not play audio", "error");
       }
     }
-  }, [translatedText, targetLang, apiKey, isSpeaking, showToast]);
+  }, [translatedText, targetLang, voiceGender, isSpeaking, credits, showToast, setCredits]);
 
-  // Clean up audio when translated text changes or screen unmounts
   useEffect(() => {
     return () => {
       soundRef.current?.stopAsync().catch(() => {});
@@ -264,12 +272,9 @@ export default function TranslateScreen() {
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
 
   return (
-    <View
-      style={[styles.root, { backgroundColor: theme.background }]}
-    >
+    <View style={[styles.root, { backgroundColor: theme.background }]}>
       <Toast message={toast.msg} type={toast.type} visible={toast.visible} />
 
-      {/* Header */}
       <View
         style={[
           styles.header,
@@ -286,13 +291,49 @@ export default function TranslateScreen() {
           </View>
           <Text style={[styles.appName, { color: theme.text }]}>BhaashAI</Text>
         </View>
-        <Pressable
-          onPress={() => router.push("/(tabs)/settings")}
-          hitSlop={12}
-          style={({ pressed }) => [styles.settingsBtn, { opacity: pressed ? 0.6 : 1 }]}
-        >
-          <Feather name="settings" size={20} color={theme.textSecondary} />
-        </Pressable>
+        <View style={styles.headerRight}>
+          <View
+            style={[
+              styles.creditsPill,
+              {
+                backgroundColor:
+                  credits > 20
+                    ? theme.primary + "15"
+                    : credits > 5
+                    ? "#F59E0B15"
+                    : theme.error + "15",
+              },
+            ]}
+          >
+            <Feather
+              name="zap"
+              size={12}
+              color={credits > 20 ? theme.primary : credits > 5 ? "#F59E0B" : theme.error}
+            />
+            <Text
+              style={[
+                styles.creditsText,
+                {
+                  color:
+                    credits > 20
+                      ? theme.primary
+                      : credits > 5
+                      ? "#F59E0B"
+                      : theme.error,
+                },
+              ]}
+            >
+              {credits}
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.push("/(tabs)/settings")}
+            hitSlop={12}
+            style={({ pressed }) => [styles.settingsBtn, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Feather name="settings" size={20} color={theme.textSecondary} />
+          </Pressable>
+        </View>
       </View>
 
       <KeyboardAvoidingView
@@ -345,20 +386,18 @@ export default function TranslateScreen() {
           <View style={styles.gap} />
           <ToggleStrip />
 
-          {!apiKey && (
-            <Pressable
-              onPress={() => router.push("/(tabs)/settings")}
+          {credits === 0 && (
+            <View
               style={[
-                styles.apiKeyBanner,
-                { backgroundColor: theme.primary + "18", borderColor: theme.primary + "40" },
+                styles.noCreditsBanner,
+                { backgroundColor: theme.error + "12", borderColor: theme.error + "30" },
               ]}
             >
-              <Feather name="alert-circle" size={15} color={theme.primary} />
-              <Text style={[styles.apiKeyText, { color: theme.primary }]}>
-                Add your Sarvam API key to begin translating
+              <Feather name="alert-triangle" size={15} color={theme.error} />
+              <Text style={[styles.noCreditText, { color: theme.error }]}>
+                No credits remaining. Check Settings for more info.
               </Text>
-              <Feather name="chevron-right" size={15} color={theme.primary} />
-            </Pressable>
+            </View>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
@@ -409,6 +448,23 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.5,
   },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  creditsPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  creditsText: {
+    fontSize: 13,
+    fontFamily: "Inter_700Bold",
+  },
   settingsBtn: {
     width: 38,
     height: 38,
@@ -417,7 +473,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: { gap: 0 },
   gap: { height: 14 },
-  apiKeyBanner: {
+  noCreditsBanner: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -427,7 +483,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
   },
-  apiKeyText: {
+  noCreditText: {
     flex: 1,
     fontSize: 13,
     fontFamily: "Inter_500Medium",

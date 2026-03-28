@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from "expo-secure-store";
 import React, {
   createContext,
   useCallback,
@@ -8,29 +7,9 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Platform, useColorScheme } from "react-native";
+import { useColorScheme } from "react-native";
 import { VoiceGender } from "@/services/tts";
-
-const secureGet = async (key: string): Promise<string | null> => {
-  if (Platform.OS === "web") return AsyncStorage.getItem(`__secure_${key}`);
-  return SecureStore.getItemAsync(key);
-};
-
-const secureSet = async (key: string, value: string): Promise<void> => {
-  if (Platform.OS === "web") {
-    await AsyncStorage.setItem(`__secure_${key}`, value);
-    return;
-  }
-  await SecureStore.setItemAsync(key, value);
-};
-
-const secureDelete = async (key: string): Promise<void> => {
-  if (Platform.OS === "web") {
-    await AsyncStorage.removeItem(`__secure_${key}`);
-    return;
-  }
-  await SecureStore.deleteItemAsync(key);
-};
+import { fetchCredits } from "@/services/api";
 
 export interface TranslationRecord {
   id: string;
@@ -43,8 +22,9 @@ export interface TranslationRecord {
 }
 
 interface AppContextValue {
-  apiKey: string;
-  setApiKey: (key: string) => Promise<void>;
+  credits: number;
+  setCredits: (n: number) => void;
+  refreshCredits: () => Promise<void>;
   sourceLang: string;
   setSourceLang: (lang: string) => void;
   targetLang: string;
@@ -72,11 +52,10 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 const HISTORY_KEY = "bhaashai_history";
 const PREFS_KEY = "bhaashai_prefs";
-const API_KEY_STORE = "sarvam_api_key";
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useColorScheme();
-  const [apiKey, setApiKeyState] = useState("");
+  const [credits, setCreditsState] = useState(50);
   const [sourceLang, setSourceLang] = useState("en-IN");
   const [targetLang, setTargetLang] = useState("hi-IN");
   const [autoDetect, setAutoDetect] = useState(true);
@@ -96,12 +75,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const isDark =
     themeMode === "system" ? systemScheme === "dark" : themeMode === "dark";
 
+  const refreshCredits = useCallback(async () => {
+    const n = await fetchCredits();
+    setCreditsState(n);
+  }, []);
+
+  const setCredits = useCallback((n: number) => {
+    setCreditsState(n);
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        const key = await secureGet(API_KEY_STORE);
-        if (key) setApiKeyState(key);
-
         const historyJson = await AsyncStorage.getItem(HISTORY_KEY);
         if (historyJson) setHistory(JSON.parse(historyJson));
 
@@ -119,6 +104,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (prefs.voiceGender) setVoiceGenderState(prefs.voiceGender);
         }
       } catch {}
+
+      refreshCredits();
     };
     loadData();
   }, []);
@@ -159,15 +146,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     [savePrefs]
   );
-
-  const setApiKey = useCallback(async (key: string) => {
-    setApiKeyState(key);
-    if (key) {
-      await secureSet(API_KEY_STORE, key);
-    } else {
-      await secureDelete(API_KEY_STORE);
-    }
-  }, []);
 
   const setThemeMode = useCallback(
     (mode: "system" | "light" | "dark") => {
@@ -220,8 +198,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AppContextValue>(
     () => ({
-      apiKey,
-      setApiKey,
+      credits,
+      setCredits,
+      refreshCredits,
       sourceLang,
       setSourceLang,
       targetLang,
@@ -245,8 +224,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setVoiceGender,
     }),
     [
-      apiKey,
-      setApiKey,
+      credits,
+      setCredits,
+      refreshCredits,
       sourceLang,
       targetLang,
       autoDetect,

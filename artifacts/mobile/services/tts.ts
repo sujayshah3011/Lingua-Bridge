@@ -1,27 +1,8 @@
-/**
- * Sarvam AI — Text-to-Speech Service
- *
- * Uses the `bulbul:v3` model for natural-sounding Indian language synthesis.
- * Writes the decoded WAV audio to the device cache and returns a file URI
- * that expo-av can load and play.
- */
-
-// expo-file-system 17+ moved legacy helpers (cacheDirectory, writeAsStringAsync, EncodingType)
-// to the /legacy subpath — import from there for backwards-compatible usage.
 import * as FileSystem from "expo-file-system/legacy";
-
-const SARVAM_BASE = "https://api.sarvam.ai";
+import { API_BASE, jsonHeaders } from "./api";
 
 export type VoiceGender = "female" | "male";
 
-/**
- * Speaker map: confirmed valid bulbul:v3 speaker names per language.
- * Full valid list from the API:
- * aditya, ritu, ashutosh, priya, neha, rahul, pooja, rohan, simran, kavya,
- * amit, dev, ishita, shreya, ratan, varun, manan, sumit, roopa, kabir, aayan,
- * shubh, advait, amelia, sophia, anand, tanya, tarun, sunny, mani, gokul,
- * vijay, shruti, suhani, mohit, kavitha, rehan, soham, rupali, niharika
- */
 export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
   "hi-IN":  { female: "neha",      male: "aditya"   },
   "en-IN":  { female: "ritu",      male: "rahul"    },
@@ -52,45 +33,32 @@ export function getSpeakerName(langCode: string, gender: VoiceGender): string {
   return SPEAKER_MAP[langCode]?.[gender] ?? (gender === "male" ? "aditya" : "neha");
 }
 
-/**
- * Synthesize speech for the given text and language.
- * Returns a local file URI that expo-av can play.
- *
- * Limits input to 500 characters (Sarvam REST TTS limit).
- * Note: bulbul:v3 does NOT accept pitch or loudness — omit them.
- */
 export async function synthesizeSpeech(
   text: string,
   targetLanguageCode: string,
-  apiKey: string,
   gender: VoiceGender = "female"
 ): Promise<string> {
   const input = text.slice(0, 500);
   if (!input.trim()) throw new Error("TTS_EMPTY_INPUT");
   const speaker = getSpeakerName(targetLanguageCode, gender);
 
-  const requestBody = {
-    inputs: [input],
-    target_language_code: targetLanguageCode,
-    speaker,
-    model: "bulbul:v3",
-    pace: 1.0,
-    speech_sample_rate: 22050,
-    enable_preprocessing: true,
-  };
-  console.log("[TTS] request →", JSON.stringify(requestBody));
-
-  const res = await fetch(`${SARVAM_BASE}/text-to-speech`, {
+  const headers = await jsonHeaders();
+  const res = await fetch(`${API_BASE}/sarvam/tts`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "api-subscription-key": apiKey,
-    },
-    body: JSON.stringify(requestBody),
+    headers,
+    body: JSON.stringify({
+      inputs: [input],
+      target_language_code: targetLanguageCode,
+      speaker,
+      model: "bulbul:v3",
+      pace: 1.0,
+      speech_sample_rate: 22050,
+      enable_preprocessing: true,
+    }),
   });
 
+  if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
   if (res.status === 429) throw new Error("RATE_LIMIT");
-  if (res.status === 401) throw new Error("INVALID_KEY");
   if (!res.ok) {
     let detail = "";
     try {
@@ -107,7 +75,6 @@ export async function synthesizeSpeech(
   const base64Wav: string = data.audios?.[0];
   if (!base64Wav) throw new Error("TTS_EMPTY_RESPONSE");
 
-  // Write the base64 WAV to a temp cache file so expo-av can load it
   const cacheDir = FileSystem.cacheDirectory;
   if (!cacheDir) throw new Error("TTS_NO_CACHE_DIR");
   const tempPath = `${cacheDir}tts_${Date.now()}.wav`;
