@@ -1,8 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
+import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import {
   GoogleAuthProvider,
@@ -154,15 +151,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const isDark =
     themeMode === "system" ? systemScheme === "dark" : themeMode === "dark";
 
+  const [_request, response, promptAsync] = Google.useAuthRequest({
+    clientId: WEB_CLIENT_ID,
+  });
+
   useEffect(() => {
-    if (Platform.OS !== "web") {
-      GoogleSignin.configure({
-        webClientId: WEB_CLIENT_ID,
-        offlineAccess: true,
-        forceCodeForRefreshToken: true,
-      });
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication) {
+        const credential = GoogleAuthProvider.credential(
+          authentication.idToken,
+          authentication.accessToken
+        );
+        signInWithCredential(auth, credential).catch(() => {});
+      }
     }
-  }, []);
+  }, [response]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -192,29 +196,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
     } else {
-      try {
-        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-        try { await GoogleSignin.signOut(); } catch (_) {}
-        await GoogleSignin.signIn();
-        const { idToken } = await GoogleSignin.getTokens();
-        if (!idToken) throw new Error("NO_ID_TOKEN");
-        const credential = GoogleAuthProvider.credential(idToken);
-        await signInWithCredential(auth, credential);
-      } catch (error: any) {
-        if (
-          error.code === statusCodes.SIGN_IN_CANCELLED ||
-          error.code === statusCodes.IN_PROGRESS
-        ) {
-          return;
-        }
-        if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-          throw new Error("PLAY_SERVICES_UNAVAILABLE");
-        }
-        if (__DEV__) console.error("[AUTH] Google Sign-In error:", error.code, error.message);
-        throw error;
-      }
+      await promptAsync();
     }
-  }, []);
+  }, [promptAsync]);
 
   const signOut = useCallback(async () => {
     await firebaseSignOut(auth);

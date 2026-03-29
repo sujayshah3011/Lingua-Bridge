@@ -1,0 +1,233 @@
+CRITICAL FIX: Replace @react-native-google-signin/google-signin entirely.
+
+The error is:
+"TurboModuleRegistry.getEnforcing: 'RNGoogleSignin' could not be found"
+
+Root cause: @react-native-google-signin is a native module that is NOT
+available in Expo Go / Rork preview. It requires a custom native build.
+
+SOLUTION: Replace it completely with expo-auth-session + expo-web-browser
+which are pure JavaScript and work in Expo Go with no native compilation.
+
+════════════════════════════════════════════════════
+STEP 1 — REMOVE THE BROKEN PACKAGE
+════════════════════════════════════════════════════
+
+Remove from package.json and all imports:
+  @react-native-google-signin/google-signin
+
+Search entire codebase for:
+  import.*@react-native-google-signin
+  GoogleSignin
+  statusCodes
+
+Delete ALL such imports and usages. Replace with the new
+implementation below. Leave no dead references.
+
+════════════════════════════════════════════════════
+STEP 2 — INSTALL CORRECT PACKAGES
+════════════════════════════════════════════════════
+
+Ensure these are in package.json (all ship with Expo Go):
+  expo-auth-session
+  expo-web-browser
+  expo-crypto
+
+These require ZERO native compilation. They work instantly in
+Expo Go and Rork preview.
+
+════════════════════════════════════════════════════
+STEP 3 — NEW GOOGLE SIGN-IN IMPLEMENTATION
+════════════════════════════════════════════════════
+
+Replace the entire contents of lib/auth.ts with this:
+
+  import * as WebBrowser from 'expo-web-browser';
+  import * as Google from 'expo-auth-session/providers/google';
+  import {
+    GoogleAuthProvider,
+    signInWithCredential,
+    signOut as firebaseSignOut,
+  } from 'firebase/auth';
+  import {
+    doc, getDoc, setDoc, updateDoc,
+    addDoc, collection, serverTimestamp, increment,
+  } from 'firebase/firestore';
+  import { auth, db } from './firebase';
+  import { WELCOME_CREDIT_INR } from './constants';
+
+  // REQUIRED: call at module level (outside any component)
+  WebBrowser.maybeCompleteAuthSession();
+
+  // ─── HOOK: use this inside your WelcomeScreen component ──────────
+  export const useGoogleAuth = () => {
+    const [request, response, promptAsync] = Google.useAuthRequest({
+      // Get these from Google Cloud Console → Credentials
+      // Use the WEB client ID for both androidClientId and webClientId
+      androidClientId: '<YOUR_ANDROID_OAUTH_CLIENT_ID>.apps.googleusercontent.com',
+      webClientId:     '<YOUR_WEB_OAUTH_CLIENT_ID>.apps.googleusercontent.com',
+      iosClientId:     '<YOUR_IOS_OAUTH_CLIENT_ID>.apps.googleusercontent.com',
+      scopes: ['profile', 'email'],
+    });
+
+    return { request, response, promptAsync };
+  };
+
+  // ─── HANDLE RESPONSE: call this in useEffect when response changes ─
+  export const handleGoogleResponse = async (
+    response: any
+  ): Promise<boolean> => {
+    if (!response || response.type !== 'success') return false;
+
+    try {
+      const { id_token } = response.params;
+      if (!id_token) throw new Error('NO_ID_TOKEN');
+
+      const credential = GoogleAuthProvider.credential(id_token);
+      const result = await signInWithCredential(auth, credential);
+
+      // Check new vs existing user
+      const userRef = doc(db, 'users', result.user.uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        // NEW USER — create document + welcome credit
+        await setDoc(userRef, {
+          uid:           result.user.uid,
+          email:         result.user.email,
+          displayName:   result.user.displayName,
+          photoURL:      result.user.photoURL,
+          createdAt:     serverTimestamp(),
+          credits:       WELCOME_CREDIT_INR,
+          totalCredited: WELCOME_CREDIT_INR,
+          totalDebited:  0,
+          stats: {
+            charsTranslated:  0,
+            charsTTS:         0,
+            secondsSTT:       0,
+            sessionCount:     1,
+          },
+          plan:     'pay-as-you-go',
+          isActive: true,
+        });
+
+        // Log welcome credit as transaction
+        await addDoc(collection(db, 'transactions'), {
+          uid:           result.user.uid,
+          type:          'topup',
+          chars:         null,
+          seconds:       null,
+          userCharged:   -WELCOME_CREDIT_INR,
+          balanceBefore: 0,
+          balanceAfter:  WELCOME_CREDIT_INR,
+          note:          'Welcome credit',
+          success:       true,
+          timestamp:     serverTimestamp(),
+        });
+      } else {
+        // EXISTING USER — increment session count
+        await updateDoc(userRef, {
+          'stats.sessionCount': increment(1),
+        });
+      }
+
+      return true;
+    } catch (err) {
+      console.error('[AUTH] handleGoogleResponse error:', err);
+      throw err;
+    }
+  };
+
+  // ─── SIGN OUT ─────────────────────────────────────────────────────
+  export const signOut = async () => {
+    await firebaseSignOut(auth);
+  };
+
+════════════════════════════════════════════════════
+STEP 4 — UPDATE WelcomeScreen TO USE THE HOOK
+════════════════════════════════════════════════════
+
+Replace the WelcomeScreen sign-in logic with this exact pattern:
+
+  import { useGoogleAuth, handleGoogleResponse } from '../lib/auth';
+  import { useEffect, useState } from 'react';
+
+  export default function WelcomeScreen() {
+    const { request, response, promptAsync } = useGoogleAuth();
+    const [loading, setLoading] = useState(false);
+
+    // When Google redirects back with a response, handle it
+    useEffect(() => {
+      if (response) {
+        setLoading(true);
+        handleGoogleResponse(response)
+          .then((success) => {
+            if (!success && response.type === 'dismiss') {
+              // User cancelled — do nothing
+            }
+          })
+          .catch(() => {
+            Alert.alert(
+              'Sign-in Failed',
+              'Could not sign in with Google. Please try again.'
+            );
+          })
+          .finally(() => setLoading(false));
+      }
+    }, [response]);
+
+    const handleSignIn = async () => {
+      if (!request) return;
+      setLoading(true);
+      try {
+        await promptAsync();
+      } catch (err) {
+        Alert.alert('Error', 'Could not open Google sign-in.');
+      } finally {
+        // Don't set loading false here — wait for response useEffect
+        // UNLESS promptAsync returns immediately (error case)
+      }
+    };
+
+    return (
+      // ... existing WelcomeScreen JSX unchanged ...
+      // Just update the button's onPress to: handleSignIn
+      // And disabled prop to: !request || loading
+    );
+  }
+
+════════════════════════════════════════════════════
+STEP 5 — REMOVE initGoogleSignIn FROM App.tsx
+════════════════════════════════════════════════════
+
+In App.tsx:
+  REMOVE: import { initGoogleSignIn } from './lib/auth'
+  REMOVE: the useEffect that calls initGoogleSignIn()
+  REMOVE: any GoogleSignin.configure() call
+
+The new hook-based approach needs NO initialization call.
+WebBrowser.maybeCompleteAuthSession() at the top of lib/auth.ts
+handles session completion automatically.
+
+════════════════════════════════════════════════════
+STEP 6 — UPDATE app.json SCHEME (Required for redirect)
+════════════════════════════════════════════════════
+
+In app.json, ensure "scheme" is set at the root expo level:
+
+  {
+    "expo": {
+      "scheme": "bhaashai",
+      "name": "BhaashAI",
+      "slug": "bhaashai",
+      ...
+    }
+  }
+
+This scheme is used as the redirect URI after Google auth.
+Without it, the browser cannot redirect back to the app.
+
+Also remove from plugins array (no longer needed):
+  "@react-native-google-signin/google-signin"
+  "@react-native-firebase/app"
+  "@react-native-firebase/auth"
