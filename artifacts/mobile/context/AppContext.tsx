@@ -202,9 +202,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (Platform.OS === "web") {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-    } else {
-      await promptAsync();
+      return;
     }
+
+    const hasNativeClientId =
+      (Platform.OS === "android" && !!ANDROID_CLIENT_ID) ||
+      (Platform.OS === "ios" && !!IOS_CLIENT_ID);
+
+    if (!hasNativeClientId) {
+      Alert.alert(
+        "Sign-in Setup Required",
+        isExpoGo
+          ? "Google Sign-in on mobile requires a native client ID to be configured. Please use the web preview to sign in, or set up EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID / EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID in your environment."
+          : "Google Sign-in is not fully configured for this platform. Please contact support.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
+    await promptAsync();
   }, [promptAsync]);
 
   const signOut = useCallback(async () => {
