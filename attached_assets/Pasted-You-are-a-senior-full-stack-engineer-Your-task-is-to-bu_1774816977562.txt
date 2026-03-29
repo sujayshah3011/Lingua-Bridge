@@ -1,0 +1,477 @@
+You are a senior full-stack engineer. Your task is to build a secure, production-grade, async e-commerce web application called **RIVORAA** by integrating a pre-built React/Vite frontend with a Node.js/Express backend, Supabase (Postgres + Auth), and a fully functional admin panel.
+
+---
+
+## PHASE CONTEXT
+This is Phase 1. Payment processing and order tracking are OUT OF SCOPE.
+Focus entirely on:
+- Auditing the existing React/Vite frontend and wiring it to a real async backend
+- Building REST API with Node.js + Express + TypeScript
+- Supabase for database (PostgreSQL), authentication, and file storage
+- Admin panel (React, same Vite project, protected routes)
+- Product, category, cart, wishlist, and order (pending only) management
+
+---
+
+## STEP 0 — REPO SETUP
+1. Clone: https://github.com/sujayshah3011/RIVORAA.git using the provided personal access token
+2. After cloning, immediately run: `git remote remove origin`
+3. Audit every page, component, and existing API call in the frontend
+4. List all UI interactions that require backend endpoints
+5. Map each to a REST API route BEFORE writing any code
+6. Document the full route map in a file called `API_MAP.md`
+
+---
+
+## TECH STACK
+
+### Frontend (pre-built — wire up, do NOT rewrite)
+- React + Vite (existing)
+- React Router v6 for routing (add `/admin/*` protected routes)
+- Axios with an interceptor for attaching Supabase JWT to every request
+- Zustand (preferred) or React Context for global state (auth, cart count)
+- Show skeleton loaders on all data fetches
+- Show spinner + disable button on every form submission
+- Toast notifications (react-hot-toast) for success/error feedback
+- All async calls use async/await + try/catch — zero unhandled promise rejections
+
+### Backend
+- **Runtime**: Node.js with Express
+- **Language**: TypeScript (strict mode, no `any`)
+- **Auth**: Supabase Auth (email/password) — verify Supabase JWT in Express middleware
+- **Database**: Supabase PostgreSQL via `@supabase/supabase-js` (server-side client with service role key)
+- **File storage**: Supabase Storage (product images bucket)
+- **Validation**: Zod on ALL inputs (request body, query params, route params)
+- **Environment**: dotenv — never commit secrets, always use `.env`
+
+### Admin Panel
+- Same Vite project, under `/admin` route
+- Protected by Supabase Auth + role check (`profiles.role = 'admin'`)
+- Separate layout component, shared design tokens with main site
+
+---
+
+## SUPABASE SETUP INSTRUCTIONS
+
+### Tables to create (provide SQL migration files)
+
+```sql
+-- profiles (extends Supabase auth.users)
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  full_name TEXT,
+  role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- categories
+CREATE TABLE categories (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  parent_id UUID REFERENCES categories(id),
+  image_url TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- products
+CREATE TABLE products (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  description TEXT,
+  price NUMERIC(10,2) NOT NULL,
+  compare_price NUMERIC(10,2),
+  category_id UUID REFERENCES categories(id),
+  tags TEXT[],
+  stock INTEGER DEFAULT 0,
+  sku TEXT UNIQUE,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- product_images
+CREATE TABLE product_images (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+  url TEXT NOT NULL,
+  is_primary BOOLEAN DEFAULT FALSE,
+  sort_order INTEGER DEFAULT 0
+);
+
+-- carts
+CREATE TABLE carts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+  quantity INTEGER NOT NULL DEFAULT 1,
+  variant JSONB, -- { size, color } for Phase 2
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, product_id)
+);
+
+-- wishlists
+CREATE TABLE wishlists (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, product_id)
+);
+
+-- orders (Phase 1 — no payment)
+CREATE TABLE orders (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  items JSONB NOT NULL, -- snapshot of cart at time of order
+  total_amount NUMERIC(10,2) NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending','processing','shipped','delivered','cancelled')),
+  shipping_address JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### Row Level Security (RLS) — enable on ALL tables
+```sql
+-- profiles: users read/update own row; admins read all
+-- products: public read; service role write
+-- carts: users access only their own rows
+-- wishlists: users access only their own rows
+-- orders: users see own; admins see all
+-- (provide full RLS policy SQL for every table)
+```
+
+### Supabase Storage
+- Create a bucket: `product-images` (public read, authenticated write)
+- Create a bucket: `avatars` (public read, authenticated write)
+
+### Supabase Auth config
+- Enable email/password provider
+- Set up `handle_new_user` trigger to auto-insert into `profiles` on signup:
+```sql
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO profiles (id, full_name)
+  VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+```
+
+---
+
+## PROJECT STRUCTURE
+
+```
+RIVORAA/
+├── frontend/                  # Existing React/Vite app
+│   ├── src/
+│   │   ├── pages/             # Existing pages — wire up only
+│   │   ├── components/        # Existing components
+│   │   ├── admin/             # NEW: admin panel pages + layout
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Products.tsx
+│   │   │   ├── Categories.tsx
+│   │   │   ├── Orders.tsx
+│   │   │   ├── Users.tsx
+│   │   │   └── AdminLayout.tsx
+│   │   ├── api/               # NEW: all axios API call functions
+│   │   │   ├── auth.ts
+│   │   │   ├── products.ts
+│   │   │   ├── cart.ts
+│   │   │   ├── wishlist.ts
+│   │   │   └── orders.ts
+│   │   ├── store/             # NEW: Zustand stores
+│   │   │   ├── authStore.ts
+│   │   │   └── cartStore.ts
+│   │   ├── lib/
+│   │   │   └── axiosClient.ts # Axios instance with JWT interceptor
+│   │   └── routes/
+│   │       └── ProtectedRoute.tsx
+│   └── .env
+│
+├── backend/
+│   ├── src/
+│   │   ├── routes/
+│   │   │   ├── auth.ts
+│   │   │   ├── products.ts
+│   │   │   ├── categories.ts
+│   │   │   ├── cart.ts
+│   │   │   ├── wishlist.ts
+│   │   │   ├── orders.ts
+│   │   │   └── admin.ts
+│   │   ├── controllers/       # One file per resource
+│   │   ├── middleware/
+│   │   │   ├── verifySupabaseJWT.ts
+│   │   │   ├── requireAdmin.ts
+│   │   │   ├── rateLimiter.ts
+│   │   │   └── errorHandler.ts
+│   │   ├── lib/
+│   │   │   └── supabaseClient.ts  # Service role client
+│   │   ├── schemas/           # Zod validation schemas
+│   │   └── server.ts
+│   ├── .env.example
+│   ├── tsconfig.json
+│   └── package.json
+│
+├── supabase/
+│   └── migrations/
+│       ├── 001_tables.sql
+│       ├── 002_rls.sql
+│       ├── 003_triggers.sql
+│       └── 004_seed.sql       # 1 admin + 10 sample products
+│
+└── README.md
+```
+
+---
+
+## BACKEND API ROUTES
+
+### Auth (thin layer — Supabase handles actual auth)
+```
+POST   /api/auth/profile          Update display name / avatar
+GET    /api/auth/me               Return profile + role from profiles table
+```
+> Note: Login/signup/logout are handled directly by Supabase JS client on the frontend.
+> The backend only needs to verify the JWT and expose profile data.
+
+### Products
+```
+GET    /api/products              Public. Filters: ?category=&minPrice=&maxPrice=&sort=&search=&page=&limit=
+GET    /api/products/:slug        Public. Returns product + images
+POST   /api/products              Admin only. Body: Zod-validated product fields
+PUT    /api/products/:id          Admin only
+DELETE /api/products/:id          Admin only (soft delete: is_active = false)
+POST   /api/products/:id/images   Admin only. Upload to Supabase Storage, insert into product_images
+DELETE /api/products/:id/images/:imageId  Admin only
+```
+
+### Categories
+```
+GET    /api/categories            Public. Returns tree structure (parent + children)
+POST   /api/categories            Admin only
+PUT    /api/categories/:id        Admin only
+DELETE /api/categories/:id        Admin only (only if no products linked)
+```
+
+### Cart
+```
+GET    /api/cart                  Auth required. Returns cart items with product details joined
+POST   /api/cart/add              { productId, quantity }
+PUT    /api/cart/update           { productId, quantity }
+DELETE /api/cart/remove/:productId
+DELETE /api/cart/clear
+```
+
+### Wishlist
+```
+GET    /api/wishlist              Auth required
+POST   /api/wishlist/add          { productId }
+DELETE /api/wishlist/remove/:productId
+```
+
+### Orders
+```
+POST   /api/orders                Auth required. Snapshot cart → create order → clear cart
+GET    /api/orders                Auth: user sees own | Admin: all orders
+GET    /api/orders/:id            Auth required + ownership check
+PATCH  /api/orders/:id/status     Admin only. { status: 'processing'|'shipped'|'delivered'|'cancelled' }
+```
+
+### Admin
+```
+GET    /api/admin/dashboard       Stats: product count, order count, user count, pending orders count
+GET    /api/admin/users           Paginated user list with role
+PATCH  /api/admin/users/:id/role  { role: 'user'|'admin' }
+```
+
+---
+
+## MIDDLEWARE CHAIN (apply in this order)
+
+```typescript
+// verifySupabaseJWT.ts
+// 1. Extract Bearer token from Authorization header
+// 2. Call supabase.auth.getUser(token) — never decode JWT manually
+// 3. Attach req.user = { id, email, role } (role fetched from profiles table)
+// 4. Return 401 if invalid/expired
+
+// requireAdmin.ts
+// 1. Must run AFTER verifySupabaseJWT
+// 2. Check req.user.role === 'admin'
+// 3. Return 403 if not admin
+
+// rateLimiter.ts
+// Auth routes: 10 requests per 15 minutes per IP
+// API routes: 100 requests per 15 minutes per IP
+
+// errorHandler.ts (global, last middleware)
+// Catch all thrown errors
+// Zod errors → 400 with field-level messages
+// Supabase errors → map to appropriate HTTP codes
+// Unknown errors → 500, never expose stack trace in production
+```
+
+---
+
+## FRONTEND AXIOS INTERCEPTOR
+
+```typescript
+// src/lib/axiosClient.ts
+// 1. Create axios instance with baseURL from env
+// 2. Request interceptor: get current Supabase session, attach Bearer token
+// 3. Response interceptor: on 401, call supabase.auth.refreshSession(), retry once
+// 4. On second 401: sign out user, redirect to /login
+```
+
+---
+
+## FRONTEND AUTH FLOW
+
+```
+App loads
+  → check supabase.auth.getSession()
+  → if session exists: fetch /api/auth/me → store user + role in Zustand authStore
+  → if role === 'admin': unlock /admin routes
+  → if no session: user is guest (cart uses localStorage until login, then merge)
+
+Login (Supabase client directly):
+  → supabase.auth.signInWithPassword()
+  → on success: fetch /api/auth/me → update store
+  → redirect to previous page or homepage
+
+Logout:
+  → supabase.auth.signOut()
+  → clear Zustand store
+  → redirect to /
+```
+
+---
+
+## ADMIN PANEL PAGES
+
+Build these inside `src/admin/`:
+
+### Dashboard (`/admin`)
+- 4 stat cards: Total Products, Total Orders, Total Users, Pending Orders
+- Simple recent orders table (last 10)
+- Data from GET /api/admin/dashboard
+
+### Products (`/admin/products`)
+- Table with: image thumbnail, name, SKU, price, stock, category, status (active/inactive), actions
+- Search + filter by category + filter by status
+- Add Product modal/drawer: name, description, price, comparePrice, category, stock, SKU, tags, image upload (multiple, drag-and-drop to Supabase Storage)
+- Edit Product: same form pre-filled
+- Soft delete with confirmation dialog
+
+### Categories (`/admin/categories`)
+- Tree-view list (parent → children)
+- Add/Edit/Delete with confirmation
+- Image upload per category
+
+### Orders (`/admin/orders`)
+- Table: order ID, user email, items count, total, status, date
+- Filter by status
+- Click row → order detail modal (items list, shipping address, status dropdown to update)
+
+### Users (`/admin/users`)
+- Table: name, email, role, created date, status
+- Toggle role between user/admin
+- Search by name or email
+
+---
+
+## SECURITY CHECKLIST (every item must be implemented)
+- [ ] Never use Supabase service role key on frontend — backend only
+- [ ] Verify JWT server-side via `supabase.auth.getUser()` — never decode manually
+- [ ] RLS enabled on all Supabase tables (defense in depth — even if backend is compromised)
+- [ ] Zod validation on every route — reject unknown fields with `z.object().strict()`
+- [ ] Helmet.js on Express for security headers
+- [ ] CORS: allow only `VITE_FRONTEND_URL` origin
+- [ ] Rate limiting on all auth-adjacent routes
+- [ ] File uploads: validate MIME type (images only), max 5MB, rename to UUID before storing
+- [ ] All admin routes double-protected: `verifySupabaseJWT` + `requireAdmin`
+- [ ] Error messages: never expose DB errors, internal paths, or stack traces to client
+- [ ] `.env` in `.gitignore` — confirmed before first commit
+- [ ] Parameterized queries only (Supabase client handles this — no raw SQL with user input)
+
+---
+
+## ENV VARIABLES
+
+### Backend `.env.example`
+```
+PORT=5000
+NODE_ENV=development
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=        # Never expose this to frontend
+SUPABASE_JWT_SECRET=              # From Supabase project settings
+CLIENT_URL=http://localhost:5173
+```
+
+### Frontend `.env.example`
+```
+VITE_API_URL=http://localhost:5000
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=           # Safe to expose — protected by RLS
+```
+
+---
+
+## SEED FILE (`supabase/migrations/004_seed.sql`)
+- 1 admin user (insert into auth.users + profiles with role='admin')
+- 3 categories (e.g. Apparel, Accessories, Footwear)
+- 10 sample products spread across categories with realistic data
+- 5 sample orders in various statuses
+
+---
+
+## DELIVERABLES CHECKLIST
+- [ ] `API_MAP.md` — full route audit of frontend → backend mapping
+- [ ] `supabase/migrations/` — all SQL files (tables, RLS, triggers, seed)
+- [ ] `backend/` — Express/TS server, all routes, middleware, Zod schemas
+- [ ] `frontend/src/api/` — typed API functions for every endpoint
+- [ ] `frontend/src/store/` — Zustand auth and cart stores
+- [ ] `frontend/src/admin/` — all 5 admin panel pages + layout
+- [ ] `frontend/src/routes/ProtectedRoute.tsx` — for both auth and admin guards
+- [ ] All existing frontend pages wired to real API (zero mock/hardcoded data)
+- [ ] `.env.example` for both frontend and backend
+- [ ] `README.md` — setup guide, env config, Supabase setup steps, API reference
+
+---
+
+## WHAT NOT TO DO
+- Do NOT add Stripe, Razorpay, or any payment code (Phase 2)
+- Do NOT add shipping/tracking integrations (Phase 2)
+- Do NOT rewrite existing frontend pages — wire them up
+- Do NOT use Supabase service role key in frontend code
+- Do NOT manually decode JWTs — always use `supabase.auth.getUser()`
+- Do NOT use `any` in TypeScript
+- Do NOT skip RLS policies — treat them as mandatory, not optional
+- Do NOT commit `.env` files
+
+---
+
+## START SEQUENCE
+1. Clone repo → audit frontend → generate `API_MAP.md`
+2. Create Supabase migration files (tables → RLS → triggers → seed)
+3. Scaffold Express/TS backend (server → middleware → routes → controllers)
+4. Wire frontend API layer (axiosClient → api/ functions → Zustand stores)
+5. Add ProtectedRoute guards + /admin routes to React Router
+6. Build admin panel pages
+7. Connect every existing frontend page to its API endpoints
+8. Final security pass: verify all checklist items
+9. Write README.md
+```
+
+---

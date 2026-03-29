@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Google from "expo-auth-session/providers/google";
+import Constants from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
 import {
   GoogleAuthProvider,
@@ -84,6 +85,10 @@ const HISTORY_KEY = "bhaashai_history";
 const PREFS_KEY = "bhaashai_prefs";
 
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
+const ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? "";
+const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? "";
+
+const isExpoGo = Constants.appOwnership === "expo";
 
 async function createUserDocIfNew(user: User): Promise<void> {
   const userRef = doc(db, "users", user.uid);
@@ -152,7 +157,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     themeMode === "system" ? systemScheme === "dark" : themeMode === "dark";
 
   const [_request, response, promptAsync] = Google.useAuthRequest({
-    clientId: WEB_CLIENT_ID,
+    webClientId: WEB_CLIENT_ID,
+    androidClientId: ANDROID_CLIENT_ID || undefined,
+    iosClientId: IOS_CLIENT_ID || undefined,
   });
 
   useEffect(() => {
