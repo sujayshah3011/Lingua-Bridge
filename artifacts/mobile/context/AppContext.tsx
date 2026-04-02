@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Google from "expo-auth-session/providers/google";
-import Constants from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
 import {
   GoogleAuthProvider,
@@ -88,8 +87,6 @@ const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
 const ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? "";
 const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? "";
 
-const isExpoGo = Constants.appOwnership === "expo";
-
 async function createUserDocIfNew(user: User): Promise<void> {
   const userRef = doc(db, "users", user.uid);
   const snap = await getDoc(userRef);
@@ -162,18 +159,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     iosClientId: IOS_CLIENT_ID || undefined,
   });
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { authentication } = response;
-      if (authentication) {
-        const credential = GoogleAuthProvider.credential(
-          authentication.idToken,
-          authentication.accessToken
-        );
-        signInWithCredential(auth, credential).catch(() => {});
+  // ── Mobile OAuth response handler ────────────────────────────────
+  const handleGoogleMobileResponse = useCallback(
+    async (res: typeof response) => {
+      if (!res || res.type !== "success") return;
+
+      // id_token may come from either the PKCE code-exchange (authentication)
+      // or the implicit flow (params) depending on which client ID is used.
+      const idToken =
+        (res as any).authentication?.idToken ??
+        (res as any).params?.id_token ??
+        null;
+      const accessToken =
+        (res as any).authentication?.accessToken ??
+        (res as any).params?.access_token ??
+        null;
+
+      if (!idToken) {
+        if (__DEV__) console.warn("[AUTH] Google response missing id_token", res);
+        Alert.alert("Sign-in Error", "Google did not return an identity token. Please try again.");
+        return;
       }
-    }
-  }, [response]);
+
+      if (__DEV__) console.log("[AUTH] id_token received, signing in to Firebase");
+
+      const credential = GoogleAuthProvider.credential(idToken, accessToken);
+      // signInWithCredential → onAuthStateChanged → createUserDocIfNew
+      await signInWithCredential(auth, credential);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (response) handleGoogleMobileResponse(response);
+  }, [response, handleGoogleMobileResponse]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -200,26 +219,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async () => {
     if (Platform.OS === "web") {
+      // Web: Firebase popup handles the entire flow directly
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       return;
     }
 
-    const hasNativeClientId =
-      (Platform.OS === "android" && !!ANDROID_CLIENT_ID) ||
-      (Platform.OS === "ios" && !!IOS_CLIENT_ID);
-
-    if (!hasNativeClientId) {
-      Alert.alert(
-        "Sign-in Setup Required",
-        isExpoGo
-          ? "Google Sign-in on mobile requires a native client ID to be configured. Please use the web preview to sign in, or set up EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID / EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID in your environment."
-          : "Google Sign-in is not fully configured for this platform. Please contact support.",
-        [{ text: "OK" }]
-      );
-      return;
-    }
-
+    // Native (Expo Go / APK): open system browser tab → Google sign-in
+    // → redirects back via bhaashai:// deep link
+    // → expo-auth-session captures → handleGoogleMobileResponse fires
+    if (__DEV__) console.log("[AUTH] promptAsync called, platform:", Platform.OS);
     await promptAsync();
   }, [promptAsync]);
 
