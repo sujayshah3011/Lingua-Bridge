@@ -128,13 +128,12 @@ export default function SettingsScreen() {
                     style={styles.avatar}
                   />
                 ) : (
-                  <View
-                    style={[
-                      styles.avatarPlaceholder,
-                      { backgroundColor: theme.primary + "22" },
-                    ]}
-                  >
-                    <Feather name="user" size={22} color={theme.primary} />
+                  <View style={[styles.avatar, styles.avatarFallback]}>
+                    <Text style={styles.avatarInitials}>
+                      {(user.displayName ?? user.email ?? "U")
+                        .charAt(0)
+                        .toUpperCase()}
+                    </Text>
                   </View>
                 )}
                 <View style={{ flex: 1 }}>
@@ -432,12 +431,15 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
   },
-  avatarPlaceholder: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  avatarFallback: {
+    backgroundColor: "#FF6B00",
     alignItems: "center",
     justifyContent: "center",
+  },
+  avatarInitials: {
+    color: "#FFF",
+    fontSize: 20,
+    fontFamily: "Inter_700Bold",
   },
   profileName: {
     fontSize: 15,

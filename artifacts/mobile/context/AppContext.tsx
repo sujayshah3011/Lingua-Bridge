@@ -2,10 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   GoogleAuthProvider,
   User,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithCredential,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
+  updateProfile,
 } from "firebase/auth";
 import {
   addDoc,
@@ -67,6 +71,9 @@ interface AppContextValue {
   user: User | null;
   authLoading: boolean;
   signIn: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
+  sendPasswordReset: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   credits: number;
   totalDebited: number;
@@ -245,6 +252,104 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  // ─── Email auth error translator ─────────────────────────────────
+  const translateAuthError = (err: any): Error => {
+    const map: Record<string, string> = {
+      "auth/invalid-email": "Invalid email address.",
+      "auth/user-not-found": "No account found with this email.",
+      "auth/wrong-password": "Incorrect password. Try again.",
+      "auth/invalid-credential": "Incorrect email or password.",
+      "auth/email-already-in-use": "An account with this email already exists.",
+      "auth/weak-password": "Password must be at least 6 characters.",
+      "auth/too-many-requests": "Too many attempts. Try again later.",
+      "auth/network-request-failed": "Network error. Check your connection.",
+      "auth/user-disabled": "This account has been disabled.",
+    };
+    return new Error(map[err.code] ?? err.message ?? "Authentication failed.");
+  };
+
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const userRef = doc(db, "users", result.user.uid);
+      const snap = await getDoc(userRef);
+      if (!snap.exists()) {
+        await setDoc(userRef, {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName ?? email.split("@")[0],
+          photoURL: result.user.photoURL ?? null,
+          createdAt: serverTimestamp(),
+          credits: WELCOME_CREDIT_INR,
+          totalCredited: WELCOME_CREDIT_INR,
+          totalDebited: 0,
+          stats: { charsTranslated: 0, charsTTS: 0, secondsSTT: 0, sessionCount: 1 },
+          plan: "pay-as-you-go",
+          isActive: true,
+        });
+        await addDoc(collection(db, "transactions"), {
+          uid: result.user.uid,
+          type: "topup",
+          chars: null,
+          seconds: null,
+          userCharged: -WELCOME_CREDIT_INR,
+          balanceBefore: 0,
+          balanceAfter: WELCOME_CREDIT_INR,
+          note: "Welcome credit",
+          success: true,
+          timestamp: serverTimestamp(),
+        });
+      } else {
+        await updateDoc(userRef, { "stats.sessionCount": increment(1) });
+      }
+      // onAuthStateChanged handles setUser
+    } catch (err: any) {
+      throw translateAuthError(err);
+    }
+  }, []);
+
+  const signUpWithEmail = useCallback(async (email: string, password: string, displayName: string) => {
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(result.user, { displayName });
+      await setDoc(doc(db, "users", result.user.uid), {
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName,
+        photoURL: null,
+        createdAt: serverTimestamp(),
+        credits: WELCOME_CREDIT_INR,
+        totalCredited: WELCOME_CREDIT_INR,
+        totalDebited: 0,
+        stats: { charsTranslated: 0, charsTTS: 0, secondsSTT: 0, sessionCount: 1 },
+        plan: "pay-as-you-go",
+        isActive: true,
+      });
+      await addDoc(collection(db, "transactions"), {
+        uid: result.user.uid,
+        type: "topup",
+        chars: null,
+        seconds: null,
+        userCharged: -WELCOME_CREDIT_INR,
+        balanceBefore: 0,
+        balanceAfter: WELCOME_CREDIT_INR,
+        note: "Welcome credit",
+        success: true,
+        timestamp: serverTimestamp(),
+      });
+    } catch (err: any) {
+      throw translateAuthError(err);
+    }
+  }, []);
+
+  const sendPasswordReset = useCallback(async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (err: any) {
+      throw translateAuthError(err);
+    }
+  }, []);
+
   const refreshCredits = useCallback(async () => {
   }, []);
 
@@ -366,6 +471,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       user,
       authLoading,
       signIn,
+      signInWithEmail,
+      signUpWithEmail,
+      sendPasswordReset,
       signOut,
       credits,
       totalDebited,
@@ -398,6 +506,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       user,
       authLoading,
       signIn,
+      signInWithEmail,
+      signUpWithEmail,
+      sendPasswordReset,
       signOut,
       credits,
       totalDebited,
