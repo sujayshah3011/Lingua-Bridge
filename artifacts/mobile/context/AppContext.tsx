@@ -5,7 +5,6 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  signInWithCredential,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
@@ -31,31 +30,10 @@ import React, {
 } from "react";
 import { Alert, Platform, useColorScheme } from "react-native";
 
-import Constants from "expo-constants";
 import { auth, db } from "@/services/firebase";
 import { VoiceGender } from "@/services/tts";
 import { UserStats, useCredits } from "@/hooks/useCredits";
 import { WELCOME_CREDIT_INR } from "@/constants/pricing";
-
-// ─── Lazy-load native Google Sign-In only in real native builds ─────────────
-// In Expo Go, appOwnership === "expo" and RNGoogleSignin is not in the binary.
-// TurboModuleRegistry.getEnforcing throws at require() time (not call time),
-// so we must guard with the Expo Go check BEFORE calling require().
-let _GoogleSignin: any = null;
-let _statusCodes: any = null;
-function loadNativeGoogleSignin(): boolean {
-  if (_GoogleSignin) return true;
-  // Skip entirely in Expo Go — the native binary does not include RNGoogleSignin
-  if (Constants.appOwnership === "expo") return false;
-  try {
-    const m = require("@react-native-google-signin/google-signin");
-    _GoogleSignin = m.GoogleSignin;
-    _statusCodes = m.statusCodes;
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 export interface TranslationRecord {
   id: string;
@@ -108,7 +86,6 @@ const AppContext = createContext<AppContextValue | null>(null);
 const HISTORY_KEY = "bhaashai_history";
 const PREFS_KEY = "bhaashai_prefs";
 
-const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
 
 async function createUserDocIfNew(user: User): Promise<void> {
   const userRef = doc(db, "users", user.uid);
@@ -200,54 +177,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = useCallback(async () => {
+    // Web: Firebase popup — works in browser/Replit preview
     if (Platform.OS === "web") {
       const provider = new GoogleAuthProvider();
       provider.addScope("profile");
       provider.addScope("email");
-      await signInWithPopup(auth, provider);
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (err: any) {
+        if (
+          err.code === "auth/popup-closed-by-user" ||
+          err.code === "auth/cancelled-popup-request"
+        ) return;
+        throw err;
+      }
       return;
     }
 
-    // Native: lazy-load @react-native-google-signin (only works in EAS builds)
-    const loaded = loadNativeGoogleSignin();
-    if (!loaded || !_GoogleSignin) {
-      // Running in Expo Go — native module not compiled in
-      throw new Error("EXPO_GO_LIMITATION");
-    }
-
-    try {
-      _GoogleSignin.configure({ webClientId: WEB_CLIENT_ID, offlineAccess: true });
-      await _GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      try { await _GoogleSignin.signOut(); } catch (_) {}
-      await _GoogleSignin.signIn();
-      const { idToken } = await _GoogleSignin.getTokens();
-      if (!idToken) throw new Error("NO_ID_TOKEN");
-      const credential = GoogleAuthProvider.credential(idToken);
-      await signInWithCredential(auth, credential);
-      // onAuthStateChanged → createUserDocIfNew handles the rest
-    } catch (err: any) {
-      if (
-        err.code === _statusCodes?.SIGN_IN_CANCELLED ||
-        err.code === _statusCodes?.IN_PROGRESS
-      ) return;
-      // TurboModuleRegistry crash in Expo Go
-      if (
-        err.message?.includes("TurboModuleRegistry") ||
-        err.message?.includes("RNGoogleSignin")
-      ) {
-        throw new Error("EXPO_GO_LIMITATION");
-      }
-      throw err;
-    }
+    // Mobile (Expo Go / any JS-only environment):
+    // @react-native-google-signin is NOT bundled — always show friendly message.
+    // Re-add the package and EAS build for production Google Sign-In on mobile.
+    throw new Error("EXPO_GO_LIMITATION");
   }, []);
 
   const signOut = useCallback(async () => {
-    if (Platform.OS !== "web") {
-      try {
-        const loaded = loadNativeGoogleSignin();
-        if (loaded && _GoogleSignin) await _GoogleSignin.signOut();
-      } catch (_) {}
-    }
     await firebaseSignOut(auth);
     setUser(null);
   }, []);

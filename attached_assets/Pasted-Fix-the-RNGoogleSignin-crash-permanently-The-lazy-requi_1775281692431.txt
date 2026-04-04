@@ -1,0 +1,153 @@
+Fix the RNGoogleSignin crash permanently. The lazy require() try/catch
+is not catching the error in Hermes/Expo Go. The error throws before
+the catch block runs.
+
+The ONLY correct fix: never call require('@react-native-google-signin/
+google-signin') in Expo Go. Replace the entire Google Sign-In 
+native loading pattern with a safe stub approach.
+
+════════════════════════════════════════════════════
+THE FIX — Apply to AppContext.tsx (or lib/auth.ts)
+wherever loadNativeGoogleSignin is defined
+════════════════════════════════════════════════════
+
+FIND and DELETE the entire loadNativeGoogleSignin function:
+
+  // DELETE THIS ENTIRE BLOCK:
+  let _GoogleSignin: any = null;
+  let _statusCodes: any = null;
+  const loadNativeGoogleSignin = () => {
+    if (_GoogleSignin) return true;
+    try {
+      const m = require('@react-native-google-signin/google-signin');
+      _GoogleSignin = m.GoogleSignin;
+      _statusCodes = m.statusCodes;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+REPLACE IT WITH this safe stub pattern that never crashes:
+
+  import { Platform } from 'react-native';
+
+  // Safe stub — never throws, never requires native module in Expo Go
+  const GoogleSigninStub = {
+    configure: () => {},
+    hasPlayServices: async () => true,
+    signIn: async () => { throw new Error('EXPO_GO_LIMITATION'); },
+    signOut: async () => {},
+    getTokens: async () => ({ idToken: null, accessToken: null }),
+    isSignedIn: async () => false,
+  };
+
+  // Determine at MODULE LOAD TIME whether native module exists
+  // by checking a known Expo Go indicator, NOT by requiring the module
+  const IS_EXPO_GO = typeof expo !== 'undefined' &&
+    !!(global as any).ExpoModules?.ExpoConstants?.executionEnvironment
+      ?.includes?.('storeClient') ||
+    // Simpler check: if __DEV__ and no native binary indicator
+    (typeof (global as any).__EXPO_DEV_LAUNCHER__ !== 'undefined');
+
+  // Use stub always — only a real EAS build has RNGoogleSignin
+  // There is NO safe way to detect this at runtime in Expo Go
+  // without crashing. So we always use the stub in JS environments.
+  const NativeGoogleSignin = GoogleSigninStub;
+
+  // The configure call is now always safe — it's a no-op stub
+  export const initGoogleSignIn = () => {
+    // No-op in Expo Go / web
+    // In EAS production build, this would configure the real SDK
+    // but since we can't import it here safely, it's handled at build time
+  };
+
+════════════════════════════════════════════════════
+THEN update the Google sign-in function:
+════════════════════════════════════════════════════
+
+  export const signInWithGoogle = async (): Promise<boolean> => {
+    // Web: use Firebase popup (works in Replit preview)
+    if (Platform.OS === 'web') {
+      return signInWithGoogleWeb();
+    }
+
+    // Mobile in Expo Go / Rork: always throw EXPO_GO_LIMITATION
+    // This is caught by WelcomeScreen and shows a friendly alert
+    throw new Error('EXPO_GO_LIMITATION');
+  };
+
+  // Web popup sign-in (unchanged — keep existing implementation)
+  const signInWithGoogleWeb = async (): Promise<boolean> => {
+    try {
+      const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
+      const provider = new GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      const result = await signInWithPopup(auth, provider);
+      const snap = await getDoc(doc(db, 'users', result.user.uid));
+      await handlePostSignIn(result.user, !snap.exists());
+      return true;
+    } catch (err: any) {
+      if (
+        err.code === 'auth/popup-closed-by-user' ||
+        err.code === 'auth/cancelled-popup-request'
+      ) return false;
+      throw err;
+    }
+  };
+
+════════════════════════════════════════════════════
+VERIFY: WelcomeScreen already handles EXPO_GO_LIMITATION
+════════════════════════════════════════════════════
+
+Confirm this catch block exists in WelcomeScreen's handleSignIn:
+
+  } catch (err: any) {
+    if (err.message === 'EXPO_GO_LIMITATION') {
+      Alert.alert(
+        'Google Sign-In Unavailable',
+        'Use Email/Password sign-in below, or open the\n' +
+        'Replit web preview tab where Google Sign-In works.',
+        [{ text: 'OK' }]
+      );
+    } else {
+      Alert.alert('Sign-in Failed', 'Please try again.');
+    }
+    setLoading(false);
+  }
+
+If this block is missing, ADD IT NOW.
+
+════════════════════════════════════════════════════
+ALSO: Remove @react-native-google-signin from package.json
+════════════════════════════════════════════════════
+
+In package.json, REMOVE this dependency entirely:
+  "@react-native-google-signin/google-signin"
+
+And remove from app.json plugins array:
+  "@react-native-google-signin/google-signin"
+
+This package causes a hard crash in any JS-only environment.
+It can only be added back when building a proper EAS native APK.
+For now, email + password login handles mobile testing.
+Google Sign-In via popup handles the web/Replit preview.
+
+════════════════════════════════════════════════════
+FINAL STATE AFTER THIS FIX:
+════════════════════════════════════════════════════
+
+  Rork/Expo Go mobile:
+    → Google button shows alert: "Use Email/Password or web preview"
+    → Email sign-in works perfectly ✅
+    → Test user (test@bhaashai.app / Test@123456) works ✅
+
+  Replit web preview tab:
+    → Google Sign-In popup works perfectly ✅
+    → Email sign-in works perfectly ✅
+
+  EAS production APK (Play Store):
+    → Re-add @react-native-google-signin at that stage
+    → Email sign-in works ✅
+    → Google Sign-In works ✅

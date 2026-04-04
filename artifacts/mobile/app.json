@@ -42,8 +42,7 @@
         {
           "microphonePermission": "BhaashAI needs microphone access to translate your speech."
         }
-      ],
-      "@react-native-google-signin/google-signin"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

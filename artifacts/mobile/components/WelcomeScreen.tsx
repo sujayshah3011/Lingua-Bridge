@@ -104,8 +104,8 @@ export function WelcomeScreen() {
     } catch (err: any) {
       if (err?.message === "EXPO_GO_LIMITATION") {
         Alert.alert(
-          "Sign-in Unavailable Here",
-          "Google Sign-In requires a production build.\n\nThe web preview (browser tab) works fine.\nFor mobile, install the APK from an EAS build.",
+          "Google Sign-In Unavailable",
+          "Use Email/Password sign-in below, or open the\nReplit web preview tab where Google Sign-In works.",
           [{ text: "OK" }]
         );
       } else {
