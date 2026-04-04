@@ -27,17 +27,22 @@ import React, {
 } from "react";
 import { Alert, Platform, useColorScheme } from "react-native";
 
+import Constants from "expo-constants";
 import { auth, db } from "@/services/firebase";
 import { VoiceGender } from "@/services/tts";
 import { UserStats, useCredits } from "@/hooks/useCredits";
 import { WELCOME_CREDIT_INR } from "@/constants/pricing";
 
 // ─── Lazy-load native Google Sign-In only in real native builds ─────────────
-// Prevents TurboModuleRegistry crash when running inside Expo Go
+// In Expo Go, appOwnership === "expo" and RNGoogleSignin is not in the binary.
+// TurboModuleRegistry.getEnforcing throws at require() time (not call time),
+// so we must guard with the Expo Go check BEFORE calling require().
 let _GoogleSignin: any = null;
 let _statusCodes: any = null;
 function loadNativeGoogleSignin(): boolean {
   if (_GoogleSignin) return true;
+  // Skip entirely in Expo Go — the native binary does not include RNGoogleSignin
+  if (Constants.appOwnership === "expo") return false;
   try {
     const m = require("@react-native-google-signin/google-signin");
     _GoogleSignin = m.GoogleSignin;
