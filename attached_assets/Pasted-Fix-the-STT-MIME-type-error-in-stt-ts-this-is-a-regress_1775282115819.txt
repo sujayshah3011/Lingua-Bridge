@@ -1,0 +1,72 @@
+Fix the STT MIME type error in stt.ts — this is a regression of a
+previously applied fix that got overwritten.
+
+Error: [STT] 400 error: "Invalid file type: audio/vnd.wave"
+File: stt.ts line 51, function: transcribeAudio
+
+════════════════════════════════════════════════════
+FIX 1 — FormData MIME type (the direct cause)
+════════════════════════════════════════════════════
+
+In stt.ts inside transcribeAudio, find the FormData.append call
+for the audio file. It currently looks like one of these:
+
+  formData.append('file', { uri, type: 'audio/vnd.wave', name: '...' })
+  formData.append('file', { uri, type: audioFile.mimeType, name: '...' })
+  formData.append('file', { uri, type: undefined, name: '...' })
+
+REPLACE with this exact hardcoded value — never derive the type:
+
+  formData.append('file', {
+    uri: audioUri,
+    type: 'audio/wav',
+    name: 'recording.wav',
+  } as any);
+
+The type MUST be the string literal 'audio/wav' — never a variable,
+never from the file object's mimeType, never from the uri extension.
+
+════════════════════════════════════════════════════
+FIX 2 — Recording options (prevents wrong format at source)
+════════════════════════════════════════════════════
+
+Find the Audio.Recording prepareToRecordAsync call in the voice
+recording function and replace the options with exactly this:
+
+  await recording.prepareToRecordAsync({
+    android: {
+      extension: '.wav',
+      outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+      audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      bitRate: 128000,
+    },
+    ios: {
+      extension: '.wav',
+      audioQuality: Audio.IOSAudioQuality.HIGH,
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      bitRate: 128000,
+      linearPCMBitDepth: 16,
+      linearPCMIsBigEndian: false,
+      linearPCMIsFloat: false,
+    },
+    web: {},
+  });
+
+════════════════════════════════════════════════════
+FIX 3 — Add a permanent comment to prevent regression
+════════════════════════════════════════════════════
+
+Add this comment directly above the FormData.append line
+so future edits never break it again:
+
+  // CRITICAL: type MUST be hardcoded 'audio/wav'
+  // React Native auto-tags as 'audio/vnd.wave' which Sarvam rejects.
+  // Never use file.mimeType, uri extension, or any dynamic value here.
+  formData.append('file', {
+    uri: audioUri,
+    type: 'audio/wav',  // ← DO NOT CHANGE THIS
+    name: 'recording.wav',
+  } as any);

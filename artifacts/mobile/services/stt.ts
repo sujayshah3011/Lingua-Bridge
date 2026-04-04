@@ -6,36 +6,22 @@ export interface STTResult {
   credits?: number;
 }
 
-function audioMeta(uri: string): { mimeType: string; filename: string } {
-  const ext = uri.split(".").pop()?.toLowerCase() ?? "";
-  switch (ext) {
-    case "wav":
-      return { mimeType: "audio/wav", filename: "recording.wav" };
-    case "mp3":
-      return { mimeType: "audio/mpeg", filename: "recording.mp3" };
-    case "ogg":
-      return { mimeType: "audio/ogg", filename: "recording.ogg" };
-    case "m4a":
-    case "aac":
-      return { mimeType: "audio/m4a", filename: "recording.m4a" };
-    default:
-      return { mimeType: "audio/wav", filename: "recording.wav" };
-  }
-}
 
 export async function transcribeAudio(
   fileUri: string,
   languageCode: string = "unknown"
 ): Promise<STTResult> {
-  const { mimeType, filename } = audioMeta(fileUri);
   const headers = await fileHeaders();
 
   const formData = new FormData();
+  // CRITICAL: type MUST be hardcoded 'audio/wav'
+  // React Native auto-tags as 'audio/vnd.wave' which Sarvam rejects.
+  // Never use file.mimeType, uri extension, or any dynamic value here.
   formData.append("file", {
     uri: fileUri,
-    type: mimeType,
-    name: filename,
-  } as unknown as Blob);
+    type: "audio/wav", // ← DO NOT CHANGE THIS
+    name: "recording.wav",
+  } as any);
   formData.append("language_code", languageCode);
 
   const res = await fetch(`${API_BASE}/stt`, {
