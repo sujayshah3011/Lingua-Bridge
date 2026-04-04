@@ -1,0 +1,637 @@
+Perform a deep audit and production-readiness overhaul of BhaashAI.
+The goal: working Google Sign-In on Android + Play Store launch ready
++ clean local development setup with zero Replit dependencies.
+
+Do NOT change any working feature. Fix and harden only what's listed.
+
+════════════════════════════════════════════════════
+BLOCK 1 — UNDERSTAND THE ENVIRONMENT PROBLEM
+════════════════════════════════════════════════════
+
+There are THREE runtime environments this app runs in:
+
+  ENV 1: Replit web preview (browser tab)
+    → Platform.OS === 'web'
+    → Firebase signInWithPopup works perfectly
+    → Native modules NOT available
+
+  ENV 2: Expo Go / Rork mobile preview  
+    → Platform.OS === 'android' but NO native modules
+    → @react-native-google-signin CRASHES here
+    → expo-auth-session works but has redirect issues
+    → This is NOT a valid test env for Google Sign-In
+
+  ENV 3: EAS Development Build / Production APK  ← TARGET
+    → Real Android binary with native modules compiled in
+    → @react-native-google-signin works perfectly here
+    → This is what gets published to Play Store
+
+The strategy:
+  - Web preview  → Firebase signInWithPopup (already working ✓)
+  - Production   → @react-native-google-signin native SDK
+  - Expo Go      → Show "Use production build" message (not worth fixing)
+
+════════════════════════════════════════════════════
+BLOCK 2 — IMPLEMENT FINAL GOOGLE SIGN-IN ARCHITECTURE
+════════════════════════════════════════════════════
+
+Replace lib/auth.ts entirely with this platform-aware implementation:
+
+  import { Platform } from 'react-native';
+  import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    signInWithCredential,
+    signOut as firebaseSignOut,
+  } from 'firebase/auth';
+  import {
+    doc, getDoc, setDoc, updateDoc,
+    addDoc, collection, serverTimestamp, increment,
+  } from 'firebase/firestore';
+  import { auth, db } from './firebase';
+  import { WELCOME_CREDIT_INR } from './constants';
+
+  // ─── Lazy-load native Google Sign-In only on real native builds ──
+  // This prevents the RNGoogleSignin crash in Expo Go
+  let GoogleSignin: any = null;
+  let statusCodes: any = null;
+
+  const loadNativeGoogleSignin = () => {
+    if (GoogleSignin) return true;
+    try {
+      const module = require('@react-native-google-signin/google-signin');
+      GoogleSignin = module.GoogleSignin;
+      statusCodes = module.statusCodes;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  // ─── WEB CLIENT ID (used by both web popup and native SDK) ───────
+  const WEB_CLIENT_ID =
+    '<YOUR_WEB_OAUTH_CLIENT_ID>.apps.googleusercontent.com';
+
+  // ─── INIT (call once at app startup in App.tsx) ───────────────────
+  export const initGoogleSignIn = () => {
+    if (Platform.OS === 'web') return; // web uses popup, no init needed
+    const loaded = loadNativeGoogleSignin();
+    if (loaded && GoogleSignin) {
+      GoogleSignin.configure({
+        webClientId: WEB_CLIENT_ID,
+        offlineAccess: true,
+      });
+    }
+  };
+
+  // ─── MAIN SIGN-IN FUNCTION ────────────────────────────────────────
+  export const signInWithGoogle = async (): Promise<boolean> => {
+    if (Platform.OS === 'web') {
+      return signInWithGoogleWeb();
+    } else {
+      return signInWithGoogleNative();
+    }
+  };
+
+  // ─── WEB: Firebase popup (works in Replit preview) ───────────────
+  const signInWithGoogleWeb = async (): Promise<boolean> => {
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      const result = await signInWithPopup(auth, provider);
+      const isNew = result.additionalUserInfo?.isNewUser ?? false;
+      await handlePostSignIn(result.user, isNew);
+      return true;
+    } catch (err: any) {
+      if (
+        err.code === 'auth/popup-closed-by-user' ||
+        err.code === 'auth/cancelled-popup-request'
+      ) return false;
+      throw err;
+    }
+  };
+
+  // ─── NATIVE: @react-native-google-signin (works in EAS build) ────
+  const signInWithGoogleNative = async (): Promise<boolean> => {
+    const loaded = loadNativeGoogleSignin();
+
+    // Expo Go / Rork preview: native module not available
+    if (!loaded || !GoogleSignin) {
+      throw new Error('EXPO_GO_LIMITATION');
+    }
+
+    try {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      // Force account picker every time
+      try { await GoogleSignin.signOut(); } catch (_) {}
+
+      await GoogleSignin.signIn();
+      const { idToken } = await GoogleSignin.getTokens();
+
+      if (!idToken) throw new Error('NO_ID_TOKEN');
+
+      const credential = GoogleAuthProvider.credential(idToken);
+      const result = await signInWithCredential(auth, credential);
+
+      const snap = await getDoc(doc(db, 'users', result.user.uid));
+      const isNew = !snap.exists();
+      await handlePostSignIn(result.user, isNew);
+      return true;
+    } catch (err: any) {
+      if (err.code === statusCodes?.SIGN_IN_CANCELLED) return false;
+      if (err.code === statusCodes?.IN_PROGRESS) return false;
+      throw err;
+    }
+  };
+
+  // ─── SHARED: Create/update user in Firestore ─────────────────────
+  const handlePostSignIn = async (user: any, isNew: boolean) => {
+    const userRef = doc(db, 'users', user.uid);
+
+    if (isNew) {
+      const snap = await getDoc(userRef);
+      if (!snap.exists()) {
+        await setDoc(userRef, {
+          uid:           user.uid,
+          email:         user.email,
+          displayName:   user.displayName,
+          photoURL:      user.photoURL,
+          createdAt:     serverTimestamp(),
+          credits:       WELCOME_CREDIT_INR,
+          totalCredited: WELCOME_CREDIT_INR,
+          totalDebited:  0,
+          stats: {
+            charsTranslated: 0,
+            charsTTS:        0,
+            secondsSTT:      0,
+            sessionCount:    1,
+          },
+          plan: 'pay-as-you-go',
+          isActive: true,
+        });
+        await addDoc(collection(db, 'transactions'), {
+          uid:           user.uid,
+          type:          'topup',
+          chars:         null,
+          seconds:       null,
+          userCharged:   -WELCOME_CREDIT_INR,
+          balanceBefore: 0,
+          balanceAfter:  WELCOME_CREDIT_INR,
+          note:          'Welcome credit',
+          success:       true,
+          timestamp:     serverTimestamp(),
+        });
+      } else {
+        await updateDoc(userRef, { 'stats.sessionCount': increment(1) });
+      }
+    } else {
+      try {
+        await updateDoc(userRef, { 'stats.sessionCount': increment(1) });
+      } catch (_) {}
+    }
+  };
+
+  // ─── SIGN OUT ─────────────────────────────────────────────────────
+  export const signOut = async () => {
+    if (Platform.OS !== 'web') {
+      try {
+        const loaded = loadNativeGoogleSignin();
+        if (loaded && GoogleSignin) await GoogleSignin.signOut();
+      } catch (_) {}
+    }
+    await firebaseSignOut(auth);
+  };
+
+════════════════════════════════════════════════════
+BLOCK 3 — UPDATE WelcomeScreen SIGN-IN BUTTON
+════════════════════════════════════════════════════
+
+Replace all sign-in logic in WelcomeScreen with:
+
+  import { Platform, Alert } from 'react-native';
+  import { signInWithGoogle } from '../lib/auth';
+  import { useState } from 'react';
+
+  const [loading, setLoading] = useState(false);
+
+  const handleSignIn = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const success = await signInWithGoogle();
+      if (!success) {
+        // User cancelled — silent, just reset loading
+      }
+      // If success: onAuthStateChanged in App.tsx handles navigation
+    } catch (err: any) {
+      if (err.message === 'EXPO_GO_LIMITATION') {
+        Alert.alert(
+          'Sign-in Unavailable in Preview',
+          'Google Sign-In requires a production build.\n\n' +
+          'The web preview (Replit browser tab) works fine.\n' +
+          'For mobile testing, install the APK from EAS Build.',
+          [{ text: 'OK' }]
+        );
+      } else {
+        Alert.alert(
+          'Sign-in Failed',
+          'Could not sign in with Google. Please try again.',
+          [{ text: 'OK' }]
+        );
+        console.error('[AUTH] Sign-in error:', err);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Button JSX:
+  <TouchableOpacity
+    onPress={handleSignIn}
+    disabled={loading}
+    style={[styles.googleButton, loading && { opacity: 0.7 }]}
+  >
+    {loading
+      ? <ActivityIndicator color="#333" size="small" />
+      : <Text style={styles.googleButtonText}>Continue with Google</Text>
+    }
+  </TouchableOpacity>
+
+In App.tsx — call initGoogleSignIn on mount:
+  import { initGoogleSignIn } from './lib/auth';
+
+  useEffect(() => {
+    initGoogleSignIn();
+  }, []);
+
+════════════════════════════════════════════════════
+BLOCK 4 — REMOVE ALL REPLIT DEPENDENCIES
+════════════════════════════════════════════════════
+
+Search codebase for every Replit-specific thing and remove/replace:
+
+4.1 — Environment Variables
+  REMOVE any hardcoded Replit secrets like:
+    process.env.REPL_SLUG
+    process.env.REPL_OWNER
+    process.env.REPLIT_DB_URL
+    Any URL containing .repl.co or .replit.app
+
+  MOVE all sensitive config to a .env file at project root.
+  Create .env with this structure:
+
+    EXPO_PUBLIC_FIREBASE_API_KEY=<value>
+    EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=<value>
+    EXPO_PUBLIC_FIREBASE_PROJECT_ID=<value>
+    EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=<value>
+    EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<value>
+    EXPO_PUBLIC_FIREBASE_APP_ID=<value>
+    EXPO_PUBLIC_SARVAM_API_KEY=<value>
+    EXPO_PUBLIC_RAZORPAY_KEY_ID=<value>
+    EXPO_PUBLIC_WEB_CLIENT_ID=<value>
+
+  Update lib/firebase.ts to read from env:
+    const firebaseConfig = {
+      apiKey:            process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+      authDomain:        process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId:         process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket:     process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId:             process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+    };
+
+  Update lib/constants.ts:
+    export const SARVAM_API_KEY = process.env.EXPO_PUBLIC_SARVAM_API_KEY!;
+    export const RAZORPAY_KEY_ID = process.env.EXPO_PUBLIC_RAZORPAY_KEY_ID!;
+
+  Create .env.example (safe to commit — no real values):
+    EXPO_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key_here
+    EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+    EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+    EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+    EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+    EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
+    EXPO_PUBLIC_SARVAM_API_KEY=your_sarvam_key
+    EXPO_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key
+    EXPO_PUBLIC_WEB_CLIENT_ID=your_google_web_client_id
+
+  Add .env to .gitignore:
+    .env
+    *.keystore
+    google-services.json
+    credentials.json
+
+4.2 — Port / Host hardcoding
+  REMOVE any hardcoded localhost URLs with Replit ports:
+    http://0.0.0.0:3000
+    https://*.repl.co
+    Any fetch/axios calls to Replit-hosted endpoints
+
+  All API calls must go to:
+    https://api.sarvam.ai (translation API)
+    https://api.anthropic.com (if used)
+    Firebase directly via SDK (no custom endpoints)
+
+4.3 — .replit and replit.nix
+  These files are Replit-only configuration.
+  They do NOT affect local development or EAS builds.
+  Leave them as-is (they're ignored outside Replit).
+  Do NOT remove them — they're needed for Replit to work.
+
+════════════════════════════════════════════════════
+BLOCK 5 — app.json PRODUCTION CONFIG
+════════════════════════════════════════════════════
+
+Replace app.json with this exact production-ready config:
+
+  {
+    "expo": {
+      "name": "BhaashAI",
+      "slug": "bhaashai",
+      "scheme": "bhaashai",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "userInterfaceStyle": "automatic",
+      "icon": "./assets/icon.png",
+      "splash": {
+        "backgroundColor": "#FF6B00",
+        "resizeMode": "contain"
+      },
+      "android": {
+        "package": "com.bhaashai.app",
+        "versionCode": 1,
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/adaptive-icon.png",
+          "backgroundColor": "#FF6B00"
+        },
+        "googleServicesFile": "./google-services.json",
+        "permissions": [
+          "android.permission.RECORD_AUDIO",
+          "android.permission.INTERNET",
+          "android.permission.ACCESS_NETWORK_STATE"
+        ]
+      },
+      "ios": {
+        "bundleIdentifier": "com.bhaashai.app",
+        "infoPlist": {
+          "NSMicrophoneUsageDescription":
+            "BhaashAI uses the microphone for voice translation across Indian languages."
+        }
+      },
+      "web": {
+        "bundler": "metro"
+      },
+      "extra": {
+        "eas": {
+          "projectId": "<YOUR_EAS_PROJECT_ID>"
+        }
+      },
+      "plugins": [
+        [
+          "@react-native-google-signin/google-signin",
+          {
+            "iosUrlScheme":
+              "com.googleusercontent.apps.<YOUR_IOS_CLIENT_ID>"
+          }
+        ],
+        [
+          "expo-av",
+          {
+            "microphonePermission":
+              "BhaashAI needs mic access for voice translation."
+          }
+        ]
+      ]
+    }
+  }
+
+════════════════════════════════════════════════════
+BLOCK 6 — eas.json PRODUCTION CONFIG
+════════════════════════════════════════════════════
+
+Create eas.json at project root:
+
+  {
+    "cli": {
+      "version": ">= 5.0.0",
+      "requireCommit": false
+    },
+    "build": {
+      "development": {
+        "developmentClient": true,
+        "distribution": "internal",
+        "android": {
+          "buildType": "apk",
+          "gradleCommand": ":app:assembleDebug"
+        },
+        "env": {
+          "APP_ENV": "development"
+        }
+      },
+      "preview": {
+        "distribution": "internal",
+        "android": {
+          "buildType": "apk"
+        },
+        "env": {
+          "APP_ENV": "preview"
+        }
+      },
+      "production": {
+        "android": {
+          "buildType": "app-bundle"
+        },
+        "env": {
+          "APP_ENV": "production"
+        }
+      }
+    },
+    "submit": {
+      "production": {
+        "android": {
+          "serviceAccountKeyPath": "./service-account.json",
+          "track": "internal"
+        }
+      }
+    }
+  }
+
+════════════════════════════════════════════════════
+BLOCK 7 — package.json SCRIPTS
+════════════════════════════════════════════════════
+
+Add these scripts to package.json:
+
+  "scripts": {
+    "start":           "expo start",
+    "start:web":       "expo start --web",
+    "android":         "expo run:android",
+    "ios":             "expo run:ios",
+    "build:dev":       "eas build --platform android --profile development",
+    "build:preview":   "eas build --platform android --profile preview",
+    "build:prod":      "eas build --platform android --profile production",
+    "build:all":       "eas build --platform all --profile production",
+    "submit:android":  "eas submit --platform android",
+    "credentials":     "eas credentials",
+    "prebuild":        "expo prebuild --clean",
+    "lint":            "eslint . --ext .ts,.tsx",
+    "type-check":      "tsc --noEmit"
+  }
+
+════════════════════════════════════════════════════
+BLOCK 8 — README.md (Local Setup Guide)
+════════════════════════════════════════════════════
+
+Create README.md at project root with this exact content:
+
+  # BhaashAI — Indian Language Translator
+
+  ## Local Development Setup
+
+  ### Prerequisites
+  - Node.js 18+
+  - npm or yarn
+  - Expo CLI: `npm install -g expo-cli eas-cli`
+
+  ### 1. Clone and Install
+```bash
+  git clone <YOUR_REPO_URL>
+  cd bhaashai
+  npm install
+```
+
+  ### 2. Environment Variables
+  Copy the example env file and fill in your values:
+```bash
+  cp .env.example .env
+```
+  Edit `.env` with your Firebase and Sarvam API credentials.
+
+  ### 3. Add google-services.json
+  Download from Firebase Console → Project Settings → Android app
+  Place at: `./google-services.json` (project root)
+
+  ### 4. Run in Browser (Replit or local)
+```bash
+  npm run start:web
+```
+  Google Sign-In works in browser via Firebase popup.
+
+  ### 5. Run on Android Device (requires EAS)
+```bash
+  # One-time: log in to Expo
+  eas login
+
+  # Build development APK (includes native Google Sign-In)
+  npm run build:dev
+
+  # Download the APK from the link EAS provides
+  # Install on your Android device
+  # Open app → Google Sign-In works natively
+```
+
+  ### 6. Play Store Production Build
+```bash
+  npm run build:prod
+  # Upload the .aab to Google Play Console
+```
+
+  ## Google Sign-In: Why It Doesn't Work in Expo Go
+
+  Expo Go is a sandboxed environment that cannot load native modules
+  not pre-compiled into it. `@react-native-google-signin` requires
+  native code. This is expected and working correctly.
+
+  Solutions:
+  - Browser preview (Replit tab): Works ✅
+  - EAS Development Build APK: Works ✅
+  - Expo Go / Rork preview: Shows "Use production build" message ✅
+  - Production Play Store: Works ✅
+
+  ## Architecture
+
+  | Layer | Technology |
+  |-------|-----------|
+  | UI | React Native + Expo |
+  | Auth | Firebase Auth + Google Sign-In |
+  | Database | Firebase Firestore (real-time) |
+  | Translation | Sarvam AI API (sarvam-translate:v1) |
+  | Voice Input | Sarvam AI STT (saaras:v3) |
+  | Voice Output | Sarvam AI TTS (bulbul:v3) |
+  | Payments | Razorpay |
+  | Builds | EAS Build |
+
+════════════════════════════════════════════════════
+BLOCK 9 — DEEP CODE AUDIT
+════════════════════════════════════════════════════
+
+Search the ENTIRE codebase for these issues and fix each one:
+
+9.1 — Hardcoded secrets
+  Search: any string matching /AIza[A-Za-z0-9_-]{35}/
+    → Firebase API key hardcoded → move to EXPO_PUBLIC_ env var
+  Search: any 40-char hex string (potential API key)
+    → move to env var
+
+9.2 — Hardcoded URLs
+  Search: "http://localhost"
+  Search: ".repl.co"
+  Search: "0.0.0.0"
+    → Remove or replace with proper API endpoints
+
+9.3 — Missing null checks that cause crashes
+  Search: .toLocaleString() — ensure ?? 0 before every call
+  Search: .toFixed( — ensure the value is a number first
+  Search: stats. — ensure stats?. optional chaining everywhere
+
+9.4 — TypeScript errors
+  Run a mental type-check on every function signature:
+  → All async functions that return values must have
+    explicit Promise<ReturnType> annotations
+  → No implicit any in credit charge functions
+
+9.5 — Missing error boundaries
+  Every screen that calls Sarvam API must have try/catch
+  that handles:
+    'INSUFFICIENT_CREDITS' → navigate to TopUp
+    'EXPO_GO_LIMITATION'   → show informative alert
+    network errors         → show "No internet" toast
+    API 400/401/429/500    → show specific error message
+
+9.6 — Verify credit deduction only happens AFTER success
+  For each of these functions, confirm the charge call
+  comes AFTER the API success check:
+    translateText      → chargeTranslate after res.ok
+    synthesizeSpeech   → chargeTTS after res.ok
+    transcribeAudio    → chargeSTT after successful response
+
+9.7 — Verify no duplicate user documents
+  In handlePostSignIn:
+    → Always getDoc first before setDoc
+    → Only call setDoc if !snap.exists()
+    → This prevents double ₹100 credits on re-login
+
+════════════════════════════════════════════════════
+BLOCK 10 — FINAL VERIFICATION CHECKLIST
+════════════════════════════════════════════════════
+
+After all changes, verify these pass:
+
+  □ npm install completes with no errors
+  □ npm run start:web launches without errors
+  □ .env.example exists with all required keys listed
+  □ .gitignore contains: .env, *.keystore, google-services.json
+  □ README.md exists with local setup instructions
+  □ eas.json exists with development, preview, production profiles
+  □ app.json has: scheme, android.package, android.googleServicesFile
+  □ lib/firebase.ts reads from EXPO_PUBLIC_ env vars
+  □ lib/constants.ts reads SARVAM_API_KEY from env var
+  □ lib/auth.ts uses lazy require for @react-native-google-signin
+  □ WelcomeScreen shows "Use production build" alert in Expo Go
+  □ WelcomeScreen uses Firebase popup on Platform.OS === 'web'
+  □ Settings sign-out calls signOut() from lib/auth.ts
+  □ No hardcoded API keys anywhere in source files
+  □ No .repl.co URLs anywhere in source files
+  □ All stats accesses use optional chaining (?.)
+  □ Credit deductions only happen after API success

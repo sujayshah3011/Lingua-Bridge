@@ -25,11 +25,28 @@ export function WelcomeScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
+    if (loading) return;
     setLoading(true);
     try {
       await signIn();
-    } catch {
-      Alert.alert("Sign-in failed", "Please check your connection and try again.");
+      // success → onAuthStateChanged in AppContext handles navigation
+    } catch (err: any) {
+      if (err?.message === "EXPO_GO_LIMITATION") {
+        Alert.alert(
+          "Sign-in Unavailable Here",
+          "Google Sign-In requires a production build.\n\n" +
+            "The web preview (browser tab) works fine.\n" +
+            "For mobile, install the APK from an EAS build.",
+          [{ text: "OK" }]
+        );
+      } else {
+        Alert.alert(
+          "Sign-in Failed",
+          "Could not sign in with Google. Please try again.",
+          [{ text: "OK" }]
+        );
+        if (__DEV__) console.error("[AUTH] Sign-in error:", err);
+      }
     } finally {
       setLoading(false);
     }

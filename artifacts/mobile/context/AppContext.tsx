@@ -1,6 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Google from "expo-auth-session/providers/google";
-import * as WebBrowser from "expo-web-browser";
 import {
   GoogleAuthProvider,
   User,
@@ -28,12 +26,27 @@ import React, {
   useState,
 } from "react";
 import { Alert, Platform, useColorScheme } from "react-native";
+
 import { auth, db } from "@/services/firebase";
 import { VoiceGender } from "@/services/tts";
 import { UserStats, useCredits } from "@/hooks/useCredits";
 import { WELCOME_CREDIT_INR } from "@/constants/pricing";
 
-WebBrowser.maybeCompleteAuthSession();
+// ─── Lazy-load native Google Sign-In only in real native builds ─────────────
+// Prevents TurboModuleRegistry crash when running inside Expo Go
+let _GoogleSignin: any = null;
+let _statusCodes: any = null;
+function loadNativeGoogleSignin(): boolean {
+  if (_GoogleSignin) return true;
+  try {
+    const m = require("@react-native-google-signin/google-signin");
+    _GoogleSignin = m.GoogleSignin;
+    _statusCodes = m.statusCodes;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export interface TranslationRecord {
   id: string;
@@ -84,8 +97,6 @@ const HISTORY_KEY = "bhaashai_history";
 const PREFS_KEY = "bhaashai_prefs";
 
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
-const ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? "";
-const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? "";
 
 async function createUserDocIfNew(user: User): Promise<void> {
   const userRef = doc(db, "users", user.uid);
@@ -153,47 +164,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const isDark =
     themeMode === "system" ? systemScheme === "dark" : themeMode === "dark";
 
-  const [_request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: WEB_CLIENT_ID,
-    androidClientId: ANDROID_CLIENT_ID || undefined,
-    iosClientId: IOS_CLIENT_ID || undefined,
-  });
-
-  // ── Mobile OAuth response handler ────────────────────────────────
-  const handleGoogleMobileResponse = useCallback(
-    async (res: typeof response) => {
-      if (!res || res.type !== "success") return;
-
-      // id_token may come from either the PKCE code-exchange (authentication)
-      // or the implicit flow (params) depending on which client ID is used.
-      const idToken =
-        (res as any).authentication?.idToken ??
-        (res as any).params?.id_token ??
-        null;
-      const accessToken =
-        (res as any).authentication?.accessToken ??
-        (res as any).params?.access_token ??
-        null;
-
-      if (!idToken) {
-        if (__DEV__) console.warn("[AUTH] Google response missing id_token", res);
-        Alert.alert("Sign-in Error", "Google did not return an identity token. Please try again.");
-        return;
-      }
-
-      if (__DEV__) console.log("[AUTH] id_token received, signing in to Firebase");
-
-      const credential = GoogleAuthProvider.credential(idToken, accessToken);
-      // signInWithCredential → onAuthStateChanged → createUserDocIfNew
-      await signInWithCredential(auth, credential);
-    },
-    []
-  );
-
-  useEffect(() => {
-    if (response) handleGoogleMobileResponse(response);
-  }, [response, handleGoogleMobileResponse]);
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -219,20 +189,53 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async () => {
     if (Platform.OS === "web") {
-      // Web: Firebase popup handles the entire flow directly
       const provider = new GoogleAuthProvider();
+      provider.addScope("profile");
+      provider.addScope("email");
       await signInWithPopup(auth, provider);
       return;
     }
 
-    // Native (Expo Go / APK): open system browser tab → Google sign-in
-    // → redirects back via bhaashai:// deep link
-    // → expo-auth-session captures → handleGoogleMobileResponse fires
-    if (__DEV__) console.log("[AUTH] promptAsync called, platform:", Platform.OS);
-    await promptAsync();
-  }, [promptAsync]);
+    // Native: lazy-load @react-native-google-signin (only works in EAS builds)
+    const loaded = loadNativeGoogleSignin();
+    if (!loaded || !_GoogleSignin) {
+      // Running in Expo Go — native module not compiled in
+      throw new Error("EXPO_GO_LIMITATION");
+    }
+
+    try {
+      _GoogleSignin.configure({ webClientId: WEB_CLIENT_ID, offlineAccess: true });
+      await _GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      try { await _GoogleSignin.signOut(); } catch (_) {}
+      await _GoogleSignin.signIn();
+      const { idToken } = await _GoogleSignin.getTokens();
+      if (!idToken) throw new Error("NO_ID_TOKEN");
+      const credential = GoogleAuthProvider.credential(idToken);
+      await signInWithCredential(auth, credential);
+      // onAuthStateChanged → createUserDocIfNew handles the rest
+    } catch (err: any) {
+      if (
+        err.code === _statusCodes?.SIGN_IN_CANCELLED ||
+        err.code === _statusCodes?.IN_PROGRESS
+      ) return;
+      // TurboModuleRegistry crash in Expo Go
+      if (
+        err.message?.includes("TurboModuleRegistry") ||
+        err.message?.includes("RNGoogleSignin")
+      ) {
+        throw new Error("EXPO_GO_LIMITATION");
+      }
+      throw err;
+    }
+  }, []);
 
   const signOut = useCallback(async () => {
+    if (Platform.OS !== "web") {
+      try {
+        const loaded = loadNativeGoogleSignin();
+        if (loaded && _GoogleSignin) await _GoogleSignin.signOut();
+      } catch (_) {}
+    }
     await firebaseSignOut(auth);
     setUser(null);
   }, []);
