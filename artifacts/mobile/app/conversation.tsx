@@ -22,7 +22,11 @@ import { Colors } from "@/constants/colors";
 import ConversationBubble, { Message } from "@/components/ConversationBubble";
 import MicButton from "@/components/MicButton";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
-import { transcribeAudio } from "@/services/stt";
+import {
+  startRecording as sttStart,
+  stopAndTranscribe,
+  cancelRecording,
+} from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
 import { translateText } from "@/services/sarvam";
 
@@ -43,13 +47,14 @@ export default function ConversationScreen() {
   const [stateB, setStateB] = useState<SpeakerState>("idle");
   const [activeRecorder, setActiveRecorder] = useState<Speaker | null>(null);
 
-  const recordingRef = useRef<Audio.Recording | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
   const scrollRef = useRef<ScrollView>(null);
+  const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
-      recordingRef.current?.stopAndUnloadAsync().catch(() => {});
+      if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
+      cancelRecording().catch(() => {});
       soundRef.current?.unloadAsync().catch(() => {});
     };
   }, []);
@@ -93,44 +98,23 @@ export default function ConversationScreen() {
       }
 
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: true,
-          playsInSilentModeIOS: true,
-        });
-        const recording = new Audio.Recording();
-        await recording.prepareToRecordAsync({
-          android: {
-            extension: ".wav",
-            outputFormat: Audio.AndroidOutputFormat.DEFAULT,
-            audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
-            sampleRate: 16000,
-            numberOfChannels: 1,
-            bitRate: 128000,
-          },
-          ios: {
-            extension: ".wav",
-            audioQuality: Audio.IOSAudioQuality.HIGH,
-            sampleRate: 16000,
-            numberOfChannels: 1,
-            bitRate: 128000,
-            linearPCMBitDepth: 16,
-            linearPCMIsBigEndian: false,
-            linearPCMIsFloat: false,
-          },
-          web: {},
-        });
-        await recording.startAsync();
-        recordingRef.current = recording;
+        await sttStart();
 
-        const timer = setTimeout(async () => {
-          if (recordingRef.current === recording) {
-            await finalize(recording, speaker, sourceLang, targetLangCode, setSpeakerState);
+        if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
+        autoTimerRef.current = setTimeout(async () => {
+          if (activeRecorder === speaker) {
+            await stopSpeaker(speaker);
           }
         }, 10000);
-
-        (recording as unknown as { _autoStopTimer?: ReturnType<typeof setTimeout> })._autoStopTimer = timer;
-      } catch (err) {
+      } catch (err: any) {
         console.error("Recording start error:", err);
+        if (err?.message === "MICROPHONE_PERMISSION_DENIED") {
+          Alert.alert(
+            "Microphone Required",
+            "Enable microphone access in Settings to use Conversation mode.",
+            [{ text: "OK" }]
+          );
+        }
         setSpeakerState("idle");
         setActiveRecorder(null);
       }
@@ -138,47 +122,26 @@ export default function ConversationScreen() {
     [credits, activeRecorder, langA, langB, ensurePermission]
   );
 
-  const stopRecording = useCallback(
+  const stopSpeaker = useCallback(
     async (speaker: Speaker) => {
-      const recording = recordingRef.current;
-      if (!recording || activeRecorder !== speaker) return;
+      if (activeRecorder !== speaker) return;
+
+      if (autoTimerRef.current) {
+        clearTimeout(autoTimerRef.current);
+        autoTimerRef.current = null;
+      }
 
       const setSpeakerState = speaker === "A" ? setStateA : setStateB;
       const sourceLang = speaker === "A" ? langA : langB;
       const targetLangCode = speaker === "A" ? langB : langA;
 
-      const autoTimer = (recording as unknown as { _autoStopTimer?: ReturnType<typeof setTimeout> })._autoStopTimer;
-      if (autoTimer) clearTimeout(autoTimer);
-
-      await finalize(recording, speaker, sourceLang, targetLangCode, setSpeakerState);
-    },
-    [activeRecorder, langA, langB]
-  );
-
-  const finalize = useCallback(
-    async (
-      recording: Audio.Recording,
-      speaker: Speaker,
-      sourceLang: string,
-      targetLangCode: string,
-      setSpeakerState: (s: SpeakerState) => void
-    ) => {
       setSpeakerState("processing");
-      recordingRef.current = null;
 
       try {
-        await recording.stopAndUnloadAsync();
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          playsInSilentModeIOS: true,
-        });
-        const uri = recording.getURI();
-        if (!uri) throw new Error("No audio");
-
-        const sttResult = await transcribeAudio(uri, sourceLang);
+        const sttResult = await stopAndTranscribe(sourceLang);
         if (typeof sttResult.credits === "number") setCredits(sttResult.credits);
 
-        if (!sttResult.transcript) {
+        if (!sttResult.transcript.trim()) {
           setSpeakerState("idle");
           setActiveRecorder(null);
           return;
@@ -309,7 +272,7 @@ export default function ConversationScreen() {
                 <MicButton
                   isRecording={stateB === "recording"}
                   onPress={() =>
-                    stateB === "recording" ? stopRecording("B") : recordAndTranslate("B")
+                    stateB === "recording" ? stopSpeaker("B") : recordAndTranslate("B")
                   }
                   disabled={activeRecorder === "A" || credits <= 0}
                   size={56}
@@ -352,7 +315,7 @@ export default function ConversationScreen() {
                 <MicButton
                   isRecording={stateA === "recording"}
                   onPress={() =>
-                    stateA === "recording" ? stopRecording("A") : recordAndTranslate("A")
+                    stateA === "recording" ? stopSpeaker("A") : recordAndTranslate("A")
                   }
                   disabled={activeRecorder === "B" || credits <= 0}
                   size={56}

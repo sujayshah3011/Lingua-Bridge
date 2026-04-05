@@ -21,7 +21,11 @@ import { LANGUAGES } from "@/constants/languages";
 import { Colors } from "@/constants/colors";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import MicButton from "@/components/MicButton";
-import { transcribeAudio } from "@/services/stt";
+import {
+  startRecording as sttStart,
+  stopAndTranscribe,
+  cancelRecording,
+} from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
 import { translateText } from "@/services/sarvam";
@@ -31,27 +35,6 @@ type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
 const USAGE_KEY = "bhaashai_usage";
 
-const WAV_RECORDING_OPTIONS: Audio.RecordingOptions = {
-  android: {
-    extension: ".wav",
-    outputFormat: Audio.AndroidOutputFormat.DEFAULT,
-    audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 128000,
-  },
-  ios: {
-    extension: ".wav",
-    audioQuality: Audio.IOSAudioQuality.HIGH,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 128000,
-    linearPCMBitDepth: 16,
-    linearPCMIsBigEndian: false,
-    linearPCMIsFloat: false,
-  },
-  web: {},
-};
 
 async function incrementUsage(
   key: "charsTranslated" | "audioSeconds",
@@ -93,28 +76,13 @@ export default function VoiceScreen() {
   const [statusText, setStatusText] = useState("");
   const [ttsLoading, setTtsLoading] = useState(false);
 
-  const recordingRef = useRef<Audio.Recording | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
-  const recordingStartRef = useRef<number>(0);
 
   useEffect(() => {
     return () => {
-      recordingRef.current?.stopAndUnloadAsync().catch(() => {});
+      cancelRecording().catch(() => {});
       soundRef.current?.unloadAsync().catch(() => {});
     };
-  }, []);
-
-  const ensurePermission = useCallback(async (): Promise<boolean> => {
-    const { status } = await Audio.requestPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Microphone Required",
-        "BhaashAI needs microphone access for voice translation.\n\nPlease enable it in your device Settings.",
-        [{ text: "OK" }]
-      );
-      return false;
-    }
-    return true;
   }, []);
 
   const startRecording = useCallback(async () => {
@@ -129,20 +97,9 @@ export default function VoiceScreen() {
       );
       return;
     }
-    if (!(await ensurePermission())) return;
 
     try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-
-      const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync(WAV_RECORDING_OPTIONS);
-      await recording.startAsync();
-      recordingRef.current = recording;
-      recordingStartRef.current = Date.now();
-
+      await sttStart();
       setState("recording");
       setTranscript("");
       setTranslation("");
@@ -152,16 +109,20 @@ export default function VoiceScreen() {
       if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.message === "MICROPHONE_PERMISSION_DENIED") {
+        Alert.alert(
+          "Microphone Required",
+          "BhaashAI needs microphone access for voice translation.\n\nPlease enable it in your device Settings.",
+          [{ text: "OK" }]
+        );
+      }
       setState("error");
       setStatusText("Could not start microphone. Please try again.");
     }
-  }, [credits, ensurePermission]);
+  }, [credits]);
 
   const stopRecording = useCallback(async () => {
-    const recording = recordingRef.current;
-    if (!recording) return;
-
     setState("processing");
     setStatusText("Processing speech…");
 
@@ -169,21 +130,9 @@ export default function VoiceScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
-    const durationMs = Date.now() - recordingStartRef.current;
-    const audioSeconds = durationMs / 1000;
-
     try {
-      await recording.stopAndUnloadAsync();
-      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
-
-      const uri = recording.getURI();
-      recordingRef.current = null;
-      if (!uri) throw new Error("NO_AUDIO");
-
-      incrementUsage("audioSeconds", Math.round(audioSeconds));
-
       setStatusText("Transcribing…");
-      const result = await transcribeAudio(uri, voiceSourceLang);
+      const result = await stopAndTranscribe(voiceSourceLang);
 
       if (!result.transcript.trim()) {
         setStatusText("No speech detected. Tap the mic and try again.");
@@ -191,9 +140,11 @@ export default function VoiceScreen() {
         return;
       }
 
+      incrementUsage("audioSeconds", Math.round(result.durationSeconds));
+
       const uid = user?.uid;
       if (uid) {
-        await chargeSTT(uid, audioSeconds, voiceSourceLang);
+        await chargeSTT(uid, result.durationSeconds, voiceSourceLang);
       }
 
       setTranscript(result.transcript);
@@ -234,13 +185,12 @@ export default function VoiceScreen() {
 
       setState("done");
     } catch (err: unknown) {
-      recordingRef.current = null;
       const msg = err instanceof Error ? err.message : "";
       if (msg === "INSUFFICIENT_CREDITS") {
         setStatusText("No credits remaining.");
       } else if (msg === "RATE_LIMIT") {
         setStatusText("Rate limit reached. Try again in a moment.");
-      } else if (msg === "NO_AUDIO") {
+      } else if (msg === "NO_RECORDING_URI" || msg === "NO_ACTIVE_RECORDING") {
         setStatusText("No audio recorded. Please try again.");
       } else if (msg.includes("STT_ERROR")) {
         setStatusText("Speech recognition failed. Please try again.");

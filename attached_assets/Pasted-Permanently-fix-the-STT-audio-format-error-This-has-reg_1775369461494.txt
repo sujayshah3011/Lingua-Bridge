@@ -1,0 +1,316 @@
+Permanently fix the STT audio format error. This has regressed
+multiple times because the approach was wrong each time.
+
+The error: [STT] 400 - "Invalid file type: audio/vnd.wave"
+
+Root cause: iOS records audio natively as M4A/AAC. Every attempt
+to force WAV format in Expo Go fails silently — iOS ignores the
+WAV setting and still produces M4A bytes. When we declare the
+MIME type as audio/wav but the bytes are M4A, Sarvam detects
+the mismatch and rejects it. The fix is NOT to force WAV.
+The fix is to record in M4A (iOS native format) and send as
+audio/mp4 — which Sarvam fully supports.
+
+════════════════════════════════════════════════════
+STEP 1 — REWRITE stt.ts COMPLETELY
+════════════════════════════════════════════════════
+
+Replace the ENTIRE contents of stt.ts with this exact implementation.
+Do not keep any of the old code. Start fresh:
+
+  import { Audio } from 'expo-av';
+  import { Platform } from 'react-native';
+  import { SARVAM_API_KEY } from './constants';
+
+  // ─── AUDIO FORMAT MAP ─────────────────────────────────────────────
+  // Key insight: use the format iOS/Android ACTUALLY produces natively.
+  // Never fight the platform. Use what it gives you.
+  //
+  // iOS   → M4A (AAC in MPEG-4 container) → MIME: audio/mp4
+  // Android → M4A (AAC in MPEG-4 container) → MIME: audio/mp4
+  // Both are natively supported by Sarvam STT REST API.
+
+  const RECORDING_OPTIONS = {
+    android: {
+      extension: '.m4a',
+      outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+      audioEncoder: Audio.AndroidAudioEncoder.AAC,
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      bitRate: 128000,
+    },
+    ios: {
+      extension: '.m4a',
+      outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
+      audioQuality: Audio.IOSAudioQuality.HIGH,
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      bitRate: 128000,
+      linearPCMBitDepth: 16,
+      linearPCMIsBigEndian: false,
+      linearPCMIsFloat: false,
+    },
+    web: {},
+  };
+
+  // ─── MIME TYPE LOOKUP ─────────────────────────────────────────────
+  // Always derive from the actual extension — never hardcode per platform
+  const getMimeType = (uri: string): string => {
+    const ext = uri.split('.').pop()?.toLowerCase();
+    const map: Record<string, string> = {
+      'm4a':  'audio/mp4',
+      'mp4':  'audio/mp4',
+      'mp3':  'audio/mpeg',
+      'aac':  'audio/aac',
+      'wav':  'audio/wav',
+      'flac': 'audio/flac',
+      'ogg':  'audio/ogg',
+      'webm': 'audio/webm',
+      'amr':  'audio/amr',
+    };
+    // Default to audio/mp4 if unknown — most likely M4A from iOS/Android
+    return map[ext ?? ''] ?? 'audio/mp4';
+  };
+
+  // ─── RECORDING STATE ──────────────────────────────────────────────
+  let activeRecording: Audio.Recording | null = null;
+  let recordingStartTime: number = 0;
+
+  // ─── START RECORDING ──────────────────────────────────────────────
+  export const startRecording = async (): Promise<void> => {
+    try {
+      // Stop any existing recording first
+      if (activeRecording) {
+        try {
+          await activeRecording.stopAndUnloadAsync();
+        } catch (_) {}
+        activeRecording = null;
+      }
+
+      // Request permission
+      const { granted } = await Audio.requestPermissionsAsync();
+      if (!granted) throw new Error('MICROPHONE_PERMISSION_DENIED');
+
+      // Set audio mode
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+      });
+
+      // Create and start recording
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(RECORDING_OPTIONS);
+      await recording.startAsync();
+
+      activeRecording = recording;
+      recordingStartTime = Date.now();
+    } catch (err: any) {
+      activeRecording = null;
+      throw err;
+    }
+  };
+
+  // ─── STOP RECORDING ───────────────────────────────────────────────
+  export const stopRecording = async (): Promise<{
+    uri: string;
+    durationSeconds: number;
+    mimeType: string;
+    fileName: string;
+  }> => {
+    if (!activeRecording) throw new Error('NO_ACTIVE_RECORDING');
+
+    const recording = activeRecording;
+    activeRecording = null;
+
+    try {
+      await recording.stopAndUnloadAsync();
+    } catch (_) {
+      // Ignore stop errors — file may still be valid
+    }
+
+    // Reset audio mode for playback
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+    });
+
+    const uri = recording.getURI();
+    if (!uri) throw new Error('NO_RECORDING_URI');
+
+    const durationSeconds = Math.max(
+      0.5,  // minimum 0.5 seconds to avoid micro-charge
+      (Date.now() - recordingStartTime) / 1000
+    );
+
+    const mimeType = getMimeType(uri);
+    const fileName = `recording_${Date.now()}.m4a`;
+
+    return { uri, durationSeconds, mimeType, fileName };
+  };
+
+  // ─── TRANSCRIBE AUDIO ─────────────────────────────────────────────
+  export const transcribeAudio = async (
+    uri: string,
+    mimeType: string,
+    fileName: string,
+    languageCode: string = 'unknown'
+  ): Promise<string> => {
+    const formData = new FormData();
+
+    // CRITICAL: append with EXACTLY the MIME type derived from the
+    // actual file extension. Never guess. Never hardcode 'audio/wav'.
+    formData.append('file', {
+      uri,
+      type: mimeType,  // e.g., 'audio/mp4' for .m4a files
+      name: fileName,
+    } as any);
+
+    formData.append('model', 'saaras:v3');
+    formData.append('mode', 'transcribe');
+
+    // Only append language_code if not auto-detect
+    if (languageCode && languageCode !== 'unknown') {
+      formData.append('language_code', languageCode);
+    }
+
+    const response = await fetch('https://api.sarvam.ai/speech-to-text', {
+      method: 'POST',
+      headers: {
+        'api-subscription-key': SARVAM_API_KEY,
+        // DO NOT set Content-Type manually — let fetch set it with
+        // the correct multipart boundary automatically
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => 'Unknown error');
+      console.error(`[STT] ${response.status} error:`, errorBody);
+      throw new Error(`STT_ERROR_${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.transcript ?? data.text ?? '';
+  };
+
+  // ─── COMBINED: STOP + TRANSCRIBE ─────────────────────────────────
+  // Convenience function used by voice screens
+  export const stopAndTranscribe = async (
+    languageCode: string = 'unknown'
+  ): Promise<{ transcript: string; durationSeconds: number }> => {
+    const { uri, durationSeconds, mimeType, fileName } = await stopRecording();
+    const transcript = await transcribeAudio(uri, mimeType, fileName, languageCode);
+    return { transcript, durationSeconds };
+  };
+
+════════════════════════════════════════════════════
+STEP 2 — UPDATE ALL VOICE SCREENS TO USE NEW API
+════════════════════════════════════════════════════
+
+In EVERY screen that records audio (Voice tab, Conversation tab):
+
+FIND the old recording pattern and REPLACE:
+
+OLD pattern (any variation of this):
+  const recording = new Audio.Recording();
+  await recording.prepareToRecordAsync({...});
+  await recording.startAsync();
+  // ...
+  await recording.stopAndUnloadAsync();
+  const uri = recording.getURI();
+  formData.append('file', { uri, type: 'audio/wav', name: '...' });
+
+NEW pattern:
+  import {
+    startRecording,
+    stopAndTranscribe,
+  } from '../services/stt';  // or wherever stt.ts lives
+
+  // Start:
+  const handleMicPress = async () => {
+    try {
+      await startRecording();
+      setIsRecording(true);
+    } catch (err: any) {
+      if (err.message === 'MICROPHONE_PERMISSION_DENIED') {
+        Alert.alert(
+          'Microphone Access Needed',
+          'Please enable microphone in Settings to use voice translation.'
+        );
+      }
+    }
+  };
+
+  // Stop and transcribe:
+  const handleMicRelease = async () => {
+    setIsRecording(false);
+    setTranscribing(true);
+    try {
+      const { transcript, durationSeconds } = await stopAndTranscribe(sourceLang);
+
+      if (transcript.trim()) {
+        setTranscriptText(transcript);
+        // Charge STT credits AFTER successful transcription
+        await chargeSTT(user.uid, durationSeconds, sourceLang);
+        // Auto-translate the transcript
+        await handleTranslate(transcript);
+      } else {
+        setTranscriptText('');
+        Alert.alert('No speech detected', 'Please try speaking again.');
+      }
+    } catch (err: any) {
+      console.error('[VOICE] transcription failed:', err);
+      Alert.alert('Voice Error', 'Could not transcribe audio. Try again.');
+    } finally {
+      setTranscribing(false);
+    }
+  };
+
+════════════════════════════════════════════════════
+STEP 3 — ADD ANTI-REGRESSION COMMENT
+════════════════════════════════════════════════════
+
+At the very top of stt.ts, add this block comment so future
+edits NEVER break this again:
+
+  /*
+   * ╔══════════════════════════════════════════════════════╗
+   * ║         STT AUDIO FORMAT — DO NOT CHANGE             ║
+   * ╠══════════════════════════════════════════════════════╣
+   * ║ Recording format: M4A (AAC in MPEG-4 container)      ║
+   * ║ MIME type sent:   audio/mp4                          ║
+   * ║                                                      ║
+   * ║ WHY M4A and NOT WAV:                                 ║
+   * ║ iOS produces M4A natively. Forcing WAV extension     ║
+   * ║ does NOT change the actual bytes — iOS still writes  ║
+   * ║ M4A/AAC bytes. Declaring audio/wav with M4A bytes    ║
+   * ║ causes Sarvam to detect the mismatch and reject.     ║
+   * ║                                                      ║
+   * ║ Sarvam STT REST API accepts: mp3, wav, aac, aiff,    ║
+   * ║ ogg, opus, flac, mp4/m4a, amr, wma, webm             ║
+   * ║ M4A = audio/mp4 is FULLY SUPPORTED. ✅               ║
+   * ║                                                      ║
+   * ║ NEVER change mimeType to 'audio/wav' or 'audio/vnd.  ║
+   * ║ wave'. If you get a 400 error, check getMimeType()   ║
+   * ║ returns the right value for the actual file.         ║
+   * ╚══════════════════════════════════════════════════════╝
+   */
+
+════════════════════════════════════════════════════
+STEP 4 — VERIFY NOTHING ELSE TOUCHES AUDIO FORMAT
+════════════════════════════════════════════════════
+
+Search entire codebase for these strings and REMOVE/FIX each:
+
+  'audio/vnd.wave'    → DELETE any FormData using this
+  'audio/wav'         → REPLACE with getMimeType(uri)
+  'audio/wave'        → REPLACE with getMimeType(uri)
+  prepareToRecordAsync({ android: {...}, ios: { extension: '.wav' } })
+                      → REPLACE with RECORDING_OPTIONS from stt.ts
+  formData.append('file', { ... type: 'audio/wav' ... })
+                      → REPLACE using the new transcribeAudio() function
+
+After search, only ONE place in the codebase should construct
+FormData for STT — inside transcribeAudio() in stt.ts.
+No other file should ever touch audio MIME types directly.
