@@ -15,20 +15,26 @@ export type VoiceGender = "female" | "male";
 
 // ─── SPEAKER MAP ──────────────────────────────────────────────────────────────
 // All names verified valid for bulbul:v3
+// Valid bulbul:v3 speakers (from API error response, April 2025):
+// aditya, ritu, ashutosh, priya, neha, rahul, pooja, rohan, simran,
+// kavya, amit, dev, shreya, ratan, varun, manan, sumit, roopa, kabir,
+// aayan, shubh, advait, amelia, sophia, anand, tanya, tarun, sunny,
+// mani, gokul, vijay, shruti, suhani, mohit, kavitha, rehan, soham,
+// rupali, niharika
 export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
-  "hi-IN":  { female: "anushka",  male: "abhilash" },
+  "hi-IN":  { female: "neha",     male: "aditya"   },
   "en-IN":  { female: "ritu",     male: "aditya"   },
-  "ta-IN":  { female: "vidya",    male: "karun"    },
+  "ta-IN":  { female: "niharika", male: "kabir"    },
   "te-IN":  { female: "kavitha",  male: "rahul"    },
   "kn-IN":  { female: "shreya",   male: "manan"    },
-  "ml-IN":  { female: "manisha",  male: "varun"    },
-  "bn-IN":  { female: "arya",     male: "rohan"    },
+  "ml-IN":  { female: "niharika", male: "varun"    },
+  "bn-IN":  { female: "niharika", male: "rohan"    },
   "gu-IN":  { female: "priya",    male: "dev"      },
   "mr-IN":  { female: "kavya",    male: "amit"     },
   "pa-IN":  { female: "simran",   male: "sumit"    },
   "od-IN":  { female: "roopa",    male: "kabir"    },
   "as-IN":  { female: "neha",     male: "aayan"    },
-  "ur-IN":  { female: "ishita",   male: "rehan"    },
+  "ur-IN":  { female: "niharika", male: "rehan"    },
   "sa-IN":  { female: "pooja",    male: "anand"    },
   "mai-IN": { female: "tanya",    male: "tarun"    },
   "brx-IN": { female: "shruti",   male: "sunny"    },
@@ -42,7 +48,7 @@ export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
 };
 
 export function getSpeakerName(langCode: string, gender: VoiceGender): string {
-  return SPEAKER_MAP[langCode]?.[gender] ?? (gender === "male" ? "aditya" : "anushka");
+  return SPEAKER_MAP[langCode]?.[gender] ?? (gender === "male" ? "aditya" : "neha");
 }
 
 // bulbul:v3 supports these 11 languages; others fall back to en-IN
