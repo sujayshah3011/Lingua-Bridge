@@ -1,0 +1,666 @@
+Completely rebuild the voice recording, STT, translation, and TTS
+playback pipeline from scratch using the EXACT official Expo patterns.
+The previous implementations introduced bugs. Start clean.
+
+════════════════════════════════════════════════════
+STEP 1 — NUKE AND REWRITE services/stt.ts
+════════════════════════════════════════════════════
+
+Delete everything in stt.ts and replace with this exact code.
+This is based directly on Expo's official docs — nothing custom:
+
+  /*
+   * STT SERVICE — DO NOT MODIFY AUDIO FORMAT SETTINGS
+   * Recording: M4A via RecordingOptionsPresets.HIGH_QUALITY
+   * MIME type: audio/m4a
+   * Sarvam accepts: mp3, wav, aac, m4a, mp4, ogg, flac, webm, amr
+   * M4A is iOS/Android native format — never fight the platform.
+   */
+
+  import { Audio } from 'expo-av';
+  import { SARVAM_API_KEY } from '../lib/constants';
+
+  // Module-level recording reference
+  let _recording: Audio.Recording | null = null;
+  let _recordingStartTime: number = 0;
+
+  // ─── PERMISSIONS ─────────────────────────────────────────────────
+  export const requestMicPermission = async (): Promise<boolean> => {
+    const { status } = await Audio.requestPermissionsAsync();
+    return status === 'granted';
+  };
+
+  // ─── START RECORDING ─────────────────────────────────────────────
+  // Uses Audio.Recording.createAsync — the ONLY reliable Expo method.
+  // It handles permission check, audio mode, prepare, and start in
+  // one atomic call. Never use new Audio.Recording() manually.
+  export const startVoiceRecording = async (): Promise<void> => {
+    try {
+      // Clean up any leftover recording
+      if (_recording) {
+        try {
+          await _recording.stopAndUnloadAsync();
+        } catch (_) {}
+        _recording = null;
+      }
+
+      // Check permission first
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== 'granted') {
+        throw new Error('MICROPHONE_PERMISSION_DENIED');
+      }
+
+      // MUST set audio mode before recording on iOS
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      // createAsync is the official recommended method —
+      // it combines prepareToRecordAsync + startAsync atomically
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+
+      _recording = recording;
+      _recordingStartTime = Date.now();
+
+    } catch (err: any) {
+      _recording = null;
+      _recordingStartTime = 0;
+      throw err;
+    }
+  };
+
+  // ─── STOP RECORDING ──────────────────────────────────────────────
+  export const stopVoiceRecording = async (): Promise<{
+    uri: string;
+    durationSeconds: number;
+  }> => {
+    if (!_recording) {
+      throw new Error('NO_ACTIVE_RECORDING');
+    }
+
+    const recording = _recording;
+    _recording = null;
+
+    const durationSeconds = Math.max(
+      0.5,
+      (Date.now() - _recordingStartTime) / 1000
+    );
+    _recordingStartTime = 0;
+
+    try {
+      await recording.stopAndUnloadAsync();
+    } catch (_) {
+      // May throw if already stopped — ignore, URI still valid
+    }
+
+    // Reset audio mode so playback works normally after recording
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+    });
+
+    const uri = recording.getURI();
+    if (!uri) throw new Error('NO_RECORDING_URI');
+
+    return { uri, durationSeconds };
+  };
+
+  // ─── TRANSCRIBE ───────────────────────────────────────────────────
+  // Sends M4A audio to Sarvam STT REST API
+  export const transcribeAudio = async (
+    uri: string,
+    languageCode: string = 'unknown'
+  ): Promise<string> => {
+    const formData = new FormData();
+
+    // CRITICAL: name must end in .m4a, type must be audio/m4a
+    // Expo HIGH_QUALITY preset produces M4A/AAC on both iOS and Android
+    // 'audio/m4a' is accepted by Sarvam STT (mp4/m4a format)
+    formData.append('file', {
+      uri,
+      name: `recording-${Date.now()}.m4a`,
+      type: 'audio/m4a',
+    } as any);
+
+    formData.append('model', 'saaras:v3');
+    formData.append('mode', 'transcribe');
+
+    if (languageCode !== 'unknown') {
+      formData.append('language_code', languageCode);
+    }
+
+    const response = await fetch('https://api.sarvam.ai/speech-to-text', {
+      method: 'POST',
+      headers: {
+        'api-subscription-key': SARVAM_API_KEY,
+        // DO NOT set Content-Type — fetch sets it with boundary automatically
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      console.error('[STT] Error:', response.status, body);
+      throw new Error(`STT_ERROR_${response.status}`);
+    }
+
+    const data = await response.json();
+    // Sarvam returns 'transcript' field
+    return (data.transcript ?? data.text ?? '').trim();
+  };
+
+════════════════════════════════════════════════════
+STEP 2 — NUKE AND REWRITE services/tts.ts
+════════════════════════════════════════════════════
+
+Delete everything in tts.ts and replace with this exact code:
+
+  /*
+   * TTS SERVICE
+   * Model: bulbul:v3
+   * Playback: expo-av Audio.Sound
+   * FORBIDDEN params for bulbul:v3: pitch, loudness, eng_interpolation_wt
+   */
+
+  import { Audio } from 'expo-av';
+  import { SARVAM_API_KEY } from '../lib/constants';
+
+  // Keep reference to unload previous sound before playing new one
+  let _currentSound: Audio.Sound | null = null;
+
+  // ─── SPEAKER MAP ─────────────────────────────────────────────────
+  // All names verified valid for bulbul:v3 (April 2025)
+  export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
+    'hi-IN': { female: 'anushka',  male: 'abhilash' },
+    'en-IN': { female: 'ritu',     male: 'aditya'   },
+    'ta-IN': { female: 'vidya',    male: 'karun'    },
+    'te-IN': { female: 'kavitha',  male: 'rahul'    },
+    'kn-IN': { female: 'shreya',   male: 'manan'    },
+    'ml-IN': { female: 'manisha',  male: 'varun'    },
+    'bn-IN': { female: 'arya',     male: 'rohan'    },
+    'gu-IN': { female: 'priya',    male: 'dev'      },
+    'mr-IN': { female: 'kavya',    male: 'amit'     },
+    'pa-IN': { female: 'simran',   male: 'sumit'    },
+    'od-IN': { female: 'roopa',    male: 'kabir'    },
+    'as-IN': { female: 'neha',     male: 'hitesh'   },
+    'ur-IN': { female: 'ishita',   male: 'rehan'    },
+  };
+
+  const getSpeaker = (
+    langCode: string,
+    gender: 'female' | 'male'
+  ): string => {
+    return SPEAKER_MAP[langCode]?.[gender] ?? 'anushka';
+  };
+
+  // ─── TTS LANGUAGES (bulbul:v3 supports 11 languages) ─────────────
+  // If target language not supported, fall back to English
+  const TTS_SUPPORTED_LANGS = new Set([
+    'hi-IN','ta-IN','te-IN','kn-IN','ml-IN',
+    'bn-IN','gu-IN','mr-IN','pa-IN','od-IN','en-IN',
+  ]);
+
+  // ─── SYNTHESIZE + PLAY ────────────────────────────────────────────
+  export const speakText = async (
+    text: string,
+    targetLang: string,
+    gender: 'female' | 'male' = 'female'
+  ): Promise<void> => {
+    if (!text.trim()) return;
+
+    // Use English if target language not supported by TTS
+    const ttsLang = TTS_SUPPORTED_LANGS.has(targetLang)
+      ? targetLang
+      : 'en-IN';
+
+    const speaker = getSpeaker(ttsLang, gender);
+
+    // ─── Call Sarvam TTS API ────────────────────────────────────────
+    const response = await fetch('https://api.sarvam.ai/text-to-speech', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-subscription-key': SARVAM_API_KEY,
+      },
+      body: JSON.stringify({
+        inputs: [text.slice(0, 500)], // max 500 chars for REST API
+        target_language_code: ttsLang,
+        speaker,
+        model: 'bulbul:v3',
+        // CRITICAL: do NOT include pitch, loudness, eng_interpolation_wt
+        // These are NOT supported in bulbul:v3 and cause 400 errors
+        pace: 1.0,
+        speech_sample_rate: 22050,
+        enable_preprocessing: true,
+      }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      console.error('[TTS] Error:', response.status, body);
+      throw new Error(`TTS_ERROR_${response.status}`);
+    }
+
+    const data = await response.json();
+    const base64Audio = data.audios?.[0];
+    if (!base64Audio) throw new Error('TTS_NO_AUDIO');
+
+    // ─── Stop previous sound before playing new one ─────────────────
+    if (_currentSound) {
+      try {
+        await _currentSound.stopAsync();
+        await _currentSound.unloadAsync();
+      } catch (_) {}
+      _currentSound = null;
+    }
+
+    // ─── Set audio mode for playback ──────────────────────────────
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+    });
+
+    // ─── Create and play sound from base64 WAV ───────────────────
+    // Sarvam returns base64-encoded WAV audio
+    const audioUri = `data:audio/wav;base64,${base64Audio}`;
+
+    const { sound } = await Audio.Sound.createAsync(
+      { uri: audioUri },
+      { shouldPlay: true, volume: 1.0 }
+    );
+
+    _currentSound = sound;
+
+    // Auto-unload when playback finishes
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (status.isLoaded && status.didJustFinish) {
+        sound.unloadAsync().catch(() => {});
+        if (_currentSound === sound) _currentSound = null;
+      }
+    });
+  };
+
+  // ─── STOP PLAYBACK ────────────────────────────────────────────────
+  export const stopSpeaking = async (): Promise<void> => {
+    if (_currentSound) {
+      try {
+        await _currentSound.stopAsync();
+        await _currentSound.unloadAsync();
+      } catch (_) {}
+      _currentSound = null;
+    }
+  };
+
+════════════════════════════════════════════════════
+STEP 3 — REBUILD Voice Screen (VoiceScreen.tsx)
+════════════════════════════════════════════════════
+
+Replace the entire voice screen component with this clean implementation:
+
+  import React, { useState, useRef, useEffect } from 'react';
+  import {
+    View, Text, TouchableOpacity, ActivityIndicator,
+    Alert, StyleSheet, Platform,
+  } from 'react-native';
+  import { Audio } from 'expo-av';
+  import {
+    startVoiceRecording,
+    stopVoiceRecording,
+    transcribeAudio,
+  } from '../services/stt';
+  import { speakText, stopSpeaking, SPEAKER_MAP } from '../services/tts';
+  import { translateText } from '../services/translate';
+  import { chargeSTT, chargeTTS, chargeTranslate } from '../lib/credits';
+  import { useAuth } from '../context/AuthContext';  // or however auth is accessed
+
+  type VoiceState =
+    | 'idle'
+    | 'requesting_permission'
+    | 'recording'
+    | 'transcribing'
+    | 'translating'
+    | 'speaking'
+    | 'done'
+    | 'error';
+
+  export default function VoiceScreen() {
+    const { user } = useAuth();
+
+    const [state, setState] = useState<VoiceState>('idle');
+    const [transcript, setTranscript] = useState('');
+    const [translation, setTranslation] = useState('');
+    const [sourceLang, setSourceLang] = useState('hi-IN');
+    const [targetLang, setTargetLang] = useState('en-IN');
+    const [voiceGender, setVoiceGender] = useState<'female' | 'male'>('female');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [recordingDuration, setRecordingDuration] = useState(0);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    // Live duration counter while recording
+    useEffect(() => {
+      if (state === 'recording') {
+        setRecordingDuration(0);
+        timerRef.current = setInterval(() => {
+          setRecordingDuration(d => d + 1);
+        }, 1000);
+      } else {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+      }
+      return () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+      };
+    }, [state]);
+
+    // ─── START RECORDING ──────────────────────────────────────────
+    const handleStartRecording = async () => {
+      if (state !== 'idle' && state !== 'done' && state !== 'error') return;
+
+      setTranscript('');
+      setTranslation('');
+      setErrorMsg('');
+
+      setState('requesting_permission');
+
+      try {
+        await startVoiceRecording();
+        setState('recording');
+      } catch (err: any) {
+        setState('error');
+        if (err.message === 'MICROPHONE_PERMISSION_DENIED') {
+          setErrorMsg('Microphone access denied. Enable it in Settings.');
+          Alert.alert(
+            'Microphone Required',
+            'Please enable microphone access in your device Settings.',
+          );
+        } else {
+          setErrorMsg('Could not start recording. Try again.');
+          console.error('[VOICE] Start recording error:', err);
+        }
+      }
+    };
+
+    // ─── STOP RECORDING + FULL PIPELINE ──────────────────────────
+    const handleStopRecording = async () => {
+      if (state !== 'recording') return;
+
+      try {
+        // 1. Stop recording
+        setState('transcribing');
+        const { uri, durationSeconds } = await stopVoiceRecording();
+
+        // 2. Transcribe via Sarvam STT
+        const transcriptText = await transcribeAudio(uri, sourceLang);
+
+        if (!transcriptText) {
+          setState('idle');
+          Alert.alert('No Speech Detected', 'Please speak clearly and try again.');
+          return;
+        }
+
+        setTranscript(transcriptText);
+
+        // 3. Charge STT credits (after success only)
+        if (user?.uid) {
+          await chargeSTT(user.uid, durationSeconds, sourceLang).catch(console.error);
+        }
+
+        // 4. Translate
+        setState('translating');
+        const translatedText = await translateText(
+          user?.uid ?? '',
+          transcriptText,
+          sourceLang,
+          targetLang,
+        );
+        setTranslation(translatedText);
+
+        setState('done');
+
+      } catch (err: any) {
+        setState('error');
+        setErrorMsg(
+          err.message?.includes('STT_ERROR_400')
+            ? 'Audio format error. Please try again.'
+            : err.message?.includes('INSUFFICIENT_CREDITS')
+            ? 'Not enough credits.'
+            : 'Something went wrong. Please try again.'
+        );
+        console.error('[VOICE] Pipeline error:', err);
+      }
+    };
+
+    // ─── SPEAK TRANSLATION ────────────────────────────────────────
+    const handleSpeak = async () => {
+      if (!translation || state === 'speaking') return;
+      setState('speaking');
+      try {
+        await speakText(translation, targetLang, voiceGender);
+        // Charge TTS after success
+        if (user?.uid) {
+          await chargeTTS(user.uid, translation, targetLang).catch(console.error);
+        }
+      } catch (err: any) {
+        console.error('[VOICE] TTS error:', err);
+        Alert.alert('Playback Error', 'Could not play audio. Try again.');
+      } finally {
+        setState('done');
+      }
+    };
+
+    const handleStopSpeaking = async () => {
+      await stopSpeaking();
+      setState('done');
+    };
+
+    // ─── MIC BUTTON HANDLER ───────────────────────────────────────
+    const handleMicPress = () => {
+      if (state === 'recording') {
+        handleStopRecording();
+      } else {
+        handleStartRecording();
+      }
+    };
+
+    // ─── UI ───────────────────────────────────────────────────────
+    const isProcessing = ['requesting_permission','transcribing','translating','speaking'].includes(state);
+    const isRecording = state === 'recording';
+
+    return (
+      <View style={styles.container}>
+
+        {/* Language Selector Row */}
+        <View style={styles.langRow}>
+          {/* Source language picker — reuse existing LanguagePicker component */}
+          {/* Target language picker — reuse existing LanguagePicker component */}
+        </View>
+
+        {/* Voice Gender Toggle */}
+        <View style={styles.genderRow}>
+          <Text style={styles.genderLabel}>Voice:</Text>
+          {(['female', 'male'] as const).map(g => (
+            <TouchableOpacity
+              key={g}
+              style={[styles.genderPill, voiceGender === g && styles.genderPillActive]}
+              onPress={() => setVoiceGender(g)}>
+              <Text style={[styles.genderText, voiceGender === g && styles.genderTextActive]}>
+                {g === 'female' ? '👩 Female' : '👨 Male'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* MIC BUTTON */}
+        <TouchableOpacity
+          onPress={handleMicPress}
+          disabled={isProcessing}
+          style={[
+            styles.micButton,
+            isRecording && styles.micButtonRecording,
+            isProcessing && styles.micButtonDisabled,
+          ]}>
+          {isProcessing ? (
+            <ActivityIndicator color="#FFF" size="large" />
+          ) : (
+            <Text style={styles.micIcon}>{isRecording ? '⏹' : '🎙️'}</Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Status label below mic */}
+        <Text style={styles.statusLabel}>
+          {state === 'idle'          && 'Tap to start speaking'}
+          {state === 'requesting_permission' && 'Requesting permission...'}
+          {state === 'recording'     && `Recording... ${recordingDuration}s`}
+          {state === 'transcribing'  && 'Transcribing your speech...'}
+          {state === 'translating'   && 'Translating...'}
+          {state === 'speaking'      && 'Speaking...'}
+          {state === 'done'          && 'Tap mic to record again'}
+          {state === 'error'         && errorMsg}
+        </Text>
+
+        {/* Transcript Card */}
+        {transcript ? (
+          <View style={styles.card}>
+            <Text style={styles.cardLabel}>You said:</Text>
+            <Text style={styles.cardText}>{transcript}</Text>
+          </View>
+        ) : null}
+
+        {/* Translation Card */}
+        {translation ? (
+          <View style={[styles.card, styles.translationCard]}>
+            <Text style={styles.cardLabel}>Translation:</Text>
+            <Text style={styles.translationText}>{translation}</Text>
+
+            {/* Speak / Stop buttons */}
+            <View style={styles.speakRow}>
+              {state === 'speaking' ? (
+                <TouchableOpacity style={styles.speakBtn} onPress={handleStopSpeaking}>
+                  <Text style={styles.speakBtnText}>⏹ Stop</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.speakBtn} onPress={handleSpeak}>
+                  <Text style={styles.speakBtnText}>
+                    🔊 Listen ({voiceGender === 'female' ? 'Female' : 'Male'})
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        ) : null}
+
+      </View>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    container: { flex:1, padding:16, backgroundColor:'#FAFAFA' },
+    langRow: { flexDirection:'row', justifyContent:'space-between', marginBottom:16 },
+    genderRow: { flexDirection:'row', alignItems:'center', gap:8, marginBottom:24 },
+    genderLabel: { fontSize:14, color:'#666' },
+    genderPill: {
+      paddingHorizontal:14, paddingVertical:6,
+      borderRadius:20, borderWidth:1, borderColor:'#FF6B00',
+    },
+    genderPillActive: { backgroundColor:'#FF6B00' },
+    genderText: { fontSize:13, color:'#FF6B00' },
+    genderTextActive: { color:'#FFF', fontWeight:'700' },
+    micButton: {
+      width:88, height:88, borderRadius:44,
+      backgroundColor:'#FF6B00',
+      alignSelf:'center', justifyContent:'center', alignItems:'center',
+      marginVertical:24, elevation:4,
+      shadowColor:'#FF6B00', shadowOpacity:0.4, shadowRadius:8,
+    },
+    micButtonRecording: {
+      backgroundColor:'#DC2626',
+      shadowColor:'#DC2626',
+    },
+    micButtonDisabled: { opacity:0.6 },
+    micIcon: { fontSize:36 },
+    statusLabel: {
+      textAlign:'center', color:'#666', fontSize:14, marginBottom:16,
+    },
+    card: {
+      backgroundColor:'#FFF', borderRadius:14, padding:16,
+      marginBottom:12, borderWidth:1, borderColor:'#E5E7EB',
+    },
+    translationCard: { borderColor:'#FF6B00', borderWidth:1.5 },
+    cardLabel: { fontSize:12, color:'#9CA3AF', marginBottom:6, fontWeight:'600' },
+    cardText: { fontSize:16, color:'#111', lineHeight:24 },
+    translationText: { fontSize:18, color:'#111', lineHeight:28, fontWeight:'500' },
+    speakRow: { marginTop:12, flexDirection:'row' },
+    speakBtn: {
+      backgroundColor:'#FF6B00', borderRadius:10,
+      paddingHorizontal:16, paddingVertical:8,
+    },
+    speakBtnText: { color:'#FFF', fontWeight:'700', fontSize:14 },
+  });
+
+════════════════════════════════════════════════════
+STEP 4 — VERIFY app.json HAS MIC PERMISSION
+════════════════════════════════════════════════════
+
+In app.json confirm these exist EXACTLY:
+
+  "android": {
+    "permissions": [
+      "android.permission.RECORD_AUDIO",
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_NETWORK_STATE"
+    ]
+  },
+  "ios": {
+    "infoPlist": {
+      "NSMicrophoneUsageDescription":
+        "BhaashAI uses your microphone to translate your voice across Indian languages."
+    }
+  },
+  "plugins": [
+    [
+      "expo-av",
+      {
+        "microphonePermission":
+          "BhaashAI needs microphone access for voice translation."
+      }
+    ]
+  ]
+
+If any of these are missing, ADD THEM NOW.
+
+════════════════════════════════════════════════════
+STEP 5 — SEARCH AND DESTROY ALL OLD PATTERNS
+════════════════════════════════════════════════════
+
+Search the entire codebase. For each match, apply the fix:
+
+  FIND: new Audio.Recording()
+  REPLACE: use Audio.Recording.createAsync() from stt.ts instead
+
+  FIND: type: 'audio/wav'
+  FIND: type: 'audio/vnd.wave'
+  FIND: type: 'audio/wave'
+  REPLACE ALL: type: 'audio/m4a'
+
+  FIND: extension: '.wav' (in recording options)
+  REPLACE: extension: '.m4a'
+
+  FIND: pitch:  (in TTS body)
+  FIND: loudness: (in TTS body)
+  FIND: eng_interpolation_wt: (in TTS body)
+  DELETE ALL these fields from any TTS API call body
+
+  FIND: 'meera' (invalid speaker in bulbul:v3)
+  REPLACE: use getSpeaker(lang, gender) from tts.ts
+
+  FIND: transcribeAudio called WITHOUT await
+  REPLACE: always await transcribeAudio(...)
+
+After search: only ONE place calls STT (services/stt.ts)
+and only ONE place calls TTS (services/tts.ts).
+No other file should make raw fetch calls to Sarvam audio APIs.

@@ -22,9 +22,9 @@ import { Colors } from "@/constants/colors";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import MicButton from "@/components/MicButton";
 import {
-  startRecording as sttStart,
+  startVoiceRecording,
   stopAndTranscribe,
-  cancelRecording,
+  cancelVoiceRecording,
 } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
@@ -80,7 +80,7 @@ export default function VoiceScreen() {
 
   useEffect(() => {
     return () => {
-      cancelRecording().catch(() => {});
+      cancelVoiceRecording().catch(() => {});
       soundRef.current?.unloadAsync().catch(() => {});
     };
   }, []);
@@ -99,7 +99,7 @@ export default function VoiceScreen() {
     }
 
     try {
-      await sttStart();
+      await startVoiceRecording();
       setState("recording");
       setTranscript("");
       setTranslation("");

@@ -23,9 +23,9 @@ import ConversationBubble, { Message } from "@/components/ConversationBubble";
 import MicButton from "@/components/MicButton";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import {
-  startRecording as sttStart,
+  startVoiceRecording,
   stopAndTranscribe,
-  cancelRecording,
+  cancelVoiceRecording,
 } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
 import { translateText } from "@/services/sarvam";
@@ -54,7 +54,7 @@ export default function ConversationScreen() {
   useEffect(() => {
     return () => {
       if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
-      cancelRecording().catch(() => {});
+      cancelVoiceRecording().catch(() => {});
       soundRef.current?.unloadAsync().catch(() => {});
     };
   }, []);
@@ -98,7 +98,7 @@ export default function ConversationScreen() {
       }
 
       try {
-        await sttStart();
+        await startVoiceRecording();
 
         if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
         autoTimerRef.current = setTimeout(async () => {

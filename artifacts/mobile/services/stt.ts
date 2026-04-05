@@ -1,24 +1,22 @@
 /*
- * ╔══════════════════════════════════════════════════════╗
- * ║         STT AUDIO FORMAT — DO NOT CHANGE             ║
- * ╠══════════════════════════════════════════════════════╣
- * ║ Recording format: M4A (AAC in MPEG-4 container)      ║
- * ║ MIME type sent:   audio/mp4                          ║
- * ║                                                      ║
- * ║ WHY M4A and NOT WAV:                                 ║
- * ║ iOS produces M4A natively. Forcing WAV extension     ║
- * ║ does NOT change the actual bytes — iOS still writes  ║
- * ║ M4A/AAC bytes. Declaring audio/wav with M4A bytes    ║
- * ║ causes Sarvam to detect the mismatch and reject.     ║
- * ║                                                      ║
- * ║ Sarvam STT REST API accepts: mp3, wav, aac, aiff,    ║
- * ║ ogg, opus, flac, mp4/m4a, amr, wma, webm             ║
- * ║ M4A = audio/mp4 is FULLY SUPPORTED. ✅               ║
- * ║                                                      ║
- * ║ NEVER change mimeType to 'audio/wav' or              ║
- * ║ 'audio/vnd.wave'. If you get a 400 error, check      ║
- * ║ getMimeType() returns the right value for the file.  ║
- * ╚══════════════════════════════════════════════════════╝
+ * STT SERVICE — DO NOT MODIFY AUDIO FORMAT SETTINGS
+ *
+ * Recording: Audio.Recording.createAsync(HIGH_QUALITY)
+ * MIME type sent to API: audio/m4a
+ *
+ * WHY createAsync AND NOT new Audio.Recording() + prepareToRecordAsync:
+ * The two-step manual approach throws "recorder not prepared" in Expo Go.
+ * createAsync is the ONLY reliable method — it combines permission check,
+ * audio mode, prepare, and start atomically in one call.
+ *
+ * WHY audio/m4a AND NOT audio/wav:
+ * HIGH_QUALITY preset produces M4A/AAC natively on iOS and Android.
+ * iOS ignores WAV settings and writes M4A bytes. Sending those bytes
+ * as audio/wav causes Sarvam to detect the mismatch and reject.
+ * Sarvam STT accepts: mp3, wav, aac, m4a, mp4, ogg, flac, webm, amr.
+ * audio/m4a is FULLY SUPPORTED. ✅
+ *
+ * NEVER change type to 'audio/wav', 'audio/vnd.wave', or any hardcoded value.
  */
 
 import { Audio } from "expo-av";
@@ -30,92 +28,58 @@ export interface STTResult {
   credits?: number;
 }
 
-// ─── RECORDING OPTIONS ────────────────────────────────────────────────────────
-// M4A/AAC: what iOS and Android actually produce natively.
-// Never use .wav extension — iOS ignores it and writes M4A bytes anyway.
-export const RECORDING_OPTIONS: Audio.RecordingOptions = {
-  android: {
-    extension: ".m4a",
-    outputFormat: Audio.AndroidOutputFormat.MPEG_4,
-    audioEncoder: Audio.AndroidAudioEncoder.AAC,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 128000,
-  },
-  ios: {
-    extension: ".m4a",
-    outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
-    audioQuality: Audio.IOSAudioQuality.HIGH,
-    sampleRate: 16000,
-    numberOfChannels: 1,
-    bitRate: 128000,
-    linearPCMBitDepth: 16,
-    linearPCMIsBigEndian: false,
-    linearPCMIsFloat: false,
-  },
-  web: {},
-};
-
-// ─── MIME TYPE LOOKUP ─────────────────────────────────────────────────────────
-// Always derive from the actual file extension — never hardcode per-platform.
-export const getMimeType = (uri: string): string => {
-  const ext = uri.split(".").pop()?.toLowerCase() ?? "";
-  const map: Record<string, string> = {
-    m4a: "audio/mp4",
-    mp4: "audio/mp4",
-    mp3: "audio/mpeg",
-    aac: "audio/aac",
-    wav: "audio/wav",
-    flac: "audio/flac",
-    ogg: "audio/ogg",
-    webm: "audio/webm",
-    amr: "audio/amr",
-  };
-  return map[ext] ?? "audio/mp4"; // default: M4A from iOS/Android
-};
-
-// ─── GLOBAL RECORDING STATE ───────────────────────────────────────────────────
-let _activeRecording: Audio.Recording | null = null;
+// ─── GLOBAL STATE ─────────────────────────────────────────────────────────────
+let _recording: Audio.Recording | null = null;
 let _recordingStartTime: number = 0;
 
 // ─── START RECORDING ──────────────────────────────────────────────────────────
-export const startRecording = async (): Promise<void> => {
-  // Stop any pre-existing recording
-  if (_activeRecording) {
-    try { await _activeRecording.stopAndUnloadAsync(); } catch (_) {}
-    _activeRecording = null;
+// Uses Audio.Recording.createAsync — the ONLY reliable Expo method.
+// It handles permission check, audio mode, prepare, and start atomically.
+// NEVER use `new Audio.Recording() + prepareToRecordAsync` — it fails in Expo Go.
+export const startVoiceRecording = async (): Promise<void> => {
+  // Clean up any leftover recording
+  if (_recording) {
+    try { await _recording.stopAndUnloadAsync(); } catch (_) {}
+    _recording = null;
   }
 
-  const { granted } = await Audio.requestPermissionsAsync();
-  if (!granted) throw new Error("MICROPHONE_PERMISSION_DENIED");
+  const { status } = await Audio.requestPermissionsAsync();
+  if (status !== "granted") throw new Error("MICROPHONE_PERMISSION_DENIED");
 
+  // MUST set audio mode before recording on iOS
   await Audio.setAudioModeAsync({
     allowsRecordingIOS: true,
     playsInSilentModeIOS: true,
-    staysActiveInBackground: false,
   });
 
-  const recording = new Audio.Recording();
-  await recording.prepareToRecordAsync(RECORDING_OPTIONS);
-  await recording.startAsync();
+  // createAsync = the single atomic call that always works
+  const { recording } = await Audio.Recording.createAsync(
+    Audio.RecordingOptionsPresets.HIGH_QUALITY
+  );
 
-  _activeRecording = recording;
+  _recording = recording;
   _recordingStartTime = Date.now();
 };
 
 // ─── STOP RECORDING ───────────────────────────────────────────────────────────
-export const stopRecording = async (): Promise<{
+export const stopVoiceRecording = async (): Promise<{
   uri: string;
   durationSeconds: number;
-  mimeType: string;
 }> => {
-  if (!_activeRecording) throw new Error("NO_ACTIVE_RECORDING");
+  if (!_recording) throw new Error("NO_ACTIVE_RECORDING");
 
-  const recording = _activeRecording;
-  _activeRecording = null;
+  const recording = _recording;
+  _recording = null;
+
+  const durationSeconds = Math.max(
+    0.5,
+    (Date.now() - _recordingStartTime) / 1000
+  );
+  _recordingStartTime = 0;
 
   try { await recording.stopAndUnloadAsync(); } catch (_) {}
 
+  // Reset audio mode so playback works after recording
   await Audio.setAudioModeAsync({
     allowsRecordingIOS: false,
     playsInSilentModeIOS: true,
@@ -124,19 +88,15 @@ export const stopRecording = async (): Promise<{
   const uri = recording.getURI();
   if (!uri) throw new Error("NO_RECORDING_URI");
 
-  const durationSeconds = Math.max(
-    0.5, // minimum to avoid micro-charge
-    (Date.now() - _recordingStartTime) / 1000
-  );
-
-  return { uri, durationSeconds, mimeType: getMimeType(uri) };
+  return { uri, durationSeconds };
 };
 
-// ─── CANCEL RECORDING (silent cleanup) ────────────────────────────────────────
-export const cancelRecording = async (): Promise<void> => {
-  if (!_activeRecording) return;
-  const recording = _activeRecording;
-  _activeRecording = null;
+// ─── CANCEL (silent cleanup) ───────────────────────────────────────────────────
+export const cancelVoiceRecording = async (): Promise<void> => {
+  if (!_recording) return;
+  const recording = _recording;
+  _recording = null;
+  _recordingStartTime = 0;
   try { await recording.stopAndUnloadAsync(); } catch (_) {}
   try {
     await Audio.setAudioModeAsync({
@@ -146,22 +106,20 @@ export const cancelRecording = async (): Promise<void> => {
   } catch (_) {}
 };
 
-// ─── TRANSCRIBE AUDIO (via API server — handles auth + credit deduction) ──────
+// ─── TRANSCRIBE (via API server — handles auth + credit deduction) ─────────────
 export async function transcribeAudio(
-  fileUri: string,
+  uri: string,
   languageCode: string = "unknown"
 ): Promise<STTResult> {
   const headers = await fileHeaders();
-  const mimeType = getMimeType(fileUri);
-
   const formData = new FormData();
-  // Derive MIME from actual extension via getMimeType().
-  // For .m4a → "audio/mp4", which Sarvam fully accepts.
-  // NEVER hardcode "audio/wav" here — iOS bytes are M4A, not WAV.
+
+  // HIGH_QUALITY preset produces M4A/AAC on iOS and Android.
+  // type: 'audio/m4a' matches the actual bytes — Sarvam accepts it.
   formData.append("file", {
-    uri: fileUri,
-    type: mimeType,
-    name: "recording.m4a",
+    uri,
+    name: `recording-${Date.now()}.m4a`,
+    type: "audio/m4a",
   } as any);
   formData.append("language_code", languageCode);
 
@@ -175,23 +133,23 @@ export async function transcribeAudio(
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    console.error(`[STT] ${res.status} error:`, body);
+    console.error(`[STT] ${res.status}:`, body);
     throw new Error(`STT_ERROR_${res.status}`);
   }
 
   const data = await res.json();
   return {
-    transcript: data.transcript ?? "",
+    transcript: (data.transcript ?? data.text ?? "").trim(),
     languageCode: data.language_code,
     credits: data.credits,
   };
 }
 
-// ─── STOP + TRANSCRIBE (convenience) ─────────────────────────────────────────
+// ─── STOP + TRANSCRIBE (convenience for conversation screen) ──────────────────
 export const stopAndTranscribe = async (
   languageCode: string = "unknown"
 ): Promise<STTResult & { durationSeconds: number }> => {
-  const { uri, durationSeconds } = await stopRecording();
+  const { uri, durationSeconds } = await stopVoiceRecording();
   const result = await transcribeAudio(uri, languageCode);
   return { ...result, durationSeconds };
 };
