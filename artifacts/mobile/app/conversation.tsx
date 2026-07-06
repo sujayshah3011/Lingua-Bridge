@@ -34,7 +34,7 @@ type Speaker = "A" | "B";
 type SpeakerState = "idle" | "recording" | "processing";
 
 export default function ConversationScreen() {
-  const { credits, setCredits, isDark } = useApp();
+  const { credits, setCredits, isDark, ttsProvider } = useApp();
   const C = isDark ? Colors.dark : Colors.light;
 
   const [langA, setLangA] = useState("hi-IN");
@@ -171,7 +171,7 @@ export default function ConversationScreen() {
         if (translated) {
           try {
             await soundRef.current?.unloadAsync();
-            const fileUri = await synthesizeSpeech(translated, targetLangCode);
+            const fileUri = await synthesizeSpeech(translated, targetLangCode, "female", ttsProvider);
             const { sound } = await Audio.Sound.createAsync(
               { uri: fileUri },
               { shouldPlay: true }

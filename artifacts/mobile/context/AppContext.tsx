@@ -31,7 +31,7 @@ import React, {
 import { Alert, Platform, useColorScheme } from "react-native";
 
 import { auth, db } from "@/services/firebase";
-import { VoiceGender } from "@/services/tts";
+import { VoiceGender, TTSProvider } from "@/services/tts";
 import { UserStats, useCredits } from "@/hooks/useCredits";
 import { WELCOME_CREDIT_INR } from "@/constants/pricing";
 
@@ -79,6 +79,8 @@ interface AppContextValue {
   addRecentLang: (code: string) => void;
   voiceGender: VoiceGender;
   setVoiceGender: (gender: VoiceGender) => void;
+  ttsProvider: TTSProvider;
+  setTTSProvider: (provider: TTSProvider) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -149,6 +151,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     "ta-IN",
   ]);
   const [voiceGender, setVoiceGenderState] = useState<VoiceGender>("female");
+  const [ttsProvider, setTTSProviderState] = useState<TTSProvider>("sarvam");
 
   const isDark =
     themeMode === "system" ? systemScheme === "dark" : themeMode === "dark";
@@ -327,6 +330,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (prefs.transliteration !== undefined)
             setTransliteration(prefs.transliteration);
           if (prefs.voiceGender) setVoiceGenderState(prefs.voiceGender);
+          if (prefs.ttsProvider) setTTSProviderState(prefs.ttsProvider);
         }
       } catch {}
     };
@@ -345,6 +349,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           autoDetect,
           transliteration,
           voiceGender,
+          ttsProvider,
           ...overrides,
         };
         await AsyncStorage.setItem(PREFS_KEY, JSON.stringify(current));
@@ -359,7 +364,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       autoDetect,
       transliteration,
       voiceGender,
+      ttsProvider,
     ]
+  );
+
+  const setTTSProvider = useCallback(
+    (provider: TTSProvider) => {
+      setTTSProviderState(provider);
+      savePrefs({ ttsProvider: provider });
+    },
+    [savePrefs]
   );
 
   const setVoiceGender = useCallback(
@@ -454,6 +468,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addRecentLang,
       voiceGender,
       setVoiceGender,
+      ttsProvider,
+      setTTSProvider,
     }),
     [
       user,
@@ -484,6 +500,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addRecentLang,
       voiceGender,
       setVoiceGender,
+      ttsProvider,
+      setTTSProvider,
     ]
   );
 

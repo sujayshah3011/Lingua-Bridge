@@ -48,6 +48,7 @@ export default function TranslateScreen() {
     addRecentLang,
     voiceGender,
     setVoiceGender,
+    ttsProvider,
   } = useApp();
   const { theme, isDark } = useTheme();
   const insets = useSafeAreaInsets();
@@ -242,14 +243,14 @@ export default function TranslateScreen() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
       });
-      const uri = await synthesizeSpeech(translatedText, targetLang, voiceGender);
+      const uri = await synthesizeSpeech(translatedText, targetLang, voiceGender, ttsProvider);
       const { sound } = await Audio.Sound.createAsync(
         { uri },
         { shouldPlay: true }
       );
       soundRef.current = sound;
 
-      await chargeTTS(uid, translatedText, targetLang);
+      await chargeTTS(uid, translatedText, targetLang, ttsProvider);
 
       sound.setOnPlaybackStatusUpdate((status) => {
         if (!status.isLoaded || status.didJustFinish) {
@@ -273,7 +274,7 @@ export default function TranslateScreen() {
         showToast("Could not play audio", "error");
       }
     }
-  }, [translatedText, targetLang, voiceGender, isSpeaking, credits, user, showToast]);
+  }, [translatedText, targetLang, voiceGender, ttsProvider, isSpeaking, credits, user, showToast]);
 
   useEffect(() => {
     return () => {

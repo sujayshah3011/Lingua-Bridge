@@ -59,6 +59,7 @@ export default function VoiceScreen() {
     isDark,
     voiceGender,
     setVoiceGender,
+    ttsProvider,
   } = useApp();
   const C = isDark ? Colors.dark : Colors.light;
 
@@ -238,7 +239,7 @@ export default function VoiceScreen() {
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
       });
-      const fileUri = await synthesizeSpeech(translation, targetLang, voiceGender);
+      const fileUri = await synthesizeSpeech(translation, targetLang, voiceGender, ttsProvider);
       const { sound } = await Audio.Sound.createAsync(
         { uri: fileUri },
         { shouldPlay: true }
@@ -246,7 +247,7 @@ export default function VoiceScreen() {
       soundRef.current = sound;
 
       if (uid) {
-        await chargeTTS(uid, translation, targetLang);
+        await chargeTTS(uid, translation, targetLang, ttsProvider);
       }
 
       sound.setOnPlaybackStatusUpdate((s) => {
@@ -272,7 +273,7 @@ export default function VoiceScreen() {
     } finally {
       setTtsLoading(false);
     }
-  }, [user, translation, targetLang, voiceGender, ttsLoading, credits]);
+  }, [user, translation, targetLang, voiceGender, ttsProvider, ttsLoading, credits]);
 
   const isRecording = state === "recording";
   const isProcessing = state === "processing";

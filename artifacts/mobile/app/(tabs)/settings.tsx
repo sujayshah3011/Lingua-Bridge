@@ -31,6 +31,8 @@ export default function SettingsScreen() {
     stats,
     themeMode,
     setThemeMode,
+    ttsProvider,
+    setTTSProvider,
   } = useApp();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
@@ -375,6 +377,58 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* TTS Provider */}
+        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
+          TTS PROVIDER
+        </Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <Text style={[styles.cardLabel, { color: theme.text }]}>Text-to-Speech Engine</Text>
+          <View style={styles.themeRow}>
+            {(["sarvam", "elevenlabs"] as const).map((provider) => {
+              const active = ttsProvider === provider;
+              return (
+                <Pressable
+                  key={provider}
+                  onPress={async () => {
+                    await Haptics.selectionAsync();
+                    setTTSProvider(provider);
+                  }}
+                  style={[
+                    styles.themeBtn,
+                    {
+                      backgroundColor: active ? theme.primary : theme.surfaceSecondary,
+                      borderColor: active ? theme.primary : theme.border,
+                    },
+                  ]}
+                >
+                  <Feather
+                    name={provider === "elevenlabs" ? "zap" : "volume-2"}
+                    size={15}
+                    color={active ? "#fff" : theme.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.themeLabel,
+                      { color: active ? "#fff" : theme.textSecondary },
+                    ]}
+                  >
+                    {provider === "elevenlabs" ? "ElevenLabs (Premium)" : "Sarvam (Standard)"}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={[styles.providerNote, { color: theme.textMuted }]}>
+            ElevenLabs offers higher quality voices.{'\n'}
+            Unsupported languages fall back to Sarvam.
+          </Text>
+        </View>
+
       </ScrollView>
     </View>
   );
@@ -686,5 +740,11 @@ const styles = StyleSheet.create({
   aboutLinkText: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
+  },
+  providerNote: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 17,
+    marginTop: 4,
   },
 });

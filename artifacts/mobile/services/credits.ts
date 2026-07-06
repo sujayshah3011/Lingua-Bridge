@@ -8,7 +8,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { USER_PRICE } from "@/constants/pricing";
+import { USER_PRICE, USER_PRICE_ELEVENLABS } from "@/constants/pricing";
 import { db } from "./firebase";
 
 const round6 = (n: number) => Math.round(n * 1_000_000) / 1_000_000;
@@ -85,13 +85,25 @@ export async function chargeTranslate(
   return { chars, cost: userCharged };
 }
 
-export async function chargeTTS(uid: string, text: string, targetLang: string) {
+export async function chargeTTS(
+  uid: string,
+  text: string,
+  targetLang: string,
+  provider: "sarvam" | "elevenlabs" = "sarvam"
+) {
   const chars = text.length;
-  const userCharged = round6(chars * USER_PRICE.tts.perChar);
+  const rate = provider === "elevenlabs" ? USER_PRICE_ELEVENLABS.tts.perChar : USER_PRICE.tts.perChar;
+  const userCharged = round6(chars * rate);
   if (__DEV__) {
-    console.log(`[CREDIT] tts: ${chars} chars → ₹${userCharged.toFixed(6)}`);
+    console.log(`[CREDIT] tts(${provider}): ${chars} chars → ₹${userCharged.toFixed(6)}`);
   }
-  await atomicDeduct({ uid, type: "tts", chars, userCharged, targetLang });
+  await atomicDeduct({
+    uid,
+    type: provider === "elevenlabs" ? "tts_elevenlabs" : "tts",
+    chars,
+    userCharged,
+    targetLang,
+  });
   await updateDoc(doc(db, "users", uid), { "stats.charsTTS": increment(chars) });
   return { chars, cost: userCharged };
 }

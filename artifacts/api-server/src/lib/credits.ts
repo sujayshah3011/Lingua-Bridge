@@ -9,6 +9,13 @@ export const CREDIT_COSTS = {
 
 export type CreditOperation = keyof typeof CREDIT_COSTS;
 
+export const ELEVENLABS_TTS_COST_PER_CHAR = 0.18 / 1000;
+export const ELEVENLABS_TTS_COST_PER_CHAR_INR = ELEVENLABS_TTS_COST_PER_CHAR * 83;
+
+export function calculateElevenLabsCost(charCount: number): number {
+  return charCount * ELEVENLABS_TTS_COST_PER_CHAR_INR;
+}
+
 const store = new Map<string, number>();
 
 export function getCredits(deviceId: string): number {
