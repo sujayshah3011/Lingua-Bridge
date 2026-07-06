@@ -8,6 +8,9 @@
     "build": "pnpm run typecheck && pnpm -r --if-present run build"
   },
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": ["@firebase/util", "esbuild", "protobufjs"]
+  },
   "devDependencies": {
     "typescript": "~5.9.2",
     "prettier": "^3.8.1"
