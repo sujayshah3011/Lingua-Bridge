@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const API_BASE = `https://${process.env.EXPO_PUBLIC_DOMAIN ?? ""}/api`;
+export const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000/api";
 
 const DEVICE_ID_KEY = "bhaashai_device_id";
 let _deviceId: string | null = null;
