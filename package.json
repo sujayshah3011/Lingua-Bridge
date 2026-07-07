@@ -2,6 +2,7 @@
   "name": "lingua-bridge",
   "version": "1.0.0",
   "license": "MIT",
+  "packageManager": "pnpm@11.10.0",
   "scripts": {
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --if-present run typecheck",
