@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000/api";
+export const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? "https://lingua-bridge.onrender.com/api";
 
 const DEVICE_ID_KEY = "bhaashai_device_id";
 let _deviceId: string | null = null;
