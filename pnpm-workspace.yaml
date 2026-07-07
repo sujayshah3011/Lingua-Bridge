@@ -6,13 +6,13 @@ packages:
 
 autoInstallPeers: false
 
-onlyBuiltDependencies:
-  - '@firebase/util'
-  - '@swc/core'
-  - esbuild
-  - msw
-  - protobufjs
-  - unrs-resolver
+allowBuilds:
+  '@firebase/util': true
+  '@swc/core': true
+  esbuild: true
+  msw: true
+  protobufjs: true
+  unrs-resolver: true
 
 catalog:
   '@replit/vite-plugin-cartographer': ^0.5.1
