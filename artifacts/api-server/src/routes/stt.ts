@@ -1,6 +1,8 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
-import { getCredits, useCredits } from "../lib/credits";
+import { requireAuth } from "../middlewares/require-auth";
+import { chargeUser, refundUser, InsufficientCreditsError } from "../lib/firestore-credits";
+import { USER_PRICE, round6 } from "../lib/pricing";
 
 const router = Router();
 const SARVAM_BASE = "https://api.sarvam.ai";
@@ -17,22 +19,32 @@ function getApiKey(): string {
 
 router.post(
   "/",
+  requireAuth,
   upload.single("file"),
   async (req: Request, res: Response) => {
-    const deviceId = req.headers["x-device-id"];
-    if (!deviceId || typeof deviceId !== "string") {
-      res.status(400).json({ error: "x-device-id header required" });
-      return;
-    }
-
-    const { allowed, credits } = useCredits(deviceId, "stt");
-    if (!allowed) {
-      res.status(402).json({ error: "INSUFFICIENT_CREDITS", credits });
-      return;
-    }
+    const uid = req.uid!;
 
     if (!req.file) {
-      res.status(400).json({ error: "No audio file provided", credits });
+      res.status(400).json({ error: "No audio file provided" });
+      return;
+    }
+
+    const languageCode = (req.body.language_code as string) ?? "unknown";
+    const durationSeconds = Math.max(0.5, Number(req.body.duration_seconds) || 0.5);
+    const cost = round6(durationSeconds * USER_PRICE.stt.perSecond);
+
+    let balanceAfter: number;
+    try {
+      ({ balanceAfter } = await chargeUser(uid, "stt", cost, {
+        seconds: durationSeconds,
+        sourceLang: languageCode,
+      }));
+    } catch (err) {
+      if (err instanceof InsufficientCreditsError) {
+        res.status(402).json({ error: "INSUFFICIENT_CREDITS", credits: err.credits });
+        return;
+      }
+      res.status(500).json({ error: "credit_charge_failed" });
       return;
     }
 
@@ -41,7 +53,7 @@ router.post(
       const form = new FormData();
       form.append("file", blob, req.file.originalname ?? "recording.wav");
       form.append("model", "saaras:v2.5");
-      form.append("language_code", (req.body.language_code as string) ?? "unknown");
+      form.append("language_code", languageCode);
       form.append("mode", "transcribe");
       form.append("with_timestamps", "false");
 
@@ -51,10 +63,16 @@ router.post(
         body: form,
       });
 
-      const data = await upstream.json();
-      res.status(upstream.status).json({ ...data, credits });
+      const data = (await upstream.json()) as Record<string, unknown>;
+      if (!upstream.ok) {
+        await refundUser(uid, cost, "stt");
+        res.status(upstream.status).json({ ...data, credits: balanceAfter + cost });
+        return;
+      }
+      res.status(upstream.status).json({ ...data, credits: balanceAfter });
     } catch {
-      res.status(502).json({ error: "upstream_error", credits: getCredits(deviceId) });
+      await refundUser(uid, cost, "stt");
+      res.status(502).json({ error: "upstream_error", credits: balanceAfter + cost });
     }
   }
 );

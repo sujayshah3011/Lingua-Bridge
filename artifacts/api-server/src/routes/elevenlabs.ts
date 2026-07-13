@@ -1,23 +1,43 @@
 import { Router, Request, Response } from "express";
 import { synthesizeSpeech, getVoiceId, isLangSupported, listVoices } from "../lib/elevenlabs";
+import { requireAuth } from "../middlewares/require-auth";
+import { chargeUser, refundUser, InsufficientCreditsError } from "../lib/firestore-credits";
+import { USER_PRICE_ELEVENLABS, round6 } from "../lib/pricing";
 
 const router = Router();
 
-router.post("/tts", async (req: Request, res: Response) => {
-  try {
-    const body = req.body as {
-      inputs?: string[];
-      target_language_code?: string;
-      speaker?: "female" | "male";
-      model?: string;
-    };
+router.post("/tts", requireAuth, async (req: Request, res: Response) => {
+  const uid = req.uid!;
+  const body = req.body as {
+    inputs?: string[];
+    target_language_code?: string;
+    speaker?: "female" | "male";
+    model?: string;
+  };
 
-    const text = body.inputs?.[0]?.slice(0, 5000).trim();
-    if (!text) {
-      res.status(400).json({ error: "Empty text input" });
+  const text = body.inputs?.[0]?.slice(0, 5000).trim();
+  if (!text) {
+    res.status(400).json({ error: "Empty text input" });
+    return;
+  }
+
+  const cost = round6(text.length * USER_PRICE_ELEVENLABS.tts.perChar);
+  let balanceAfter: number;
+  try {
+    ({ balanceAfter } = await chargeUser(uid, "tts_elevenlabs", cost, {
+      chars: text.length,
+      targetLang: body.target_language_code,
+    }));
+  } catch (err) {
+    if (err instanceof InsufficientCreditsError) {
+      res.status(402).json({ error: "INSUFFICIENT_CREDITS", credits: err.credits });
       return;
     }
+    res.status(500).json({ error: "credit_charge_failed" });
+    return;
+  }
 
+  try {
     const langCode = body.target_language_code && isLangSupported(body.target_language_code)
       ? body.target_language_code
       : "en-IN";
@@ -28,18 +48,20 @@ router.post("/tts", async (req: Request, res: Response) => {
     const result = await synthesizeSpeech({
       text,
       voiceId,
-      modelId: body.model ?? "eleven_multilingual_v2",
+      modelId: body.model ?? "eleven_flash_v2_5",
     });
 
-    res.json(result);
+    res.json({ ...result, credits: balanceAfter });
   } catch (error: any) {
     console.error("[ElevenLabs TTS]", error.message);
+    await refundUser(uid, cost, "tts_elevenlabs");
+    const credits = balanceAfter + cost;
 
-    if (error.status === 401) { res.status(401).json({ error: "Invalid API key" }); return; }
-    if (error.status === 429) { res.status(429).json({ error: "Rate limited" }); return; }
-    if (error.status === 402) { res.status(402).json({ error: "Insufficient credits" }); return; }
+    if (error.status === 401) { res.status(401).json({ error: "Invalid API key", credits }); return; }
+    if (error.status === 429) { res.status(429).json({ error: "Rate limited", credits }); return; }
+    if (error.status === 402) { res.status(402).json({ error: "Insufficient credits", credits }); return; }
 
-    res.status(502).json({ error: "upstream_error", details: error.message });
+    res.status(502).json({ error: "upstream_error", details: error.message, credits });
   }
 });
 

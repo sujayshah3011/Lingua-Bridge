@@ -25,8 +25,12 @@ export async function synthesizeSpeech(opts: ElevenLabsTTSOptions): Promise<TTSR
   const apiKey = process.env["ELEVENLABS_API_KEY"];
   if (!apiKey) throw new Error("ELEVENLABS_API_KEY not configured");
 
+  // /stream endpoint: ElevenLabs sends audio chunks as they're generated
+  // instead of waiting for the whole clip, so total time-to-last-byte is
+  // lower even though we still buffer it into one response below.
+  // optimize_streaming_latency=4 trades a little quality for max speed.
   const res = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${opts.voiceId}`,
+    `https://api.elevenlabs.io/v1/text-to-speech/${opts.voiceId}/stream?optimize_streaming_latency=4`,
     {
       method: "POST",
       headers: {
@@ -35,7 +39,7 @@ export async function synthesizeSpeech(opts: ElevenLabsTTSOptions): Promise<TTSR
       },
       body: JSON.stringify({
         text: opts.text,
-        model_id: opts.modelId ?? "eleven_multilingual_v2",
+        model_id: opts.modelId ?? "eleven_flash_v2_5",
         voice_settings: {
           stability: 0.5,
           similarity_boost: 0.75,
