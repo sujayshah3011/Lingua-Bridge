@@ -137,7 +137,7 @@ async function speakTextElevenLabs(
       inputs: [text],
       target_language_code: ttsLang,
       speaker: gender,
-      model: "eleven_multilingual_v2",
+      model: "eleven_flash_v2_5",
     }),
   });
 
@@ -247,7 +247,7 @@ async function synthesizeElevenLabs(
       inputs: [text],
       target_language_code: ttsLang,
       speaker: gender,
-      model: "eleven_multilingual_v2",
+      model: "eleven_flash_v2_5",
     }),
   });
 

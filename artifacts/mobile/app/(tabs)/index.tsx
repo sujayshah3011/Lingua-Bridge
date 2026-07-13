@@ -30,7 +30,6 @@ import {
 } from "@/services/sarvam";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
-import { chargeTranslate, chargeTTS } from "@/services/credits";
 
 export default function TranslateScreen() {
   const {
@@ -109,13 +108,6 @@ export default function TranslateScreen() {
           setDetectedLang(result.detectedSourceLang);
         }
         lastTranslatedRef.current = text;
-
-        await chargeTranslate(
-          uid,
-          text,
-          result.detectedSourceLang ?? sourceLang,
-          targetLang
-        );
 
         addToHistory({
           sourceText: text,
@@ -249,8 +241,6 @@ export default function TranslateScreen() {
         { shouldPlay: true }
       );
       soundRef.current = sound;
-
-      await chargeTTS(uid, translatedText, targetLang, ttsProvider);
 
       sound.setOnPlaybackStatusUpdate((status) => {
         if (!status.isLoaded || status.didJustFinish) {

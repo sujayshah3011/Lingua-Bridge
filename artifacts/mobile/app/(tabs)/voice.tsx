@@ -29,7 +29,6 @@ import {
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
 import { translateText } from "@/services/sarvam";
-import { chargeSTT, chargeTranslate, chargeTTS } from "@/services/credits";
 
 type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
@@ -143,11 +142,6 @@ export default function VoiceScreen() {
 
       incrementUsage("audioSeconds", Math.round(result.durationSeconds));
 
-      const uid = user?.uid;
-      if (uid) {
-        await chargeSTT(uid, result.durationSeconds, voiceSourceLang);
-      }
-
       setTranscript(result.transcript);
       if (result.languageCode) setDetectedLang(result.languageCode);
       setStatusText("Translating…");
@@ -158,15 +152,6 @@ export default function VoiceScreen() {
         targetLanguageCode: targetLang,
         formalMode: true,
       });
-
-      if (uid) {
-        await chargeTranslate(
-          uid,
-          result.transcript,
-          detectedSourceLang ?? result.languageCode ?? voiceSourceLang,
-          targetLang
-        );
-      }
 
       if (detectedSourceLang) setDetectedLang(detectedSourceLang);
       setTranslation(translatedText || "Translation unavailable.");
@@ -225,7 +210,6 @@ export default function VoiceScreen() {
       );
       return;
     }
-    const uid = user?.uid;
 
     setTtsLoading(true);
     try {
@@ -245,10 +229,6 @@ export default function VoiceScreen() {
         { shouldPlay: true }
       );
       soundRef.current = sound;
-
-      if (uid) {
-        await chargeTTS(uid, translation, targetLang, ttsProvider);
-      }
 
       sound.setOnPlaybackStatusUpdate((s) => {
         if (!s.isLoaded || ("didJustFinish" in s && s.didJustFinish)) {

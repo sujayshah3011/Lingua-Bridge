@@ -31,17 +31,24 @@ export async function getDeviceId(): Promise<string> {
   return id;
 }
 
+async function getAuthToken(): Promise<string> {
+  const { auth } = await import("./firebase");
+  if (!auth.currentUser) throw new Error("NOT_SIGNED_IN");
+  return auth.currentUser.getIdToken();
+}
+
 export async function jsonHeaders(): Promise<Record<string, string>> {
-  const deviceId = await getDeviceId();
+  const [deviceId, token] = await Promise.all([getDeviceId(), getAuthToken()]);
   return {
     "Content-Type": "application/json",
     "x-device-id": deviceId,
+    Authorization: `Bearer ${token}`,
   };
 }
 
 export async function fileHeaders(): Promise<Record<string, string>> {
-  const deviceId = await getDeviceId();
-  return { "x-device-id": deviceId };
+  const [deviceId, token] = await Promise.all([getDeviceId(), getAuthToken()]);
+  return { "x-device-id": deviceId, Authorization: `Bearer ${token}` };
 }
 
 export async function fetchCredits(): Promise<number> {

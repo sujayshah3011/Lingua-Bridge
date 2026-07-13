@@ -109,7 +109,8 @@ export const cancelVoiceRecording = async (): Promise<void> => {
 // ─── TRANSCRIBE (via API server — handles auth + credit deduction) ─────────────
 export async function transcribeAudio(
   uri: string,
-  languageCode: string = "unknown"
+  languageCode: string = "unknown",
+  durationSeconds: number = 0.5
 ): Promise<STTResult> {
   const headers = await fileHeaders();
   const formData = new FormData();
@@ -122,6 +123,7 @@ export async function transcribeAudio(
     type: "audio/m4a",
   } as any);
   formData.append("language_code", languageCode);
+  formData.append("duration_seconds", String(durationSeconds));
 
   const res = await fetch(`${API_BASE}/stt`, {
     method: "POST",
@@ -150,6 +152,6 @@ export const stopAndTranscribe = async (
   languageCode: string = "unknown"
 ): Promise<STTResult & { durationSeconds: number }> => {
   const { uri, durationSeconds } = await stopVoiceRecording();
-  const result = await transcribeAudio(uri, languageCode);
+  const result = await transcribeAudio(uri, languageCode, durationSeconds);
   return { ...result, durationSeconds };
 };
