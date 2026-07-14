@@ -64,10 +64,6 @@ interface AppContextValue {
   setTargetLang: (lang: string) => void;
   autoDetect: boolean;
   setAutoDetect: (val: boolean) => void;
-  formalMode: boolean;
-  setFormalMode: (val: boolean) => void;
-  transliteration: boolean;
-  setTransliteration: (val: boolean) => void;
   history: TranslationRecord[];
   addToHistory: (record: Omit<TranslationRecord, "id" | "timestamp">) => void;
   deleteHistoryItem: (id: string) => void;
@@ -139,8 +135,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [sourceLang, setSourceLang] = useState("en-IN");
   const [targetLang, setTargetLang] = useState("hi-IN");
   const [autoDetect, setAutoDetect] = useState(true);
-  const [formalMode, setFormalMode] = useState(true);
-  const [transliteration, setTransliteration] = useState(false);
   const [history, setHistory] = useState<TranslationRecord[]>([]);
   const [themeMode, setThemeModeState] = useState<"system" | "light" | "dark">(
     "system"
@@ -323,12 +317,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           const prefs = JSON.parse(prefsJson);
           if (prefs.sourceLang) setSourceLang(prefs.sourceLang);
           if (prefs.targetLang) setTargetLang(prefs.targetLang);
-          if (prefs.formalMode !== undefined) setFormalMode(prefs.formalMode);
           if (prefs.themeMode) setThemeModeState(prefs.themeMode);
           if (prefs.recentLangs) setRecentLangs(prefs.recentLangs);
           if (prefs.autoDetect !== undefined) setAutoDetect(prefs.autoDetect);
-          if (prefs.transliteration !== undefined)
-            setTransliteration(prefs.transliteration);
           if (prefs.voiceGender) setVoiceGenderState(prefs.voiceGender);
           if (prefs.ttsProvider) setTTSProviderState(prefs.ttsProvider);
         }
@@ -343,11 +334,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const current = {
           sourceLang,
           targetLang,
-          formalMode,
           themeMode,
           recentLangs,
           autoDetect,
-          transliteration,
           voiceGender,
           ttsProvider,
           ...overrides,
@@ -358,11 +347,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [
       sourceLang,
       targetLang,
-      formalMode,
       themeMode,
       recentLangs,
       autoDetect,
-      transliteration,
       voiceGender,
       ttsProvider,
     ]
@@ -453,10 +440,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setTargetLang,
       autoDetect,
       setAutoDetect,
-      formalMode,
-      setFormalMode,
-      transliteration,
-      setTransliteration,
       history,
       addToHistory,
       deleteHistoryItem,
@@ -487,8 +470,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       sourceLang,
       targetLang,
       autoDetect,
-      formalMode,
-      transliteration,
       history,
       addToHistory,
       deleteHistoryItem,

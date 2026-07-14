@@ -17,17 +17,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { ToggleStrip } from "@/components/ToggleStrip";
 import { Toast } from "@/components/ui/Toast";
 import { TranslationOutput } from "@/components/TranslationOutput";
 import { TranslatorInput } from "@/components/TranslatorInput";
 import { Language } from "@/constants/languages";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/hooks/useTheme";
-import {
-  translateText,
-  transliterateText,
-} from "@/services/sarvam";
+import { translateText } from "@/services/sarvam";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
 
@@ -41,8 +37,6 @@ export default function TranslateScreen() {
     setTargetLang,
     autoDetect,
     setAutoDetect,
-    formalMode,
-    transliteration,
     addToHistory,
     addRecentLang,
     voiceGender,
@@ -54,7 +48,6 @@ export default function TranslateScreen() {
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
-  const [transliteratedText, setTransliteratedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLang, setDetectedLang] = useState<string | undefined>();
   const [showSourcePicker, setShowSourcePicker] = useState(false);
@@ -103,7 +96,7 @@ export default function TranslateScreen() {
           input: text,
           sourceLanguageCode: autoDetect ? "auto" : sourceLang,
           targetLanguageCode: targetLang,
-          formalMode,
+          formalMode: true,
         });
 
         setTranslatedText(result.translatedText);
@@ -117,19 +110,8 @@ export default function TranslateScreen() {
           translatedText: result.translatedText,
           sourceLang: result.detectedSourceLang ?? sourceLang,
           targetLang,
-          mode: formalMode ? "formal" : "modern-colloquial",
+          mode: "formal",
         });
-
-        if (transliteration && result.translatedText) {
-          try {
-            const tl = await transliterateText({
-              input: result.translatedText,
-              sourceLanguageCode: targetLang,
-              targetLanguageCode: "en-IN",
-            });
-            setTransliteratedText(tl);
-          } catch {}
-        }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         if (msg === "INSUFFICIENT_CREDITS") {
@@ -154,8 +136,6 @@ export default function TranslateScreen() {
       autoDetect,
       sourceLang,
       targetLang,
-      formalMode,
-      transliteration,
       addToHistory,
       showToast,
     ]
@@ -165,7 +145,6 @@ export default function TranslateScreen() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!inputText.trim() || inputText.trim().length < 2) {
       setTranslatedText("");
-      setTransliteratedText("");
       setDetectedLang(undefined);
       lastTranslatedRef.current = "";
       return;
@@ -187,7 +166,7 @@ export default function TranslateScreen() {
     if (inputText.trim().length > 2) {
       runTranslation(inputText);
     }
-  }, [sourceLang, targetLang, formalMode]);
+  }, [sourceLang, targetLang]);
 
   const handleSourceSelect = (lang: Language) => {
     if (lang.code === "auto") {
@@ -207,7 +186,6 @@ export default function TranslateScreen() {
   const handleClear = () => {
     setInputText("");
     setTranslatedText("");
-    setTransliteratedText("");
     setDetectedLang(undefined);
     lastTranslatedRef.current = "";
   };
@@ -368,10 +346,8 @@ export default function TranslateScreen() {
           <View style={styles.gap} />
           <TranslationOutput
             translatedText={translatedText}
-            transliteratedText={transliteratedText}
             isLoading={isLoading}
             detectedLang={detectedLang}
-            showTransliteration={transliteration}
             targetLang={targetLang}
             onCopy={handleCopy}
             onSpeak={handleSpeak}
@@ -384,9 +360,6 @@ export default function TranslateScreen() {
               onGenderChange={setVoiceGender}
             />
           )}
-          <View style={styles.gap} />
-          <ToggleStrip />
-
         </ScrollView>
       </KeyboardAvoidingView>
 

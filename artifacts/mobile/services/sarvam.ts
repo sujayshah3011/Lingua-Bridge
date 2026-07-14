@@ -13,12 +13,6 @@ export interface TranslateResult {
   credits?: number;
 }
 
-export interface TransliterateParams {
-  input: string;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
-}
-
 export async function detectLanguage(input: string): Promise<string> {
   try {
     const headers = await jsonHeaders();
@@ -78,26 +72,4 @@ export async function translateText(
     detectedSourceLang: sourceLang,
     credits: data.credits,
   };
-}
-
-export async function transliterateText(
-  params: TransliterateParams
-): Promise<string> {
-  try {
-    const headers = await jsonHeaders();
-    const res = await fetch(`${API_BASE}/sarvam/transliterate`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        input: params.input,
-        source_language_code: params.sourceLanguageCode,
-        target_language_code: params.targetLanguageCode,
-      }),
-    });
-    if (!res.ok) return "";
-    const data = await res.json();
-    return data.transliterated_text ?? "";
-  } catch {
-    return "";
-  }
 }

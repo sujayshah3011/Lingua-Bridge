@@ -21,10 +21,8 @@ import { useTheme } from "@/hooks/useTheme";
 
 interface TranslationOutputProps {
   translatedText: string;
-  transliteratedText?: string;
   isLoading: boolean;
   detectedLang?: string;
-  showTransliteration: boolean;
   targetLang: string;
   onCopy?: () => void;
   onSpeak?: () => void;
@@ -33,10 +31,8 @@ interface TranslationOutputProps {
 
 export function TranslationOutput({
   translatedText,
-  transliteratedText,
   isLoading,
   detectedLang,
-  showTransliteration,
   targetLang,
   onCopy,
   onSpeak,
@@ -179,18 +175,6 @@ export function TranslationOutput({
             >
               {translatedText}
             </Text>
-            {showTransliteration && !!transliteratedText && (
-              <Animated.View entering={FadeIn.duration(200)}>
-                <Text
-                  style={[
-                    styles.transliteratedText,
-                    { color: theme.textSecondary },
-                  ]}
-                >
-                  {transliteratedText}
-                </Text>
-              </Animated.View>
-            )}
           </Animated.View>
         ) : (
           <Text style={[styles.placeholder, { color: theme.textMuted }]}>
@@ -267,13 +251,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "Inter_600SemiBold",
     lineHeight: 28,
-  },
-  transliteratedText: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    marginTop: 8,
-    fontStyle: "italic",
-    lineHeight: 20,
   },
   placeholder: {
     fontSize: 15,
