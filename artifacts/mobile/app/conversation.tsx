@@ -192,16 +192,24 @@ export default function ConversationScreen() {
                 soundRef.current = null;
               }
             });
-          } catch {
-            // TTS failure is non-fatal
+          } catch (err) {
+            // TTS failure is non-fatal — the translated text is still shown
+            console.error("[Conversation TTS] Unhandled error:", err instanceof Error ? err.message : err);
           }
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "";
+        if (msg !== "INSUFFICIENT_CREDITS") {
+          console.error("[Conversation] Unhandled error:", msg);
+        }
         Alert.alert(
           "Error",
           msg === "INSUFFICIENT_CREDITS"
             ? "No credits remaining. Check Settings."
+            : msg === "NOT_SIGNED_IN"
+            ? "Please sign in to use Conversation mode."
+            : msg
+            ? `Translation failed: ${msg}`
             : "Translation failed. Please try again."
         );
       } finally {

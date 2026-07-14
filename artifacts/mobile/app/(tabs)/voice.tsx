@@ -176,6 +176,8 @@ export default function VoiceScreen() {
         setStatusText("No credits remaining.");
       } else if (msg === "RATE_LIMIT") {
         setStatusText("Rate limit reached. Try again in a moment.");
+      } else if (msg === "NOT_SIGNED_IN") {
+        setStatusText("Please sign in to use voice translation.");
       } else if (msg === "NO_RECORDING_URI" || msg === "NO_ACTIVE_RECORDING") {
         setStatusText("No audio recorded. Please try again.");
       } else if (msg.includes("STT_ERROR")) {
@@ -183,7 +185,8 @@ export default function VoiceScreen() {
       } else if (msg.includes("HTTP_")) {
         setStatusText("Translation service error. Please try again.");
       } else {
-        setStatusText("Something went wrong. Please try again.");
+        console.error("[Voice] Unhandled error:", msg);
+        setStatusText(msg ? `Something went wrong: ${msg}` : "Something went wrong. Please try again.");
       }
       setState("error");
     }
@@ -238,16 +241,23 @@ export default function VoiceScreen() {
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
+      if (!["INSUFFICIENT_CREDITS", "RATE_LIMIT", "NOT_SIGNED_IN", "TTS_EMPTY_RESPONSE"].includes(msg) && !msg.startsWith("TTS_ERROR_")) {
+        console.error("[Voice TTS] Unhandled error:", msg);
+      }
       Alert.alert(
         "Playback Failed",
         msg === "INSUFFICIENT_CREDITS"
           ? "No credits remaining."
           : msg === "RATE_LIMIT"
           ? "Rate limit reached, please wait."
+          : msg === "NOT_SIGNED_IN"
+          ? "Please sign in to use voice."
           : msg.startsWith("TTS_ERROR_")
           ? "Speech synthesis failed. Please try again."
           : msg === "TTS_EMPTY_RESPONSE"
           ? "No audio received from the server."
+          : msg
+          ? `Could not play audio: ${msg}`
           : "Could not play audio. Please try again."
       );
     } finally {

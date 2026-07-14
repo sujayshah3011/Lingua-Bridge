@@ -23,7 +23,12 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     const decoded = await adminAuth.verifyIdToken(token);
     req.uid = decoded.uid;
     next();
-  } catch {
+  } catch (err) {
+    // The real reason (expired token, project-id/audience mismatch between
+    // this server's FIREBASE_PROJECT_ID and the app's Firebase config,
+    // malformed token, clock skew...) only shows up here — logged so it's
+    // visible in the platform's runtime logs instead of a bare 401.
+    req.log?.warn({ err }, "requireAuth: token verification failed");
     res.status(401).json({ error: "INVALID_AUTH_TOKEN" });
   }
 }

@@ -92,7 +92,10 @@ export default function TranslateScreen() {
       if (text === lastTranslatedRef.current) return;
 
       const uid = user?.uid;
-      if (!uid) return;
+      if (!uid) {
+        showToast("Please sign in to translate", "error");
+        return;
+      }
 
       setIsLoading(true);
       try {
@@ -133,10 +136,13 @@ export default function TranslateScreen() {
           showToast("No credits remaining", "error");
         } else if (msg === "RATE_LIMIT") {
           showToast("Translation limit reached, please wait", "error");
+        } else if (msg === "NOT_SIGNED_IN") {
+          showToast("Please sign in to translate", "error");
         } else if (msg.includes("Network") || msg.includes("fetch")) {
           showToast("Network error — please retry", "error");
         } else {
-          showToast("Translation failed — please retry", "error");
+          console.error("[Translate] Unhandled error:", msg);
+          showToast(`Translation failed: ${msg}`, "error");
         }
       } finally {
         setIsLoading(false);
@@ -256,12 +262,15 @@ export default function TranslateScreen() {
         showToast("No credits remaining", "error");
       } else if (msg === "RATE_LIMIT") {
         showToast("Rate limit reached, please wait", "error");
+      } else if (msg === "NOT_SIGNED_IN") {
+        showToast("Please sign in to use voice", "error");
       } else if (msg.startsWith("TTS_ERROR_")) {
         showToast("Speech synthesis failed. Please try again.", "error");
       } else if (msg === "TTS_EMPTY_RESPONSE") {
         showToast("No audio received from the server.", "error");
       } else {
-        showToast("Could not play audio", "error");
+        console.error("[TTS] Unhandled error:", msg);
+        showToast(`Could not play audio: ${msg}`, "error");
       }
     }
   }, [translatedText, targetLang, voiceGender, ttsProvider, isSpeaking, credits, user, showToast]);
