@@ -57,7 +57,10 @@ router.post("/translate", requireAuth, async (req: Request, res: Response) => {
 
 router.post("/detect-language", requireAuth, async (req: Request, res: Response) => {
   try {
-    const upstream = await fetch(`${SARVAM_BASE}/detect-language`, {
+    // Sarvam's actual endpoint is /text-lid, not /detect-language — this was
+    // 404ing silently because the client's detectLanguage() catches any
+    // non-OK response and falls back to "en-IN", masking the failure.
+    const upstream = await fetch(`${SARVAM_BASE}/text-lid`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
