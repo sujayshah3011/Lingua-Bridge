@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppLogo } from "@/components/AppLogo";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Toast } from "@/components/ui/Toast";
@@ -280,7 +281,7 @@ export default function TranslateScreen() {
       >
         <View style={styles.logoRow}>
           <View style={[styles.logoAccent, { backgroundColor: theme.primary }]}>
-            <Feather name="globe" size={16} color="#fff" />
+            <AppLogo size={16} color="#fff" strokeWidth={18} />
           </View>
           <Text style={[styles.appName, { color: theme.text }]}>BhaashAI</Text>
         </View>

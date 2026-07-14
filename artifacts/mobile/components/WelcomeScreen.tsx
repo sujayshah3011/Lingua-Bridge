@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AppLogo } from "@/components/AppLogo";
 import { useApp } from "@/context/AppContext";
 
 type Tab = "signin" | "signup";
@@ -129,7 +130,7 @@ export function WelcomeScreen() {
       <View style={[styles.top, { paddingTop: insets.top + 32 }]}>
         <View style={styles.logoWrap}>
           <View style={styles.logoIcon}>
-            <Feather name="globe" size={36} color="#FF6B00" />
+            <AppLogo size={36} color="#FF6B00" strokeWidth={16} />
           </View>
           <Text style={styles.logoText}>BhaashAI</Text>
           <Text style={styles.devanagari}>भाषा-AI</Text>
