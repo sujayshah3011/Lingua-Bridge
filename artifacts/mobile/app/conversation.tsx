@@ -34,7 +34,7 @@ type Speaker = "A" | "B";
 type SpeakerState = "idle" | "recording" | "processing";
 
 export default function ConversationScreen() {
-  const { credits, setCredits, isDark, ttsProvider } = useApp();
+  const { credits, setCredits, isDark, ttsProvider, voiceGender } = useApp();
   const C = isDark ? Colors.dark : Colors.light;
 
   const [langA, setLangA] = useState("hi-IN");
@@ -50,6 +50,15 @@ export default function ConversationScreen() {
   const soundRef = useRef<Audio.Sound | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // recordAndTranslate's setTimeout and stopSpeaker both need the CURRENT
+  // active recorder at the moment they run, not whatever it was when their
+  // closure was created — setActiveRecorderBoth keeps this ref in sync with
+  // the state so both reads are always fresh.
+  const activeRecorderRef = useRef<Speaker | null>(null);
+  const setActiveRecorderBoth = useCallback((speaker: Speaker | null) => {
+    activeRecorderRef.current = speaker;
+    setActiveRecorder(speaker);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -90,7 +99,7 @@ export default function ConversationScreen() {
       const sourceLang = speaker === "A" ? langA : langB;
       const targetLangCode = speaker === "A" ? langB : langA;
 
-      setActiveRecorder(speaker);
+      setActiveRecorderBoth(speaker);
       setSpeakerState("recording");
 
       if (Platform.OS !== "web") {
@@ -102,7 +111,7 @@ export default function ConversationScreen() {
 
         if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
         autoTimerRef.current = setTimeout(async () => {
-          if (activeRecorder === speaker) {
+          if (activeRecorderRef.current === speaker) {
             await stopSpeaker(speaker);
           }
         }, 10000);
@@ -116,15 +125,15 @@ export default function ConversationScreen() {
           );
         }
         setSpeakerState("idle");
-        setActiveRecorder(null);
+        setActiveRecorderBoth(null);
       }
     },
-    [credits, activeRecorder, langA, langB, ensurePermission]
+    [credits, activeRecorder, langA, langB, ensurePermission, setActiveRecorderBoth]
   );
 
   const stopSpeaker = useCallback(
     async (speaker: Speaker) => {
-      if (activeRecorder !== speaker) return;
+      if (activeRecorderRef.current !== speaker) return;
 
       if (autoTimerRef.current) {
         clearTimeout(autoTimerRef.current);
@@ -143,7 +152,7 @@ export default function ConversationScreen() {
 
         if (!sttResult.transcript.trim()) {
           setSpeakerState("idle");
-          setActiveRecorder(null);
+          setActiveRecorderBoth(null);
           return;
         }
 
@@ -171,7 +180,7 @@ export default function ConversationScreen() {
         if (translated) {
           try {
             await soundRef.current?.unloadAsync();
-            const fileUri = await synthesizeSpeech(translated, targetLangCode, "female", ttsProvider);
+            const fileUri = await synthesizeSpeech(translated, targetLangCode, voiceGender, ttsProvider);
             const { sound } = await Audio.Sound.createAsync(
               { uri: fileUri },
               { shouldPlay: true }
@@ -197,10 +206,10 @@ export default function ConversationScreen() {
         );
       } finally {
         setSpeakerState("idle");
-        setActiveRecorder(null);
+        setActiveRecorderBoth(null);
       }
     },
-    [addMessage, setCredits]
+    [addMessage, setCredits, langA, langB, voiceGender, ttsProvider, setActiveRecorderBoth]
   );
 
   const langALabel = LANGUAGES.find((l) => l.code === langA)?.name ?? langA;

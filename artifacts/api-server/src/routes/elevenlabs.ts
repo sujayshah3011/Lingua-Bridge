@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { synthesizeSpeech, getVoiceId, isLangSupported, listVoices } from "../lib/elevenlabs";
+import { synthesizeSpeech, getVoiceId, listVoices } from "../lib/elevenlabs";
 import { requireAuth } from "../middlewares/require-auth";
 import { chargeUser, refundUser, InsufficientCreditsError } from "../lib/firestore-credits";
 import { USER_PRICE_ELEVENLABS, round6 } from "../lib/pricing";
@@ -38,9 +38,12 @@ router.post("/tts", requireAuth, async (req: Request, res: Response) => {
   }
 
   try {
-    const langCode = body.target_language_code && isLangSupported(body.target_language_code)
-      ? body.target_language_code
-      : "en-IN";
+    // getVoiceId falls back to a default multilingual voice for any language
+    // code without a curated voice — ElevenLabs' model reads the language
+    // from the input text itself, so passing the real code through (instead
+    // of silently swapping to en-IN) lets it attempt the correct language
+    // even without a hand-picked voice for it.
+    const langCode = body.target_language_code ?? "en-IN";
 
     const gender = body.speaker === "male" ? "male" : "female";
     const voiceId = getVoiceId(langCode, gender);

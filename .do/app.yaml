@@ -4,7 +4,7 @@ services:
   - name: api
     github:
       repo: sujayshah3011/Lingua-Bridge
-      branch: main
+      branch: master
       deploy_on_push: true
     source_dir: /
     build_command: npm install -g pnpm@latest && pnpm install --no-frozen-lockfile && pnpm --filter @workspace/api-server run build

@@ -1,6 +1,6 @@
 import { Audio } from "expo-av";
 import { API_BASE, jsonHeaders } from "./api";
-import { getElevenLabsVoice, ELEVENLABS_SUPPORTED } from "./elevenlabs-voice-map";
+import { getElevenLabsVoice } from "./elevenlabs-voice-map";
 
 export type VoiceGender = "female" | "male";
 export type TTSProvider = "sarvam" | "elevenlabs";
@@ -35,10 +35,22 @@ export function getSpeakerName(langCode: string, gender: VoiceGender): string {
   return SPEAKER_MAP[langCode]?.[gender] ?? (gender === "male" ? "aditya" : "neha");
 }
 
-const TTS_SUPPORTED = new Set([
+// Sarvam's Bulbul TTS model only covers these 11 (of the app's 23 Indian
+// languages). ElevenLabs' multilingual models read language from the input
+// text itself, not from the voice_id, so they can attempt the rest — used as
+// the automatic fallback for the 12 Sarvam doesn't cover, instead of the old
+// behavior of silently speaking English over unsupported-language text.
+const SARVAM_TTS_SUPPORTED = new Set([
   "hi-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN",
   "bn-IN", "gu-IN", "mr-IN", "pa-IN", "od-IN", "en-IN",
 ]);
+
+function resolveTTSProvider(targetLang: string, preferred: TTSProvider): TTSProvider {
+  if (preferred === "sarvam" && !SARVAM_TTS_SUPPORTED.has(targetLang)) {
+    return "elevenlabs";
+  }
+  return preferred;
+}
 
 let _currentSound: Audio.Sound | null = null;
 
@@ -59,8 +71,9 @@ export const speakText = async (
   const input = text.slice(0, 500).trim();
   if (!input) return;
 
-  if (provider === "elevenlabs") {
-    return speakTextElevenLabs(text, targetLang, gender);
+  const resolved = resolveTTSProvider(targetLang, provider);
+  if (resolved === "elevenlabs") {
+    return speakTextElevenLabs(input, targetLang, gender);
   }
 
   return speakTextSarvam(input, targetLang, gender);
@@ -71,8 +84,7 @@ async function speakTextSarvam(
   targetLang: string,
   gender: VoiceGender
 ): Promise<void> {
-  const ttsLang = TTS_SUPPORTED.has(targetLang) ? targetLang : "en-IN";
-  const speaker = getSpeakerName(ttsLang, gender);
+  const speaker = getSpeakerName(targetLang, gender);
 
   const headers = await jsonHeaders();
   const res = await fetch(`${API_BASE}/sarvam/tts`, {
@@ -80,7 +92,7 @@ async function speakTextSarvam(
     headers,
     body: JSON.stringify({
       inputs: [input],
-      target_language_code: ttsLang,
+      target_language_code: targetLang,
       speaker,
       model: "bulbul:v3",
       pace: 1.0,
@@ -126,8 +138,7 @@ async function speakTextElevenLabs(
   targetLang: string,
   gender: VoiceGender
 ): Promise<void> {
-  const ttsLang = ELEVENLABS_SUPPORTED.has(targetLang) ? targetLang : "en-IN";
-  const voiceId = getElevenLabsVoice(ttsLang, gender);
+  const voiceId = getElevenLabsVoice(targetLang, gender);
 
   const headers = await jsonHeaders();
   const res = await fetch(`${API_BASE}/elevenlabs/tts`, {
@@ -135,7 +146,7 @@ async function speakTextElevenLabs(
     headers,
     body: JSON.stringify({
       inputs: [text],
-      target_language_code: ttsLang,
+      target_language_code: targetLang,
       speaker: gender,
       model: "eleven_flash_v2_5",
     }),
@@ -182,7 +193,8 @@ export async function synthesizeSpeech(
   const input = text.slice(0, 500).trim();
   if (!input) throw new Error("TTS_EMPTY_INPUT");
 
-  if (provider === "elevenlabs") {
+  const resolved = resolveTTSProvider(targetLanguageCode, provider);
+  if (resolved === "elevenlabs") {
     return synthesizeElevenLabs(input, targetLanguageCode, gender);
   }
 
@@ -194,10 +206,7 @@ async function synthesizeSarvam(
   targetLanguageCode: string,
   gender: VoiceGender
 ): Promise<string> {
-  const ttsLang = TTS_SUPPORTED.has(targetLanguageCode)
-    ? targetLanguageCode
-    : "en-IN";
-  const speaker = getSpeakerName(ttsLang, gender);
+  const speaker = getSpeakerName(targetLanguageCode, gender);
 
   const headers = await jsonHeaders();
   const res = await fetch(`${API_BASE}/sarvam/tts`, {
@@ -205,7 +214,7 @@ async function synthesizeSarvam(
     headers,
     body: JSON.stringify({
       inputs: [input],
-      target_language_code: ttsLang,
+      target_language_code: targetLanguageCode,
       speaker,
       model: "bulbul:v3",
       pace: 1.0,
@@ -234,10 +243,7 @@ async function synthesizeElevenLabs(
   targetLanguageCode: string,
   gender: VoiceGender
 ): Promise<string> {
-  const ttsLang = ELEVENLABS_SUPPORTED.has(targetLanguageCode)
-    ? targetLanguageCode
-    : "en-IN";
-  const voiceId = getElevenLabsVoice(ttsLang, gender);
+  const voiceId = getElevenLabsVoice(targetLanguageCode, gender);
 
   const headers = await jsonHeaders();
   const res = await fetch(`${API_BASE}/elevenlabs/tts`, {
@@ -245,7 +251,7 @@ async function synthesizeElevenLabs(
     headers,
     body: JSON.stringify({
       inputs: [text],
-      target_language_code: ttsLang,
+      target_language_code: targetLanguageCode,
       speaker: gender,
       model: "eleven_flash_v2_5",
     }),
