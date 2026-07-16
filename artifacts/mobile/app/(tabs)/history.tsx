@@ -3,7 +3,6 @@ import { router } from "expo-router";
 import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Platform,
   Pressable,
@@ -13,6 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { WarmStateCard } from "@/components/ui/WarmStateCard";
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/hooks/useTheme";
 import { db } from "@/services/firebase";
@@ -158,10 +158,8 @@ export default function HistoryScreen() {
         </Pressable>
       </View>
 
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={theme.primary} />
-        </View>
+      {loading && transactions.length === 0 ? (
+        <WarmStateCard icon="clock" title="Loading history..." loading />
       ) : (
         <FlatList
           data={transactions}
@@ -176,17 +174,11 @@ export default function HistoryScreen() {
             },
           ]}
           ListEmptyComponent={
-            <View style={styles.empty}>
-              <View style={[styles.emptyIcon, { backgroundColor: theme.surfaceSecondary }]}>
-                <Feather name="clock" size={28} color={theme.textMuted} />
-              </View>
-              <Text style={[styles.emptyTitle, { color: theme.text }]}>
-                No transactions yet
-              </Text>
-              <Text style={[styles.emptySub, { color: theme.textMuted }]}>
-                Your credit activity will appear here
-              </Text>
-            </View>
+            <WarmStateCard
+              icon="clock"
+              title="No transactions yet"
+              subtitle="Your credit activity — translations, voice inputs, and top-ups — will appear here."
+            />
           }
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
@@ -224,11 +216,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "Inter_600SemiBold",
   },
-  center: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   list: {
     paddingHorizontal: 16,
     paddingTop: 8,
@@ -261,29 +248,5 @@ const styles = StyleSheet.create({
   rowAmt: {
     fontSize: 15,
     fontFamily: "Inter_700Bold",
-  },
-  empty: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 80,
-    gap: 12,
-  },
-  emptyIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 4,
-  },
-  emptyTitle: {
-    fontSize: 17,
-    fontFamily: "Inter_600SemiBold",
-  },
-  emptySub: {
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-    textAlign: "center",
-    paddingHorizontal: 40,
   },
 });

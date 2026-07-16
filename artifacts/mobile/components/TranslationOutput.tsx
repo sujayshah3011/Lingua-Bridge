@@ -16,6 +16,7 @@ import Animated, {
   FadeInDown,
 } from "react-native-reanimated";
 
+import { tintedShadow } from "@/constants/colors";
 import { getLanguageByCode } from "@/constants/languages";
 import { useTheme } from "@/hooks/useTheme";
 
@@ -71,14 +72,21 @@ export function TranslationOutput({
     onSpeak();
   };
 
+  const cardShadow = tintedShadow(
+    isDark ? theme.primary : theme.primary,
+    isDark ? 0.1 : 0.07,
+    14
+  );
+
   return (
     <View
       style={[
         styles.card,
         {
           backgroundColor: isDark ? theme.surfaceSecondary : theme.surface,
-          borderColor: theme.border,
+          borderColor: isDark ? theme.border : "#F0E4D8",
         },
+        cardShadow,
       ]}
     >
       <View style={styles.cardHeader}>

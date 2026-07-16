@@ -269,9 +269,9 @@ export default function ConversationScreen() {
           >
             <Pressable
               onPress={() => setShowPickerB(true)}
-              style={[styles.langRow, { borderColor: C.border }]}
+              style={[styles.langRow, { borderColor: C.terracotta + "40", backgroundColor: C.surfaceSecondary }]}
             >
-              <Feather name="globe" size={14} color={C.primary} />
+              <Feather name="globe" size={14} color={C.terracotta} />
               <Text style={[styles.langLabel, { color: C.text }]}>{langBLabel}</Text>
               <Feather name="chevron-down" size={12} color={C.textMuted} />
             </Pressable>
@@ -301,7 +301,7 @@ export default function ConversationScreen() {
             </View>
           </View>
 
-          <View style={[styles.divider, { backgroundColor: C.border }]} />
+          <View style={[styles.divider, { backgroundColor: C.terracotta + "30" }]} />
 
           {/* Speaker A (top) */}
           <View
@@ -312,9 +312,9 @@ export default function ConversationScreen() {
           >
             <Pressable
               onPress={() => setShowPickerA(true)}
-              style={[styles.langRow, { borderColor: C.border }]}
+              style={[styles.langRow, { borderColor: C.sage + "40", backgroundColor: C.surfaceSecondary }]}
             >
-              <Feather name="globe" size={14} color={C.primary} />
+              <Feather name="globe" size={14} color={C.sage} />
               <Text style={[styles.langLabel, { color: C.text }]}>{langALabel}</Text>
               <Feather name="chevron-down" size={12} color={C.textMuted} />
             </Pressable>

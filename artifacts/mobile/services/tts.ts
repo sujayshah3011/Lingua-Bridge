@@ -1,6 +1,5 @@
 import { Audio } from "expo-av";
 import { API_BASE, jsonHeaders } from "./api";
-import { getElevenLabsVoice } from "./elevenlabs-voice-map";
 
 export type VoiceGender = "female" | "male";
 export type TTSProvider = "sarvam" | "elevenlabs";
@@ -138,8 +137,6 @@ async function speakTextElevenLabs(
   targetLang: string,
   gender: VoiceGender
 ): Promise<void> {
-  const voiceId = getElevenLabsVoice(targetLang, gender);
-
   const headers = await jsonHeaders();
   const res = await fetch(`${API_BASE}/elevenlabs/tts`, {
     method: "POST",
@@ -161,7 +158,7 @@ async function speakTextElevenLabs(
   }
 
   const data = await res.json();
-  const base64Wav: string = data.audios?.[0];
+  const base64Wav: string = data.audio ?? data.audios?.[0];
   if (!base64Wav) throw new Error("TTS_EMPTY_RESPONSE");
 
   await stopSpeaking();
@@ -243,8 +240,6 @@ async function synthesizeElevenLabs(
   targetLanguageCode: string,
   gender: VoiceGender
 ): Promise<string> {
-  const voiceId = getElevenLabsVoice(targetLanguageCode, gender);
-
   const headers = await jsonHeaders();
   const res = await fetch(`${API_BASE}/elevenlabs/tts`, {
     method: "POST",
@@ -266,7 +261,7 @@ async function synthesizeElevenLabs(
   }
 
   const data = await res.json();
-  const base64Wav: string = data.audios?.[0];
+  const base64Wav: string = data.audio ?? data.audios?.[0];
   if (!base64Wav) throw new Error("TTS_EMPTY_RESPONSE");
 
   return `data:audio/wav;base64,${base64Wav}`;

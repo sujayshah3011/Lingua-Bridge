@@ -155,11 +155,11 @@ export default function SettingsScreen() {
                 <View
                   style={[
                     styles.signedInBadge,
-                    { backgroundColor: theme.success + "18" },
+                    { backgroundColor: "#84A98C18" },
                   ]}
                 >
-                  <Feather name="check-circle" size={12} color={theme.success} />
-                  <Text style={[styles.signedInText, { color: theme.success }]}>
+                  <Feather name="check-circle" size={12} color={"#84A98C"} />
+                  <Text style={[styles.signedInText, { color: "#84A98C" }]}>
                     Signed in
                   </Text>
                 </View>
@@ -266,9 +266,9 @@ export default function SettingsScreen() {
           </View>
 
           {credits < 5 && credits > 0 && (
-            <View style={[styles.lowBanner, { backgroundColor: "#FFF7ED", borderColor: "#FED7AA" }]}>
-              <Feather name="alert-triangle" size={13} color="#EA580C" />
-              <Text style={styles.lowBannerText}>
+            <View style={[styles.lowBanner, { backgroundColor: "#FFF0E0", borderColor: "#D4764A40" }]}>
+              <Feather name="alert-triangle" size={13} color="#B8653F" />
+              <Text style={[styles.lowBannerText, { color: "#B8653F" }]}>
                 Low balance — consider adding credits
               </Text>
             </View>
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   card: {
-    borderRadius: 14,
+    borderRadius: 20,
     borderWidth: 1,
     padding: 16,
     gap: 12,
@@ -615,9 +615,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    paddingVertical: 11,
-    borderRadius: 10,
+    paddingVertical: 14,
+    borderRadius: 20,
     marginTop: 4,
+    shadowColor: "#FF6B00",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
   },
   addCreditsBtnText: {
     fontSize: 14,
@@ -689,7 +694,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 14,
     borderWidth: 1,
   },
   themeLabel: {

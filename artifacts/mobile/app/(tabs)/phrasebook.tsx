@@ -171,7 +171,7 @@ export default function PhrasebookScreen() {
       edges={["top", "left", "right"]}
     >
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: C.border }]}>
+      <View style={[styles.header, { borderBottomColor: C.sage + "30" }]}>
         <Text style={[styles.headerTitle, { color: C.text }]}>Phrasebook</Text>
         <Pressable
           onPress={() => setShowLangPicker(true)}

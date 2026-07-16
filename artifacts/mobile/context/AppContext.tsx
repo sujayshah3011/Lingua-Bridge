@@ -130,7 +130,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  const { credits, totalDebited, stats, ready: creditsReady } = useCredits(user?.uid);
+  const { credits, totalDebited, stats, ready: creditsReady, setCredits: setCreditsFromHook } = useCredits(user?.uid);
 
   const [sourceLang, setSourceLang] = useState("en-IN");
   const [targetLang, setTargetLang] = useState("hi-IN");
@@ -301,10 +301,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refreshCredits = useCallback(async () => {
-  }, []);
+    if (!user?.uid) return;
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) {
+        setCreditsFromHook(snap.data().credits ?? 0);
+      }
+    } catch {}
+  }, [user?.uid, setCreditsFromHook]);
 
-  const setCredits = useCallback((_n: number) => {
-  }, []);
+  const setCredits = useCallback(
+    (n: number) => {
+      setCreditsFromHook(n);
+    },
+    [setCreditsFromHook]
+  );
 
   useEffect(() => {
     const loadData = async () => {

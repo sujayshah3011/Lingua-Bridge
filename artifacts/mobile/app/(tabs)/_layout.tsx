@@ -4,11 +4,32 @@ import { Tabs } from "expo-router";
 import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { SymbolView } from "expo-symbols";
 import { Feather } from "@expo/vector-icons";
-import React from "react";
-import { Platform, StyleSheet, View, useColorScheme } from "react-native";
+import React, { useRef, useCallback } from "react";
+import {
+  Animated,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useApp } from "@/context/AppContext";
+
+type IconName = React.ComponentProps<typeof Feather>["name"];
+
+interface TabIcon {
+  ios: string;
+  feather: IconName;
+}
+
+const TABS: { name: string; label: string; icon: TabIcon }[] = [
+  { name: "index", label: "Translate", icon: { ios: "globe", feather: "globe" } },
+  { name: "voice", label: "Voice", icon: { ios: "mic", feather: "mic" } },
+  { name: "phrasebook", label: "Phrases", icon: { ios: "book", feather: "book-open" } },
+  { name: "history", label: "History", icon: { ios: "clock", feather: "clock" } },
+  { name: "settings", label: "Settings", icon: { ios: "gearshape", feather: "settings" } },
+];
 
 function NativeTabLayout() {
   return (
@@ -37,6 +58,50 @@ function NativeTabLayout() {
   );
 }
 
+function AnimatedTabButton({
+  children,
+  onPress,
+  accessibilityRole,
+  accessibilityState,
+  accessibilityLabel,
+}: any) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = useCallback(() => {
+    Animated.spring(scale, {
+      toValue: 0.93,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 4,
+    }).start();
+  }, [scale]);
+
+  const handlePressOut = useCallback(() => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 12,
+    }).start();
+  }, [scale]);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      accessibilityRole={accessibilityRole}
+      accessibilityState={accessibilityState}
+      accessibilityLabel={accessibilityLabel}
+      style={styles.tabButton}
+    >
+      <Animated.View style={[styles.tabInner, { transform: [{ scale }] }]}>
+        {children}
+      </Animated.View>
+    </Pressable>
+  );
+}
+
 function ClassicTabLayout() {
   const { isDark } = useApp();
   const isIOS = Platform.OS === "ios";
@@ -52,13 +117,15 @@ function ClassicTabLayout() {
         headerShown: false,
         tabBarActiveTintColor: activeTint,
         tabBarInactiveTintColor: inactiveTint,
+        tabBarButton: (props: any) => <AnimatedTabButton {...props} />,
         tabBarStyle: {
           position: "absolute",
           backgroundColor: isIOS ? "transparent" : isDark ? "#0A0F18" : "#fff",
           borderTopWidth: isWeb ? 1 : StyleSheet.hairlineWidth,
-          borderTopColor: isDark ? "#1E2A3A" : "#E2E8F0",
+          borderTopColor: isDark ? "#1E2A3A" : "#F0E4D8",
           elevation: 0,
           paddingBottom: safeAreaInsets.bottom,
+          height: safeAreaInsets.bottom + 64,
           ...(isWeb ? { height: 84 } : {}),
         },
         tabBarBackground: () =>
@@ -81,15 +148,27 @@ function ClassicTabLayout() {
           fontFamily: "Inter_500Medium",
           marginBottom: 2,
         },
+        tabBarIconStyle: {
+          marginTop: 6,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Translate",
-          tabBarIcon: ({ color }) =>
+          tabBarIcon: ({ color, focused }) =>
             isIOS ? (
-              <SymbolView name="globe" tintColor={color} size={24} />
+              <SymbolView
+                name={focused ? "globe.fill" : "globe"}
+                tintColor={color}
+                size={24}
+                weight={focused ? "bold" : "regular"}
+              />
+            ) : focused ? (
+              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
+                <Feather name="globe" size={22} color={color} />
+              </View>
             ) : (
               <Feather name="globe" size={22} color={color} />
             ),
@@ -99,9 +178,18 @@ function ClassicTabLayout() {
         name="voice"
         options={{
           title: "Voice",
-          tabBarIcon: ({ color }) =>
+          tabBarIcon: ({ color, focused }) =>
             isIOS ? (
-              <SymbolView name="mic" tintColor={color} size={24} />
+              <SymbolView
+                name={focused ? "mic.fill" : "mic"}
+                tintColor={color}
+                size={24}
+                weight={focused ? "bold" : "regular"}
+              />
+            ) : focused ? (
+              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
+                <Feather name="mic" size={22} color={color} />
+              </View>
             ) : (
               <Feather name="mic" size={22} color={color} />
             ),
@@ -111,9 +199,18 @@ function ClassicTabLayout() {
         name="phrasebook"
         options={{
           title: "Phrases",
-          tabBarIcon: ({ color }) =>
+          tabBarIcon: ({ color, focused }) =>
             isIOS ? (
-              <SymbolView name="book" tintColor={color} size={24} />
+              <SymbolView
+                name={focused ? "book.fill" : "book"}
+                tintColor={color}
+                size={24}
+                weight={focused ? "bold" : "regular"}
+              />
+            ) : focused ? (
+              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
+                <Feather name="book-open" size={22} color={color} />
+              </View>
             ) : (
               <Feather name="book-open" size={22} color={color} />
             ),
@@ -123,9 +220,18 @@ function ClassicTabLayout() {
         name="history"
         options={{
           title: "History",
-          tabBarIcon: ({ color }) =>
+          tabBarIcon: ({ color, focused }) =>
             isIOS ? (
-              <SymbolView name="clock" tintColor={color} size={24} />
+              <SymbolView
+                name={focused ? "clock.fill" : "clock"}
+                tintColor={color}
+                size={24}
+                weight={focused ? "bold" : "regular"}
+              />
+            ) : focused ? (
+              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
+                <Feather name="clock" size={22} color={color} />
+              </View>
             ) : (
               <Feather name="clock" size={22} color={color} />
             ),
@@ -135,9 +241,18 @@ function ClassicTabLayout() {
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }) =>
+          tabBarIcon: ({ color, focused }) =>
             isIOS ? (
-              <SymbolView name="gearshape" tintColor={color} size={24} />
+              <SymbolView
+                name={focused ? "gearshape.fill" : "gearshape"}
+                tintColor={color}
+                size={24}
+                weight={focused ? "bold" : "regular"}
+              />
+            ) : focused ? (
+              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
+                <Feather name="settings" size={22} color={color} />
+              </View>
             ) : (
               <Feather name="settings" size={22} color={color} />
             ),
@@ -146,6 +261,26 @@ function ClassicTabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 44,
+  },
+  tabInner: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  activePill: {
+    width: 40,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 export default function TabLayout() {
   if (isLiquidGlassAvailable()) {

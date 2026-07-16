@@ -23,6 +23,7 @@ import { TranslationOutput } from "@/components/TranslationOutput";
 import { TranslatorInput } from "@/components/TranslatorInput";
 import { Language } from "@/constants/languages";
 import { useApp } from "@/context/AppContext";
+import { Colors } from "@/constants/colors";
 import { useTheme } from "@/hooks/useTheme";
 import { translateText } from "@/services/sarvam";
 import { synthesizeSpeech } from "@/services/tts";
@@ -444,36 +445,38 @@ const styles = StyleSheet.create({
   zeroOverlay: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 99,
-    backgroundColor: "rgba(0,0,0,0.85)",
+    backgroundColor: "rgba(10,15,24,0.88)",
     alignItems: "center",
     justifyContent: "center",
     padding: 32,
   },
   zeroCard: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
+    backgroundColor: "#151D28",
+    borderRadius: 24,
     padding: 32,
     alignItems: "center",
     gap: 12,
     width: "100%",
+    borderWidth: 1,
+    borderColor: "#1E2A3A",
   },
   zeroTitle: {
     fontSize: 22,
     fontFamily: "Inter_700Bold",
-    color: "#0A1628",
+    color: "#F0F4F8",
     marginTop: 4,
   },
   zeroSub: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
-    color: "#64748B",
+    color: "#A0AEC0",
     textAlign: "center",
     lineHeight: 20,
   },
   zeroBtn: {
     marginTop: 8,
     backgroundColor: "#FF6B00",
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 32,
     paddingVertical: 14,
   },
@@ -484,7 +487,7 @@ const styles = StyleSheet.create({
   },
   creditsText: {
     fontSize: 13,
-    fontFamily: "Inter_700Bold",
+    fontFamily: "Inter_600SemiBold",
   },
   settingsBtn: {
     width: 38,
@@ -496,16 +499,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#FFF7ED",
+    backgroundColor: "#FFF0E0",
     borderLeftWidth: 3,
-    borderLeftColor: "#EA580C",
+    borderLeftColor: "#D4764A",
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
   lowBannerText: {
     fontSize: 13,
     fontFamily: "Inter_500Medium",
-    color: "#9A3412",
+    color: "#B8653F",
   },
   scrollContent: { gap: 0 },
   gap: { height: 14 },

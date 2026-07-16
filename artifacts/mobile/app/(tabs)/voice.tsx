@@ -16,9 +16,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 
+import { Colors, tintedShadow } from "@/constants/colors";
 import { useApp } from "@/context/AppContext";
 import { LANGUAGES } from "@/constants/languages";
-import { Colors } from "@/constants/colors";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
 import MicButton from "@/components/MicButton";
 import {
@@ -51,6 +51,7 @@ export default function VoiceScreen() {
   const {
     user,
     credits,
+    setCredits,
     targetLang,
     setTargetLang,
     addToHistory,
@@ -140,19 +141,21 @@ export default function VoiceScreen() {
         return;
       }
 
+      if (typeof result.credits === "number") setCredits(result.credits);
       incrementUsage("audioSeconds", Math.round(result.durationSeconds));
 
       setTranscript(result.transcript);
       if (result.languageCode) setDetectedLang(result.languageCode);
       setStatusText("Translating…");
 
-      const { translatedText, detectedSourceLang } = await translateText({
+      const { translatedText, detectedSourceLang, credits: newCredits } = await translateText({
         input: result.transcript,
         sourceLanguageCode: result.languageCode ?? voiceSourceLang,
         targetLanguageCode: targetLang,
         formalMode: true,
       });
 
+      if (typeof newCredits === "number") setCredits(newCredits);
       if (detectedSourceLang) setDetectedLang(detectedSourceLang);
       setTranslation(translatedText || "Translation unavailable.");
       setStatusText("");
@@ -190,7 +193,7 @@ export default function VoiceScreen() {
       }
       setState("error");
     }
-  }, [user, voiceSourceLang, targetLang, addToHistory]);
+  }, [user, setCredits, voiceSourceLang, targetLang, addToHistory]);
 
   const toggleRecording = useCallback(() => {
     if (state === "recording") {
@@ -283,7 +286,7 @@ export default function VoiceScreen() {
       style={[styles.safe, { backgroundColor: C.background }]}
       edges={["top", "left", "right"]}
     >
-      <View style={[styles.header, { borderBottomColor: C.border }]}>
+      <View style={[styles.header, { borderBottomColor: C.terracotta + "30" }]}>
         <Text style={[styles.headerTitle, { color: C.text }]}>Voice</Text>
         <View style={styles.headerRight}>
           <Pressable
@@ -400,8 +403,17 @@ export default function VoiceScreen() {
             </View>
 
             {transcript ? (
-              <View style={[styles.card, { backgroundColor: C.surface, borderColor: C.border }]}>
-                <Text style={[styles.cardLabel, { color: C.textMuted }]}>
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor: C.surface,
+                    borderColor: C.sage + "30",
+                  },
+                  tintedShadow(C.sage, 0.06, 12),
+                ]}
+              >
+                <Text style={[styles.cardLabel, { color: C.sage }]}>
                   {detectedLabel ? `Detected: ${detectedLabel}` : "Transcript"}
                 </Text>
                 <Text style={[styles.transcriptText, { color: C.textSecondary }]}>
@@ -411,10 +423,19 @@ export default function VoiceScreen() {
             ) : null}
 
             {translation ? (
-              <View style={[styles.card, { backgroundColor: C.surface, borderColor: C.border }]}>
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor: C.surface,
+                    borderColor: C.primary + "25",
+                  },
+                  tintedShadow(C.primary, 0.07, 14),
+                ]}
+              >
                 <View style={styles.cardHeaderRow}>
-                  <View style={[styles.langDot, { backgroundColor: C.primary }]} />
-                  <Text style={[styles.cardLabel, { color: C.textMuted, flex: 1 }]}>
+                  <View style={[styles.langDot, { backgroundColor: C.terracotta }]} />
+                  <Text style={[styles.cardLabel, { color: C.terracotta, flex: 1 }]}>
                     {targetLabel}
                   </Text>
                   <Pressable
@@ -511,7 +532,7 @@ const styles = StyleSheet.create({
   },
   creditsText: {
     fontSize: 12,
-    fontFamily: "Inter_700Bold",
+    fontFamily: "Inter_600SemiBold",
   },
   convBtn: {
     flexDirection: "row",
@@ -568,7 +589,7 @@ const styles = StyleSheet.create({
   },
   autoTag: {
     fontSize: 9,
-    fontFamily: "Inter_700Bold",
+    fontFamily: "Inter_600SemiBold",
     letterSpacing: 0.6,
   },
   webNotice: {
@@ -642,36 +663,38 @@ const styles = StyleSheet.create({
   zeroOverlay: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 99,
-    backgroundColor: "rgba(0,0,0,0.85)",
+    backgroundColor: "rgba(10,15,24,0.88)",
     alignItems: "center",
     justifyContent: "center",
     padding: 32,
   },
   zeroCard: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
+    backgroundColor: "#151D28",
+    borderRadius: 24,
     padding: 32,
     alignItems: "center",
     gap: 12,
     width: "100%",
+    borderWidth: 1,
+    borderColor: "#1E2A3A",
   },
   zeroTitle: {
     fontSize: 22,
     fontFamily: "Inter_700Bold",
-    color: "#0A1628",
+    color: "#F0F4F8",
     marginTop: 4,
   },
   zeroSub: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
-    color: "#64748B",
+    color: "#A0AEC0",
     textAlign: "center",
     lineHeight: 20,
   },
   zeroBtn: {
     marginTop: 8,
     backgroundColor: "#FF6B00",
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 32,
     paddingVertical: 14,
   },

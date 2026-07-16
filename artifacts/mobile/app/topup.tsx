@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   popularText: {
     fontSize: 10,
-    fontFamily: "Inter_700Bold",
+    fontFamily: "Inter_600SemiBold",
     color: "#fff",
     letterSpacing: 0.4,
   },
@@ -290,8 +290,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 10,
     paddingVertical: 16,
-    borderRadius: 14,
+    borderRadius: 24,
     marginTop: 8,
+    shadowColor: "#FF6B00",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
+    elevation: 6,
   },
   buyBtnText: {
     fontSize: 16,

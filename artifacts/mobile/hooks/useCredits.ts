@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { db } from "@/services/firebase";
 
 export interface UserStats {
@@ -10,10 +10,14 @@ export interface UserStats {
 }
 
 export function useCredits(uid: string | undefined) {
-  const [credits, setCredits] = useState<number>(0);
+  const [credits, setCreditsState] = useState<number>(0);
   const [totalDebited, setTotalDebited] = useState<number>(0);
   const [stats, setStats] = useState<UserStats>({});
   const [ready, setReady] = useState(false);
+
+  const setCredits = useCallback((n: number) => {
+    setCreditsState(n);
+  }, []);
 
   useEffect(() => {
     if (!uid) {
@@ -23,7 +27,7 @@ export function useCredits(uid: string | undefined) {
     const unsub = onSnapshot(doc(db, "users", uid), (snap) => {
       if (snap.exists()) {
         const data = snap.data();
-        setCredits(data.credits ?? 0);
+        setCreditsState(data.credits ?? 0);
         setTotalDebited(data.totalDebited ?? 0);
         setStats(data.stats ?? {});
       }
@@ -32,5 +36,5 @@ export function useCredits(uid: string | undefined) {
     return unsub;
   }, [uid]);
 
-  return { credits, totalDebited, stats, ready };
+  return { credits, totalDebited, stats, ready, setCredits };
 }

@@ -12,7 +12,6 @@ import {
   Pressable,
   StyleSheet,
   View,
-  AccessibilityInfo,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/colors";
@@ -32,80 +31,69 @@ const MicButton: React.FC<MicButtonProps> = ({
   size = 80,
   accessibilityLabel,
 }) => {
-  // Two pulse rings that scale outward and fade when recording
   const pulse1 = useRef(new Animated.Value(1)).current;
   const pulse2 = useRef(new Animated.Value(1)).current;
   const opacity1 = useRef(new Animated.Value(0)).current;
   const opacity2 = useRef(new Animated.Value(0)).current;
+  const iconScale = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
     if (isRecording) {
-      // Ring 1: fast pulse
-      const ring1 = Animated.loop(
+      const springPulse = (value: Animated.Value, opacity: Animated.Value) =>
         Animated.sequence([
           Animated.parallel([
-            Animated.timing(pulse1, {
-              toValue: 1.6,
-              duration: 900,
+            Animated.spring(value, {
+              toValue: 1.55,
               useNativeDriver: false,
+              speed: 8,
+              bounciness: 6,
             }),
-            Animated.timing(opacity1, {
+            Animated.timing(opacity, {
               toValue: 0,
-              duration: 900,
+              duration: 700,
               useNativeDriver: false,
             }),
           ]),
           Animated.parallel([
-            Animated.timing(pulse1, {
+            Animated.spring(value, {
               toValue: 1,
-              duration: 0,
               useNativeDriver: false,
+              speed: 40,
+              bounciness: 2,
             }),
-            Animated.timing(opacity1, {
-              toValue: 0.5,
-              duration: 0,
+            Animated.timing(opacity, {
+              toValue: 0.45,
+              duration: 50,
               useNativeDriver: false,
             }),
           ]),
-        ])
-      );
-      // Ring 2: delayed pulse for stagger effect
+        ]);
+
+      const ring1 = Animated.loop(springPulse(pulse1, opacity1));
       const ring2 = Animated.loop(
-        Animated.sequence([
-          Animated.delay(450),
-          Animated.parallel([
-            Animated.timing(pulse2, {
-              toValue: 1.6,
-              duration: 900,
-              useNativeDriver: false,
-            }),
-            Animated.timing(opacity2, {
-              toValue: 0,
-              duration: 900,
-              useNativeDriver: false,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(pulse2, {
-              toValue: 1,
-              duration: 0,
-              useNativeDriver: false,
-            }),
-            Animated.timing(opacity2, {
-              toValue: 0.5,
-              duration: 0,
-              useNativeDriver: false,
-            }),
-          ]),
-        ])
+        Animated.sequence([Animated.delay(600), springPulse(pulse2, opacity2)])
       );
+
+      Animated.spring(iconScale, {
+        toValue: 1.15,
+        useNativeDriver: false,
+        speed: 14,
+        bounciness: 8,
+      }).start();
+
       pulseAnim.current = Animated.parallel([ring1, ring2]);
-      opacity1.setValue(0.5);
-      opacity2.setValue(0.5);
+      opacity1.setValue(0.45);
+      opacity2.setValue(0.45);
       pulseAnim.current.start();
     } else {
       pulseAnim.current?.stop();
+      Animated.spring(iconScale, {
+        toValue: 1,
+        useNativeDriver: false,
+        speed: 20,
+        bounciness: 4,
+      }).start();
       pulse1.setValue(1);
       pulse2.setValue(1);
       opacity1.setValue(0);
@@ -117,14 +105,13 @@ const MicButton: React.FC<MicButtonProps> = ({
   const bgColor = disabled
     ? COLORS.border
     : isRecording
-    ? "#C0392B"
+    ? "#D4764A"
     : COLORS.primary;
 
-  const ringColor = isRecording ? "#E74C3C" : COLORS.primary;
+  const ringColor = isRecording ? "#D4764A" : COLORS.primary;
 
   return (
     <View style={styles.wrapper} accessible={false}>
-      {/* Outer pulse ring */}
       <Animated.View
         style={[
           styles.ring,
@@ -137,7 +124,6 @@ const MicButton: React.FC<MicButtonProps> = ({
           },
         ]}
       />
-      {/* Inner pulse ring */}
       <Animated.View
         style={[
           styles.ring,
@@ -171,11 +157,13 @@ const MicButton: React.FC<MicButtonProps> = ({
           },
         ]}
       >
-        <Feather
-          name={isRecording ? "square" : "mic"}
-          size={size * 0.38}
-          color="#FFFFFF"
-        />
+        <Animated.View style={{ transform: [{ scale: iconScale }] }}>
+          <Feather
+            name={isRecording ? "square" : "mic"}
+            size={size * 0.38}
+            color="#FFFFFF"
+          />
+        </Animated.View>
       </Pressable>
     </View>
   );
