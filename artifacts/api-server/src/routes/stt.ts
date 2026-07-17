@@ -54,7 +54,13 @@ router.post(
       const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
       const form = new FormData();
       form.append("file", blob, req.file.originalname ?? "recording.m4a");
-      form.append("model", "saaras:v3");
+      // saaras:v3 only exists on Sarvam's newer /speech-to-text endpoint
+      // (with mode="translate"); this legacy /speech-to-text-translate
+      // endpoint is hard-tied to saaras:v2.5 and errors on any other model
+      // string. A prior commit swapped this to v3 without also switching
+      // endpoints — reverted. Migrating to v3 properly means moving to
+      // POST /speech-to-text with mode="translate", a separate change.
+      form.append("model", "saaras:v2.5");
       form.append("mode", "transcribe");
       form.append("with_timestamps", "false");
       form.append("audio_type", ext);
