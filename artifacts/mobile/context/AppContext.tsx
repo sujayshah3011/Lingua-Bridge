@@ -153,18 +153,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        try {
-          await createUserDocIfNew(firebaseUser);
-          setUser(firebaseUser);
-        } catch {
-          await firebaseSignOut(auth).catch(() => {});
-          setUser(null);
-          Alert.alert(
-            "Setup Failed",
-            "We couldn't set up your account. Please try signing in again.",
-            [{ text: "OK" }]
-          );
-        }
+        setUser(firebaseUser);
+        createUserDocIfNew(firebaseUser).catch(() => {});
       } else {
         setUser(null);
       }

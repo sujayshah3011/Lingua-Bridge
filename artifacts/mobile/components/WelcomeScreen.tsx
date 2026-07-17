@@ -4,13 +4,14 @@ import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Animated,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,6 +25,48 @@ const FEATURES = [
   { icon: "mic" as const, label: "Voice" },
   { icon: "message-square" as const, label: "Conversation" },
 ];
+
+function useSpringScale() {
+  const scale = useRef(new Animated.Value(1)).current;
+  const pressIn = () =>
+    Animated.spring(scale, {
+      toValue: 0.96,
+      useNativeDriver: true,
+      speed: 40,
+      bounciness: 4,
+    }).start();
+  const pressOut = () =>
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 10,
+    }).start();
+  return { scale, pressIn, pressOut };
+}
+
+function SpringPressable({
+  children,
+  style,
+  onPress,
+  disabled,
+  ...props
+}: React.ComponentProps<typeof Pressable> & { children: React.ReactNode }) {
+  const { scale, pressIn, pressOut } = useSpringScale();
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={pressIn}
+      onPressOut={pressOut}
+      disabled={disabled}
+      {...props}
+    >
+      <Animated.View style={[{ transform: [{ scale }] }, style as any]}>
+        {children}
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 export function WelcomeScreen() {
   const { signIn, signInWithEmail, signUpWithEmail, sendPasswordReset } = useApp();
@@ -43,7 +86,6 @@ export function WelcomeScreen() {
 
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
-  const confirmPasswordRef = useRef<TextInput>(null);
 
   const switchTab = (tab: Tab) => {
     setActiveTab(tab);
@@ -121,76 +163,91 @@ export function WelcomeScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={["#FF6B00", "#7C2D8F", "#0A1628"]}
-        locations={[0, 0.45, 1]}
+        colors={["#FFF8F0", "#FFEDE0", "#FFE0CC"]}
+        locations={[0, 0.5, 1]}
         style={StyleSheet.absoluteFillObject}
       />
 
-      {/* ── Top hero section ── */}
-      <View style={[styles.top, { paddingTop: insets.top + 32 }]}>
-        <View style={styles.logoWrap}>
-          <View style={styles.logoIcon}>
-            <AppLogo size={36} color="#FF6B00" strokeWidth={16} />
-          </View>
-          <Text style={styles.logoText}>BhaashAI</Text>
-          <Text style={styles.devanagari}>भाषा-AI</Text>
-        </View>
-
-        <Text style={styles.tagline}>
-          Real-time translation across all 22{"\n"}official Indian languages
-        </Text>
-
-        <View style={styles.chips}>
-          {FEATURES.map((f) => (
-            <View key={f.icon} style={styles.chip}>
-              <Feather name={f.icon} size={14} color="rgba(255,255,255,0.85)" />
-              <Text style={styles.chipText}>{f.label}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* ── Bottom card ── */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.cardWrapper}
+        style={styles.flex}
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[
-            styles.cardScroll,
-            { paddingBottom: insets.bottom + 32 },
+            styles.scrollContent,
+            { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
           ]}
         >
+          {/* ── Hero ── */}
+          <View style={styles.hero}>
+            <View style={styles.logoOuter}>
+              <View style={styles.logoInner}>
+                <AppLogo size={32} color="#FF6B00" strokeWidth={18} />
+              </View>
+            </View>
+            <Text style={styles.appName}>BhaashAI</Text>
+            <Text style={styles.devanagari}>भाषा-AI</Text>
+            <Text style={styles.tagline}>
+              Real-time translation across all 22 official Indian languages
+            </Text>
+
+            <View style={styles.chipsRow}>
+              {FEATURES.map((f) => (
+                <View key={f.icon} style={styles.chip}>
+                  <Feather name={f.icon} size={13} color="#D4764A" />
+                  <Text style={styles.chipText}>{f.label}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* ── Card ── */}
           <View style={styles.card}>
             {/* Tab switcher */}
-            <View style={styles.tabSwitcher}>
-              <TouchableOpacity
-                style={[styles.tab, activeTab === "signin" && styles.tabActive]}
+            <View style={styles.tabRow}>
+              <SpringPressable
                 onPress={() => switchTab("signin")}
+                style={[
+                  styles.tab,
+                  activeTab === "signin" && styles.tabActive,
+                ]}
               >
-                <Text style={[styles.tabText, activeTab === "signin" && styles.tabTextActive]}>
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "signin" && styles.tabTextActive,
+                  ]}
+                >
                   Sign In
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.tab, activeTab === "signup" && styles.tabActive]}
+              </SpringPressable>
+              <SpringPressable
                 onPress={() => switchTab("signup")}
+                style={[
+                  styles.tab,
+                  activeTab === "signup" && styles.tabActive,
+                ]}
               >
-                <Text style={[styles.tabText, activeTab === "signup" && styles.tabTextActive]}>
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "signup" && styles.tabTextActive,
+                  ]}
+                >
                   Sign Up
                 </Text>
-              </TouchableOpacity>
+              </SpringPressable>
             </View>
 
-            {/* ── SIGN IN TAB ── */}
+            {/* ── SIGN IN ── */}
             {activeTab === "signin" && (
               <>
                 <TextInput
                   style={styles.input}
                   placeholder="Email address"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor="#B8A9A0"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -202,12 +259,12 @@ export function WelcomeScreen() {
                   onSubmitEditing={() => passwordRef.current?.focus()}
                 />
 
-                <View style={styles.passwordWrap}>
+                <View style={styles.pwWrap}>
                   <TextInput
                     ref={passwordRef}
-                    style={styles.inputPassword}
+                    style={styles.pwInput}
                     placeholder="Password"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#B8A9A0"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={!showPassword}
@@ -218,46 +275,55 @@ export function WelcomeScreen() {
                     textContentType="password"
                     onSubmitEditing={handleEmailSignIn}
                   />
-                  <TouchableOpacity
+                  <Pressable
                     style={styles.eyeBtn}
                     onPress={() => setShowPassword((p) => !p)}
                   >
                     <Feather
                       name={showPassword ? "eye-off" : "eye"}
                       size={18}
-                      color="#9CA3AF"
+                      color="#B8A9A0"
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
 
-                <TouchableOpacity
-                  style={styles.forgotWrap}
+                <Pressable
+                  style={styles.forgotBtn}
                   onPress={handleForgotPassword}
                   disabled={loading}
                 >
                   <Text style={styles.forgotText}>Forgot password?</Text>
-                </TouchableOpacity>
+                </Pressable>
 
                 {error && <ErrorBox message={error} />}
 
-                <TouchableOpacity
-                  style={[styles.primaryBtn, loading && { opacity: 0.7 }]}
+                <SpringPressable
                   onPress={handleEmailSignIn}
                   disabled={loading}
+                  style={[styles.primaryBtn, loading && { opacity: 0.7 }]}
                 >
                   {loading ? (
                     <ActivityIndicator color="#FFF" size="small" />
                   ) : (
                     <Text style={styles.primaryBtnText}>Sign In</Text>
                   )}
-                </TouchableOpacity>
+                </SpringPressable>
 
                 <Divider />
 
-                <GoogleButton onPress={handleGoogleSignIn} loading={loading} />
+                <SpringPressable
+                  onPress={handleGoogleSignIn}
+                  disabled={loading}
+                  style={styles.googleBtn}
+                >
+                  <View style={styles.googleIcon}>
+                    <Text style={styles.googleIconText}>G</Text>
+                  </View>
+                  <Text style={styles.googleBtnText}>Continue with Google</Text>
+                </SpringPressable>
 
                 {__DEV__ && (
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => {
                       setEmail("test@bhaashai.app");
                       setPassword("Test@123456");
@@ -266,18 +332,18 @@ export function WelcomeScreen() {
                     style={styles.devBtn}
                   >
                     <Text style={styles.devBtnText}>Dev: Fill Test Credentials</Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 )}
               </>
             )}
 
-            {/* ── SIGN UP TAB ── */}
+            {/* ── SIGN UP ── */}
             {activeTab === "signup" && (
               <>
                 <TextInput
                   style={styles.input}
                   placeholder="Your name"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor="#B8A9A0"
                   value={name}
                   onChangeText={setName}
                   autoCapitalize="words"
@@ -292,7 +358,7 @@ export function WelcomeScreen() {
                   ref={emailRef}
                   style={styles.input}
                   placeholder="Email address"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor="#B8A9A0"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -304,12 +370,12 @@ export function WelcomeScreen() {
                   onSubmitEditing={() => passwordRef.current?.focus()}
                 />
 
-                <View style={styles.passwordWrap}>
+                <View style={styles.pwWrap}>
                   <TextInput
                     ref={passwordRef}
-                    style={styles.inputPassword}
+                    style={styles.pwInput}
                     placeholder="Password (min 6 characters)"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#B8A9A0"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={!showPassword}
@@ -318,26 +384,25 @@ export function WelcomeScreen() {
                     autoComplete="password"
                     returnKeyType="next"
                     textContentType="password"
-                    onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+                    onSubmitEditing={handleEmailSignUp}
                   />
-                  <TouchableOpacity
+                  <Pressable
                     style={styles.eyeBtn}
                     onPress={() => setShowPassword((p) => !p)}
                   >
                     <Feather
                       name={showPassword ? "eye-off" : "eye"}
                       size={18}
-                      color="#9CA3AF"
+                      color="#B8A9A0"
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
 
-                <View style={styles.passwordWrap}>
+                <View style={styles.pwWrap}>
                   <TextInput
-                    ref={confirmPasswordRef}
-                    style={styles.inputPassword}
+                    style={styles.pwInput}
                     placeholder="Confirm password"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#B8A9A0"
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
                     secureTextEntry={!showConfirmPassword}
@@ -347,39 +412,51 @@ export function WelcomeScreen() {
                     textContentType="newPassword"
                     onSubmitEditing={handleEmailSignUp}
                   />
-                  <TouchableOpacity
+                  <Pressable
                     style={styles.eyeBtn}
                     onPress={() => setShowConfirmPassword((p) => !p)}
                   >
                     <Feather
                       name={showConfirmPassword ? "eye-off" : "eye"}
                       size={18}
-                      color="#9CA3AF"
+                      color="#B8A9A0"
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
 
                 {error && <ErrorBox message={error} />}
 
-                <TouchableOpacity
-                  style={[styles.primaryBtn, loading && { opacity: 0.7 }]}
+                <SpringPressable
                   onPress={handleEmailSignUp}
                   disabled={loading}
+                  style={[styles.primaryBtn, loading && { opacity: 0.7 }]}
                 >
                   {loading ? (
                     <ActivityIndicator color="#FFF" size="small" />
                   ) : (
                     <Text style={styles.primaryBtnText}>Create Account</Text>
                   )}
-                </TouchableOpacity>
+                </SpringPressable>
 
-                <Text style={styles.freeCredits}>
-                  ₹100 free credits on signup — no subscription
-                </Text>
+                <View style={styles.freeCreditsRow}>
+                  <Feather name="zap" size={14} color="#84A98C" />
+                  <Text style={styles.freeCreditsText}>
+                    ₹100 free credits on signup — no subscription
+                  </Text>
+                </View>
 
                 <Divider />
 
-                <GoogleButton onPress={handleGoogleSignIn} loading={loading} />
+                <SpringPressable
+                  onPress={handleGoogleSignIn}
+                  disabled={loading}
+                  style={styles.googleBtn}
+                >
+                  <View style={styles.googleIcon}>
+                    <Text style={styles.googleIconText}>G</Text>
+                  </View>
+                  <Text style={styles.googleBtnText}>Continue with Google</Text>
+                </SpringPressable>
               </>
             )}
 
@@ -396,6 +473,7 @@ export function WelcomeScreen() {
 function ErrorBox({ message }: { message: string }) {
   return (
     <View style={styles.errorBox}>
+      <Feather name="alert-circle" size={14} color="#D4764A" />
       <Text style={styles.errorText}>{message}</Text>
     </View>
   );
@@ -411,145 +489,159 @@ function Divider() {
   );
 }
 
-function GoogleButton({ onPress, loading }: { onPress: () => void; loading: boolean }) {
-  return (
-    <TouchableOpacity style={styles.googleBtn} onPress={onPress} disabled={loading}>
-      <View style={styles.googleIcon}>
-        <Text style={styles.googleIconText}>G</Text>
-      </View>
-      <Text style={styles.googleBtnText}>Continue with Google</Text>
-    </TouchableOpacity>
-  );
-}
-
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#0A1628" },
-
-  top: {
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingBottom: 20,
+  root: { flex: 1 },
+  flex: { flex: 1 },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    gap: 24,
   },
-  logoWrap: { alignItems: "center", marginBottom: 16 },
-  logoIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 22,
-    backgroundColor: "rgba(255,255,255,0.12)",
+
+  /* ── Hero ── */
+  hero: {
+    alignItems: "center",
+    paddingTop: 12,
+    gap: 8,
+  },
+  logoOuter: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    backgroundColor: "#FF6B00",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
+    shadowColor: "#FF6B00",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+    marginBottom: 8,
   },
-  logoText: {
+  logoInner: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  appName: {
     fontSize: 32,
     fontFamily: "Inter_700Bold",
-    color: "#FFFFFF",
-    letterSpacing: -1,
+    color: "#0D1B2A",
+    letterSpacing: -0.5,
   },
   devanagari: {
-    fontSize: 16,
-    color: "rgba(255,255,255,0.6)",
+    fontSize: 15,
     fontFamily: "Inter_400Regular",
-    marginTop: 2,
+    color: "#D4764A",
     letterSpacing: 2,
   },
   tagline: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: "Inter_400Regular",
-    color: "rgba(255,255,255,0.75)",
+    color: "#4A5568",
     textAlign: "center",
-    lineHeight: 22,
-    marginBottom: 20,
+    lineHeight: 21,
+    paddingHorizontal: 20,
+    marginTop: 4,
   },
-  chips: {
+  chipsRow: {
     flexDirection: "row",
-    gap: 10,
-    flexWrap: "wrap",
-    justifyContent: "center",
+    gap: 8,
+    marginTop: 8,
   },
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.12)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.18)",
+    borderRadius: 16,
+    backgroundColor: "#FFF0E0",
   },
   chipText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: "Inter_500Medium",
-    color: "rgba(255,255,255,0.85)",
+    color: "#D4764A",
   },
 
-  cardWrapper: { flex: 1 },
-  cardScroll: { flexGrow: 1, justifyContent: "flex-end" },
+  /* ── Card ── */
   card: {
     backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    borderRadius: 28,
     paddingHorizontal: 24,
-    paddingTop: 28,
-    ...Platform.select({
-      ios: { shadowColor: "#000", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.08, shadowRadius: 12 },
-      android: { elevation: 8 },
-    }),
+    paddingTop: 24,
+    paddingBottom: 20,
+    borderWidth: 1,
+    borderColor: "#F0E4D8",
+    shadowColor: "#D4764A",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 6,
   },
 
-  tabSwitcher: {
+  /* ── Tabs ── */
+  tabRow: {
     flexDirection: "row",
-    backgroundColor: "#F3F4F6",
-    borderRadius: 12,
+    backgroundColor: "#FFF0E0",
+    borderRadius: 16,
     padding: 4,
     marginBottom: 20,
   },
   tab: {
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingVertical: 10,
+    borderRadius: 12,
     alignItems: "center",
   },
   tabActive: {
-    backgroundColor: "#FF6B00",
-    shadowColor: "#FF6B00",
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#D4764A",
     shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
     elevation: 3,
   },
-  tabText: { fontSize: 14, color: "#6B7280", fontFamily: "Inter_500Medium" },
-  tabTextActive: { color: "#FFF", fontFamily: "Inter_700Bold" },
+  tabText: {
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
+    color: "#B8A9A0",
+  },
+  tabTextActive: {
+    color: "#0D1B2A",
+    fontFamily: "Inter_600SemiBold",
+  },
 
+  /* ── Inputs ── */
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
+    borderColor: "#F0E4D8",
+    borderRadius: 14,
     paddingHorizontal: 16,
     fontSize: 15,
-    backgroundColor: "#FAFAFA",
-    color: "#111",
+    backgroundColor: "#FFF8F3",
+    color: "#0D1B2A",
     marginBottom: 12,
     fontFamily: "Inter_400Regular",
   },
-  passwordWrap: {
+  pwWrap: {
     position: "relative",
     marginBottom: 12,
   },
-  inputPassword: {
+  pwInput: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
+    borderColor: "#F0E4D8",
+    borderRadius: 14,
     paddingHorizontal: 16,
     paddingRight: 48,
     fontSize: 15,
-    backgroundColor: "#FAFAFA",
-    color: "#111",
+    backgroundColor: "#FFF8F3",
+    color: "#0D1B2A",
     fontFamily: "Inter_400Regular",
   },
   eyeBtn: {
@@ -560,66 +652,101 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  forgotWrap: { alignSelf: "flex-end", marginBottom: 16, marginTop: -4 },
-  forgotText: { fontSize: 13, color: "#FF6B00", fontFamily: "Inter_500Medium" },
+  /* ── Forgot ── */
+  forgotBtn: { alignSelf: "flex-end", marginBottom: 16, marginTop: -4 },
+  forgotText: { fontSize: 13, color: "#D4764A", fontFamily: "Inter_500Medium" },
 
+  /* ── Error ── */
   errorBox: {
-    backgroundColor: "#FEF2F2",
-    borderRadius: 8,
-    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#FFF0E0",
+    borderRadius: 12,
+    padding: 12,
     marginBottom: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: "#EF4444",
   },
-  errorText: { color: "#DC2626", fontSize: 13, fontFamily: "Inter_400Regular" },
+  errorText: {
+    flex: 1,
+    color: "#B8653F",
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+  },
 
+  /* ── Primary Button ── */
   primaryBtn: {
     height: 52,
     backgroundColor: "#FF6B00",
-    borderRadius: 14,
+    borderRadius: 18,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 4,
+    shadowColor: "#FF6B00",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 5,
   },
   primaryBtnText: {
     fontSize: 16,
-    fontFamily: "Inter_700Bold",
+    fontFamily: "Inter_600SemiBold",
     color: "#FFF",
   },
 
-  freeCredits: {
-    fontSize: 13,
-    color: "#16A34A",
-    fontFamily: "Inter_500Medium",
-    textAlign: "center",
-    marginTop: 8,
+  /* ── Free Credits ── */
+  freeCreditsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 10,
     marginBottom: 4,
   },
+  freeCreditsText: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+    color: "#84A98C",
+  },
 
+  /* ── Divider ── */
   divider: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 16,
   },
-  dividerLine: { flex: 1, height: 1, backgroundColor: "#E5E7EB" },
-  dividerText: { marginHorizontal: 12, color: "#9CA3AF", fontSize: 13, fontFamily: "Inter_400Regular" },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#F0E4D8",
+  },
+  dividerText: {
+    marginHorizontal: 12,
+    color: "#B8A9A0",
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+  },
 
+  /* ── Google Button ── */
   googleBtn: {
     height: 50,
-    backgroundColor: "#FFF",
-    borderRadius: 14,
+    backgroundColor: "#FFF8F3",
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#F0E4D8",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
-    ...Platform.select({
-      ios: { shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 4 },
-      android: { elevation: 2 },
-    }),
+    shadowColor: "#D4764A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  googleBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: "#202124" },
+  googleBtnText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    color: "#202124",
+  },
   googleIcon: {
     width: 24,
     height: 24,
@@ -628,27 +755,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  googleIconText: { fontSize: 14, fontFamily: "Inter_700Bold", color: "#FFF" },
+  googleIconText: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    color: "#FFF",
+  },
 
+  /* ── Dev ── */
   devBtn: {
     height: 44,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: "#6366F1",
+    borderColor: "#84A98C",
     borderStyle: "dashed",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
   },
-  devBtnText: { color: "#6366F1", fontSize: 13, fontFamily: "Inter_600SemiBold" },
+  devBtnText: {
+    color: "#84A98C",
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+  },
 
+  /* ── Terms ── */
   terms: {
     fontSize: 11,
     fontFamily: "Inter_400Regular",
-    color: "#94A3B8",
+    color: "#B8A9A0",
     textAlign: "center",
     lineHeight: 16,
     marginTop: 16,
-    marginBottom: 4,
   },
 });

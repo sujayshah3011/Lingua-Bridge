@@ -26,7 +26,7 @@ function AppSplash() {
   return (
     <View style={splash.root}>
       <Text style={splash.text}>भाषा-AI</Text>
-      <ActivityIndicator color="#fff" size="large" style={splash.indicator} />
+      <ActivityIndicator color="#FF6B00" size="large" style={splash.indicator} />
     </View>
   );
 }
@@ -34,18 +34,19 @@ function AppSplash() {
 const splash = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#FF6B00",
+    backgroundColor: "#FFF8F0",
     alignItems: "center",
     justifyContent: "center",
   },
   text: {
     fontSize: 52,
-    color: "#fff",
+    color: "#0D1B2A",
     fontFamily: "Inter_700Bold",
     letterSpacing: -1,
   },
   indicator: {
     marginTop: 48,
+    color: "#FF6B00",
   },
 });
 

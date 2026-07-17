@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
   FlatList,
   Platform,
@@ -20,7 +22,6 @@ const ONBOARDING_KEY = "onboarding_completed";
 interface Slide {
   id: string;
   icon: keyof typeof Feather.glyphMap;
-  iconColor: string;
   title: string;
   subtitle: string;
 }
@@ -29,7 +30,6 @@ const SLIDES: Slide[] = [
   {
     id: "s1",
     icon: "mic",
-    iconColor: "#FF6B00",
     title: "Speak any\nIndian language",
     subtitle:
       "BhaashAI listens to you in real time and translates across all 22 official Indian languages plus English.",
@@ -37,7 +37,6 @@ const SLIDES: Slide[] = [
   {
     id: "s2",
     icon: "globe",
-    iconColor: "#2B7A0B",
     title: "Instant real-time\ntranslation",
     subtitle:
       "Powered by Sarvam AI — purpose-built for Indian languages with native script, transliteration, and natural voice output.",
@@ -45,7 +44,6 @@ const SLIDES: Slide[] = [
   {
     id: "s3",
     icon: "zap",
-    iconColor: "#FF6B00",
     title: "Start translating\nfor free",
     subtitle:
       "Your account starts with 50 free translation credits. Each translation costs 1 credit, voice recognition costs 2. No sign-up required.",
@@ -55,6 +53,15 @@ const SLIDES: Slide[] = [
 export default function OnboardingScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const listRef = useRef<FlatList>(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -84,6 +91,12 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={["#FFF8F0", "#FFEDE0", "#FFE0CC"]}
+        locations={[0, 0.5, 1]}
+        style={StyleSheet.absoluteFillObject}
+      />
+
       <View style={styles.skipRow}>
         <Pressable
           onPress={skip}
@@ -106,9 +119,9 @@ export default function OnboardingScreen() {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
         renderItem={({ item }) => (
-          <View style={[styles.slide, { width: SCREEN_W }]}>
-            <View style={[styles.iconCircle, { borderColor: item.iconColor }]}>
-              <Feather name={item.icon} size={56} color={item.iconColor} />
+          <Animated.View style={[styles.slide, { width: SCREEN_W, opacity: fadeAnim }]}>
+            <View style={styles.iconCircle}>
+              <Feather name={item.icon} size={52} color="#D4764A" />
             </View>
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.subtitle}>{item.subtitle}</Text>
@@ -116,13 +129,13 @@ export default function OnboardingScreen() {
             {item.id === "s3" && (
               <View style={styles.creditsRow}>
                 <View style={styles.creditBadge}>
-                  <Feather name="zap" size={14} color="#FF6B00" />
+                  <Feather name="zap" size={14} color="#84A98C" />
                   <Text style={styles.creditBadgeText}>50 free credits</Text>
                 </View>
                 <Text style={styles.creditDetail}>Translate · Voice · Conversation</Text>
               </View>
             )}
-          </View>
+          </Animated.View>
         )}
       />
 
@@ -145,14 +158,14 @@ export default function OnboardingScreen() {
           accessibilityLabel={isLastSlide ? "Get started" : "Next"}
           style={({ pressed }) => [
             styles.btn,
-            { opacity: pressed ? 0.75 : 1 },
+            { opacity: pressed ? 0.8 : 1 },
           ]}
         >
           <Text style={styles.btnText}>
             {isLastSlide ? "Get Started" : "Next"}
           </Text>
           <Feather
-            name={isLastSlide ? "check" : "arrow-right"}
+            name={isLastSlide ? "arrow-right" : "arrow-right"}
             size={18}
             color="#FFFFFF"
           />
@@ -165,7 +178,6 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   skipRow: {
     flexDirection: "row",
@@ -178,7 +190,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 15,
-    color: "#9AA5B1",
+    color: "#B8A9A0",
     fontFamily: "Inter_500Medium",
   },
   slide: {
@@ -189,14 +201,18 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   iconCircle: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 2,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F8F9FA",
-    marginBottom: 8,
+    backgroundColor: "#FFF0E0",
+    marginBottom: 12,
+    shadowColor: "#D4764A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
   title: {
     fontSize: 28,
@@ -206,11 +222,12 @@ const styles = StyleSheet.create({
     lineHeight: 36,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "Inter_400Regular",
     color: "#4A5568",
     textAlign: "center",
-    lineHeight: 24,
+    lineHeight: 23,
+    paddingHorizontal: 8,
   },
   creditsRow: {
     alignItems: "center",
@@ -221,7 +238,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#FFF3E8",
+    backgroundColor: "#FFF0E0",
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 7,
@@ -229,12 +246,12 @@ const styles = StyleSheet.create({
   creditBadgeText: {
     fontSize: 15,
     fontFamily: "Inter_600SemiBold",
-    color: "#FF6B00",
+    color: "#84A98C",
   },
   creditDetail: {
     fontSize: 13,
     fontFamily: "Inter_400Regular",
-    color: "#9AA5B1",
+    color: "#B8A9A0",
   },
   dotsRow: {
     flexDirection: "row",
@@ -247,12 +264,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   dotActive: {
-    width: 24,
-    backgroundColor: "#FF6B00",
+    width: 28,
+    backgroundColor: "#D4764A",
   },
   dotInactive: {
     width: 8,
-    backgroundColor: "#E2E8F0",
+    backgroundColor: "#F0E4D8",
   },
   footer: {
     paddingHorizontal: 24,
@@ -260,12 +277,17 @@ const styles = StyleSheet.create({
   },
   btn: {
     height: 56,
-    borderRadius: 16,
+    borderRadius: 20,
     backgroundColor: "#FF6B00",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
+    shadowColor: "#FF6B00",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
   },
   btnText: {
     fontSize: 17,
