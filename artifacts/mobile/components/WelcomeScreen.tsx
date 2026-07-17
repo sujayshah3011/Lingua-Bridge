@@ -59,9 +59,16 @@ function SpringPressable({
       onPressIn={pressIn}
       onPressOut={pressOut}
       disabled={disabled}
+      style={style as any}
       {...props}
     >
-      <Animated.View style={[{ transform: [{ scale }] }, style as any]}>
+      {/* style is applied on both layers: the outer Pressable needs it to
+          participate correctly in a parent flex row (e.g. flex: 1 to split
+          width with a sibling tab), while the inner Animated.View needs it
+          too so its own children (icon + label, etc.) still lay out per
+          flexDirection/alignItems as authored. Only the transform belongs
+          on the inner view alone. */}
+      <Animated.View style={[style as any, { transform: [{ scale }] }]}>
         {children}
       </Animated.View>
     </Pressable>
