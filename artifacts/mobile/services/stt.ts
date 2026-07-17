@@ -136,7 +136,9 @@ export async function transcribeAudio(
   if (!res.ok) {
     const body = await res.text().catch(() => "");
     console.error(`[STT] ${res.status}:`, body);
-    throw new Error(`STT_ERROR_${res.status}`);
+    let detail = "";
+    try { const parsed = JSON.parse(body); detail = parsed.error || parsed.message || ""; } catch {}
+    throw new Error(detail ? `STT_ERROR_${res.status}: ${detail}` : `STT_ERROR_${res.status}`);
   }
 
   const data = await res.json();

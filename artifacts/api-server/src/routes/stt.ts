@@ -29,7 +29,7 @@ router.post(
       return;
     }
 
-    const languageCode = (req.body.language_code as string) ?? "unknown";
+    const languageCode = (req.body.language_code as string) ?? "";
     const durationSeconds = Math.max(0.5, Number(req.body.duration_seconds) || 0.5);
     const cost = round6(durationSeconds * USER_PRICE.stt.perSecond);
 
@@ -49,13 +49,18 @@ router.post(
     }
 
     try {
+      const ext = (req.file.originalname ?? "").split(".").pop() || "m4a";
+      const validLang = languageCode && languageCode !== "unknown" ? languageCode : "";
       const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
       const form = new FormData();
-      form.append("file", blob, req.file.originalname ?? "recording.wav");
-      form.append("model", "saaras:v2.5");
-      form.append("language_code", languageCode);
+      form.append("file", blob, req.file.originalname ?? "recording.m4a");
+      form.append("model", "saaras:v3");
       form.append("mode", "transcribe");
       form.append("with_timestamps", "false");
+      form.append("audio_type", ext);
+      if (validLang) {
+        form.append("language_code", validLang);
+      }
 
       const upstream = await fetch(`${SARVAM_BASE}/speech-to-text-translate`, {
         method: "POST",
