@@ -184,9 +184,9 @@ export default function VoiceScreen() {
       } else if (msg === "NO_RECORDING_URI" || msg === "NO_ACTIVE_RECORDING") {
         setStatusText("No audio recorded. Please try again.");
       } else if (msg.includes("STT_ERROR")) {
-        setStatusText("Speech recognition failed. Please try again.");
+        setStatusText(`Speech recognition failed: ${msg}`);
       } else if (msg.includes("HTTP_")) {
-        setStatusText("Translation service error. Please try again.");
+        setStatusText(`Translation failed: ${msg}`);
       } else {
         console.error("[Voice] Unhandled error:", msg);
         setStatusText(msg ? `Something went wrong: ${msg}` : "Something went wrong. Please try again.");
@@ -256,7 +256,7 @@ export default function VoiceScreen() {
           : msg === "NOT_SIGNED_IN"
           ? "Please sign in to use voice."
           : msg.startsWith("TTS_ERROR_")
-          ? "Speech synthesis failed. Please try again."
+          ? `Speech synthesis failed: ${msg}`
           : msg === "TTS_EMPTY_RESPONSE"
           ? "No audio received from the server."
           : msg

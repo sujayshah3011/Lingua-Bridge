@@ -49,9 +49,10 @@ router.post("/translate", requireAuth, async (req: Request, res: Response) => {
       return;
     }
     res.status(upstream.status).json({ ...data, credits: balanceAfter });
-  } catch {
+  } catch (err) {
     await refundUser(uid, cost, "translate");
-    res.status(502).json({ error: "upstream_error", credits: balanceAfter + cost });
+    const details = err instanceof Error ? err.message : String(err);
+    res.status(502).json({ error: "upstream_error", details, credits: balanceAfter + cost });
   }
 });
 
@@ -70,8 +71,9 @@ router.post("/detect-language", requireAuth, async (req: Request, res: Response)
     });
     const data = (await upstream.json()) as Record<string, unknown>;
     res.status(upstream.status).json(data);
-  } catch {
-    res.status(502).json({ error: "upstream_error" });
+  } catch (err) {
+    const details = err instanceof Error ? err.message : String(err);
+    res.status(502).json({ error: "upstream_error", details });
   }
 });
 
@@ -108,9 +110,10 @@ router.post("/transliterate", requireAuth, async (req: Request, res: Response) =
       return;
     }
     res.status(upstream.status).json({ ...data, credits: balanceAfter });
-  } catch {
+  } catch (err) {
     await refundUser(uid, cost, "transliterate");
-    res.status(502).json({ error: "upstream_error", credits: balanceAfter + cost });
+    const details = err instanceof Error ? err.message : String(err);
+    res.status(502).json({ error: "upstream_error", details, credits: balanceAfter + cost });
   }
 });
 
@@ -150,9 +153,10 @@ router.post("/tts", requireAuth, async (req: Request, res: Response) => {
       return;
     }
     res.status(upstream.status).json({ ...data, credits: balanceAfter });
-  } catch {
+  } catch (err) {
     await refundUser(uid, cost, "tts");
-    res.status(502).json({ error: "upstream_error", credits: balanceAfter + cost });
+    const details = err instanceof Error ? err.message : String(err);
+    res.status(502).json({ error: "upstream_error", details, credits: balanceAfter + cost });
   }
 });
 

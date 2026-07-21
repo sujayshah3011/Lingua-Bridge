@@ -1,5 +1,5 @@
 import { Audio } from "expo-av";
-import { API_BASE, jsonHeaders } from "./api";
+import { API_BASE, extractErrorDetail, jsonHeaders } from "./api";
 
 export type VoiceGender = "female" | "male";
 export type TTSProvider = "sarvam" | "elevenlabs";
@@ -103,9 +103,9 @@ async function speakTextSarvam(
   if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    console.error("[TTS Sarvam] Error:", res.status, body);
-    throw new Error(`TTS_ERROR_${res.status}`);
+    const detail = await extractErrorDetail(res);
+    console.error("[TTS Sarvam] Error:", res.status, detail);
+    throw new Error(detail ? `TTS_ERROR_${res.status}: ${detail}` : `TTS_ERROR_${res.status}`);
   }
 
   const data = await res.json();
@@ -152,9 +152,9 @@ async function speakTextElevenLabs(
   if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    console.error("[TTS ElevenLabs] Error:", res.status, body);
-    throw new Error(`ELEVENLABS_TTS_ERROR_${res.status}`);
+    const detail = await extractErrorDetail(res);
+    console.error("[TTS ElevenLabs] Error:", res.status, detail);
+    throw new Error(detail ? `ELEVENLABS_TTS_ERROR_${res.status}: ${detail}` : `ELEVENLABS_TTS_ERROR_${res.status}`);
   }
 
   const data = await res.json();
@@ -223,9 +223,9 @@ async function synthesizeSarvam(
   if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    console.error("[TTS Sarvam] Error:", res.status, body);
-    throw new Error(`TTS_ERROR_${res.status}`);
+    const detail = await extractErrorDetail(res);
+    console.error("[TTS Sarvam] Error:", res.status, detail);
+    throw new Error(detail ? `TTS_ERROR_${res.status}: ${detail}` : `TTS_ERROR_${res.status}`);
   }
 
   const data = await res.json();
@@ -255,9 +255,9 @@ async function synthesizeElevenLabs(
   if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    console.error("[TTS ElevenLabs] Error:", res.status, body);
-    throw new Error(`ELEVENLABS_TTS_ERROR_${res.status}`);
+    const detail = await extractErrorDetail(res);
+    console.error("[TTS ElevenLabs] Error:", res.status, detail);
+    throw new Error(detail ? `ELEVENLABS_TTS_ERROR_${res.status}: ${detail}` : `ELEVENLABS_TTS_ERROR_${res.status}`);
   }
 
   const data = await res.json();

@@ -20,7 +20,7 @@
  */
 
 import { Audio } from "expo-av";
-import { API_BASE, fileHeaders } from "./api";
+import { API_BASE, extractErrorDetail, fileHeaders } from "./api";
 
 export interface STTResult {
   transcript: string;
@@ -134,10 +134,8 @@ export async function transcribeAudio(
   if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    console.error(`[STT] ${res.status}:`, body);
-    let detail = "";
-    try { const parsed = JSON.parse(body); detail = parsed.error || parsed.message || ""; } catch {}
+    const detail = await extractErrorDetail(res);
+    console.error(`[STT] ${res.status}:`, detail);
     throw new Error(detail ? `STT_ERROR_${res.status}: ${detail}` : `STT_ERROR_${res.status}`);
   }
 

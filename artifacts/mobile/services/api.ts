@@ -51,6 +51,21 @@ export async function fileHeaders(): Promise<Record<string, string>> {
   return { "x-device-id": deviceId, Authorization: `Bearer ${token}` };
 }
 
+// Best-effort extraction of a human-readable message from a failed
+// response, so callers can show/log the real upstream reason instead of
+// just an HTTP status code. Falls back to the raw body when the JSON
+// shape doesn't match what we expect.
+export async function extractErrorDetail(res: Response): Promise<string> {
+  const body = await res.text().catch(() => "");
+  if (!body) return "";
+  try {
+    const parsed = JSON.parse(body);
+    const msg = parsed?.error?.message ?? parsed?.message ?? parsed?.error ?? parsed?.detail;
+    if (typeof msg === "string" && msg) return msg;
+  } catch {}
+  return body.slice(0, 300);
+}
+
 export async function fetchCredits(): Promise<number> {
   try {
     const deviceId = await getDeviceId();

@@ -1,4 +1,4 @@
-import { API_BASE, jsonHeaders } from "./api";
+import { API_BASE, extractErrorDetail, jsonHeaders } from "./api";
 
 export interface TranslateParams {
   input: string;
@@ -62,8 +62,9 @@ export async function translateText(
   if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || `HTTP_${res.status}`);
+    const detail = await extractErrorDetail(res);
+    console.error(`[Translate] ${res.status}:`, detail);
+    throw new Error(detail ? `HTTP_${res.status}: ${detail}` : `HTTP_${res.status}`);
   }
 
   const data = await res.json();

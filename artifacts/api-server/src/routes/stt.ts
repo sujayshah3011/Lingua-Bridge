@@ -81,9 +81,10 @@ router.post(
         return;
       }
       res.status(upstream.status).json({ ...data, credits: balanceAfter });
-    } catch {
+    } catch (err) {
       await refundUser(uid, cost, "stt");
-      res.status(502).json({ error: "upstream_error", credits: balanceAfter + cost });
+      const details = err instanceof Error ? err.message : String(err);
+      res.status(502).json({ error: "upstream_error", details, credits: balanceAfter + cost });
     }
   }
 );
