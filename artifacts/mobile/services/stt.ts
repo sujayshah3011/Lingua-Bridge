@@ -2,21 +2,23 @@
  * STT SERVICE — DO NOT MODIFY AUDIO FORMAT SETTINGS
  *
  * Recording: Audio.Recording.createAsync(HIGH_QUALITY)
- * MIME type sent to API: audio/m4a
+ * MIME type sent to API: audio/x-m4a
  *
  * WHY createAsync AND NOT new Audio.Recording() + prepareToRecordAsync:
  * The two-step manual approach throws "recorder not prepared" in Expo Go.
  * createAsync is the ONLY reliable method — it combines permission check,
  * audio mode, prepare, and start atomically in one call.
  *
- * WHY audio/m4a AND NOT audio/wav:
+ * WHY audio/x-m4a AND NOT audio/wav OR audio/m4a:
  * HIGH_QUALITY preset produces M4A/AAC natively on iOS and Android.
  * iOS ignores WAV settings and writes M4A bytes. Sending those bytes
  * as audio/wav causes Sarvam to detect the mismatch and reject.
- * Sarvam STT accepts: mp3, wav, aac, m4a, mp4, ogg, flac, webm, amr.
- * audio/m4a is FULLY SUPPORTED. ✅
+ * "audio/m4a" looks right but ISN'T a MIME type Sarvam's allow-list
+ * recognizes — confirmed live via Sarvam's own 400: "Invalid file type:
+ * audio/m4a. Only [...'audio/mp4', 'audio/x-m4a'...] are allowed." The
+ * M4A container's real MIME types are audio/mp4 and audio/x-m4a only.
  *
- * NEVER change type to 'audio/wav', 'audio/vnd.wave', or any hardcoded value.
+ * NEVER change type to 'audio/wav', 'audio/vnd.wave', or bare 'audio/m4a'.
  */
 
 import { Audio } from "expo-av";
@@ -116,11 +118,12 @@ export async function transcribeAudio(
   const formData = new FormData();
 
   // HIGH_QUALITY preset produces M4A/AAC on iOS and Android.
-  // type: 'audio/m4a' matches the actual bytes — Sarvam accepts it.
+  // type: 'audio/x-m4a' — Sarvam's allow-list has audio/mp4 and audio/x-m4a
+  // for this container, but NOT bare 'audio/m4a' (confirmed via live 400).
   formData.append("file", {
     uri,
     name: `recording-${Date.now()}.m4a`,
-    type: "audio/m4a",
+    type: "audio/x-m4a",
   } as any);
   formData.append("language_code", languageCode);
   formData.append("duration_seconds", String(durationSeconds));
