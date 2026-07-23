@@ -173,7 +173,8 @@ export default function TopUpScreen() {
         </Pressable>
 
         <Text style={[styles.note, { color: theme.textMuted }]}>
-          Credits never expire. Secure payment powered by Razorpay.
+          Credits never expire. In-app payments are coming soon — for now,
+          reach out to us to top up manually.
         </Text>
       </ScrollView>
     </View>

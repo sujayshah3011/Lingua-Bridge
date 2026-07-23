@@ -88,8 +88,15 @@ export default function ConversationScreen() {
 
   const recordAndTranslate = useCallback(
     async (speaker: Speaker) => {
-      if (credits <= 0) {
-        Alert.alert("No Credits", "You have no credits remaining. Check Settings for more info.");
+      if (credits < 0.05) {
+        Alert.alert(
+          "Not Enough Credits",
+          "Your balance is too low to record. Add credits to continue.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Add Credits", onPress: () => router.push("/topup") },
+          ]
+        );
         return;
       }
       if (activeRecorder !== null) return;
@@ -229,6 +236,9 @@ export default function ConversationScreen() {
   const messagesA = messages.filter((m) => m.speaker === "A");
   const messagesB = messages.filter((m) => m.speaker === "B");
 
+  const badgeColor =
+    credits > 20 ? "#16A34A" : credits > 5 ? "#EA580C" : "#DC2626";
+
   return (
     <SafeAreaView
       style={[styles.safe, { backgroundColor: C.background }]}
@@ -242,13 +252,38 @@ export default function ConversationScreen() {
           <Feather name="arrow-left" size={22} color={C.text} />
         </Pressable>
         <Text style={[styles.navTitle, { color: C.text }]}>Conversation</Text>
-        <Pressable
-          onPress={() => setMessages([])}
-          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-        >
-          <Feather name="trash-2" size={20} color={C.textMuted} />
-        </Pressable>
+        <View style={styles.navRight}>
+          <Pressable
+            onPress={() => router.push("/topup")}
+            style={[
+              styles.creditsPill,
+              { backgroundColor: badgeColor + "15", borderColor: badgeColor },
+            ]}
+          >
+            <Text style={[styles.creditsText, { color: badgeColor }]}>
+              ₹{credits.toFixed(2)}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setMessages([])}
+            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+          >
+            <Feather name="trash-2" size={20} color={C.textMuted} />
+          </Pressable>
+        </View>
       </View>
+
+      {credits > 0 && credits < 5 && (
+        <Pressable
+          onPress={() => router.push("/topup")}
+          style={styles.lowBanner}
+        >
+          <Feather name="alert-triangle" size={13} color="#9A3412" />
+          <Text style={styles.lowBannerText}>
+            Low balance ₹{credits.toFixed(2)} — Tap to add credits
+          </Text>
+        </Pressable>
+      )}
 
       {Platform.OS === "web" ? (
         <View style={styles.webWrap}>
@@ -294,7 +329,7 @@ export default function ConversationScreen() {
                   onPress={() =>
                     stateB === "recording" ? stopSpeaker("B") : recordAndTranslate("B")
                   }
-                  disabled={activeRecorder === "A" || credits <= 0}
+                  disabled={activeRecorder === "A" || credits < 0.05}
                   size={56}
                 />
               )}
@@ -337,7 +372,7 @@ export default function ConversationScreen() {
                   onPress={() =>
                     stateA === "recording" ? stopSpeaker("A") : recordAndTranslate("A")
                   }
-                  disabled={activeRecorder === "B" || credits <= 0}
+                  disabled={activeRecorder === "B" || credits < 0.05}
                   size={56}
                 />
               )}
@@ -380,6 +415,36 @@ const styles = StyleSheet.create({
   navTitle: {
     fontSize: 17,
     fontFamily: "Inter_600SemiBold",
+  },
+  navRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  creditsPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  creditsText: {
+    fontSize: 12,
+    fontFamily: "Inter_600SemiBold",
+  },
+  lowBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#FFF7ED",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#EA580C30",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  lowBannerText: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+    color: "#9A3412",
   },
   webWrap: {
     flex: 1,
