@@ -76,8 +76,13 @@ export default function VoiceScreen() {
   const [detectedLang, setDetectedLang] = useState<string | null>(null);
   const [statusText, setStatusText] = useState("");
   const [ttsLoading, setTtsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const soundRef = useRef<Audio.Sound | null>(null);
+  // Caches the last synthesized clip so repeat taps on the same translation
+  // (same text + target + voice + provider) replay for free instead of
+  // paying for a fresh synthesis every time.
+  const lastAudioRef = useRef<{ key: string; uri: string } | null>(null);
 
   useEffect(() => {
     return () => {
@@ -203,8 +208,53 @@ export default function VoiceScreen() {
     }
   }, [state, startRecording, stopRecording]);
 
+  const stopSpeakingSound = useCallback(async () => {
+    if (soundRef.current) {
+      await soundRef.current.stopAsync().catch(() => {});
+      await soundRef.current.unloadAsync().catch(() => {});
+      soundRef.current = null;
+    }
+    setIsPlaying(false);
+  }, []);
+
+  const playUri = useCallback(async (uri: string) => {
+    await stopSpeakingSound();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+    });
+    const { sound } = await Audio.Sound.createAsync(
+      { uri },
+      { shouldPlay: true }
+    );
+    soundRef.current = sound;
+    setIsPlaying(true);
+
+    sound.setOnPlaybackStatusUpdate((s) => {
+      if (!s.isLoaded || ("didJustFinish" in s && s.didJustFinish)) {
+        sound.unloadAsync().catch(() => {});
+        if (soundRef.current === sound) soundRef.current = null;
+        setIsPlaying(false);
+      }
+    });
+  }, [stopSpeakingSound]);
+
   const speakTranslation = useCallback(async () => {
     if (!translation || ttsLoading) return;
+
+    // Tapping while it's already playing just stops it — no re-synthesis.
+    if (isPlaying) {
+      await stopSpeakingSound();
+      return;
+    }
+
+    const cacheKey = `${translation}|${targetLang}|${voiceGender}|${ttsProvider}`;
+    if (lastAudioRef.current?.key === cacheKey) {
+      await playUri(lastAudioRef.current.uri);
+      return;
+    }
+
     if (credits < 0.01) {
       Alert.alert(
         "No Credits",
@@ -219,29 +269,9 @@ export default function VoiceScreen() {
 
     setTtsLoading(true);
     try {
-      if (soundRef.current) {
-        await soundRef.current.stopAsync().catch(() => {});
-        await soundRef.current.unloadAsync().catch(() => {});
-        soundRef.current = null;
-      }
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-      });
       const fileUri = await synthesizeSpeech(translation, targetLang, voiceGender, ttsProvider);
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: fileUri },
-        { shouldPlay: true }
-      );
-      soundRef.current = sound;
-
-      sound.setOnPlaybackStatusUpdate((s) => {
-        if (!s.isLoaded || ("didJustFinish" in s && s.didJustFinish)) {
-          sound.unloadAsync().catch(() => {});
-          soundRef.current = null;
-        }
-      });
+      lastAudioRef.current = { key: cacheKey, uri: fileUri };
+      await playUri(fileUri);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
       if (!["INSUFFICIENT_CREDITS", "RATE_LIMIT", "NOT_SIGNED_IN", "TTS_EMPTY_RESPONSE"].includes(msg) && !msg.startsWith("TTS_ERROR_")) {
@@ -266,7 +296,7 @@ export default function VoiceScreen() {
     } finally {
       setTtsLoading(false);
     }
-  }, [user, translation, targetLang, voiceGender, ttsProvider, ttsLoading, credits]);
+  }, [translation, targetLang, voiceGender, ttsProvider, ttsLoading, credits, isPlaying, playUri, stopSpeakingSound]);
 
   const isRecording = state === "recording";
   const isProcessing = state === "processing";
@@ -441,10 +471,13 @@ export default function VoiceScreen() {
                   <Pressable
                     onPress={speakTranslation}
                     disabled={ttsLoading}
+                    accessibilityLabel={isPlaying ? "Stop playback" : "Play translation"}
                     style={({ pressed }) => ({ opacity: pressed || ttsLoading ? 0.6 : 1, padding: 4 })}
                   >
                     {ttsLoading ? (
                       <ActivityIndicator size="small" color={C.primary} />
+                    ) : isPlaying ? (
+                      <Feather name="square" size={18} color={C.primary} />
                     ) : (
                       <Feather name="volume-2" size={20} color={C.primary} />
                     )}

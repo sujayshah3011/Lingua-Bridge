@@ -6,8 +6,10 @@
  * Each bubble shows the original text with the translation in smaller italic below.
  */
 
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Audio } from "expo-av";
+import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/colors";
 
 export interface Message {
@@ -18,6 +20,9 @@ export interface Message {
   sourceLangLabel: string;
   targetLangLabel: string;
   timestamp: number;
+  // Set once the translation's speech is synthesized, so the replay button
+  // can play the already-paid-for clip again without a new synthesis call.
+  audioUri?: string;
 }
 
 interface Props {
@@ -30,6 +35,41 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const soundRef = useRef<Audio.Sound | null>(null);
+
+  useEffect(() => {
+    return () => {
+      soundRef.current?.unloadAsync().catch(() => {});
+    };
+  }, []);
+
+  const toggleReplay = async () => {
+    if (!message.audioUri) return;
+
+    if (soundRef.current) {
+      await soundRef.current.stopAsync().catch(() => {});
+      await soundRef.current.unloadAsync().catch(() => {});
+      soundRef.current = null;
+      setIsPlaying(false);
+      return;
+    }
+
+    const { sound } = await Audio.Sound.createAsync(
+      { uri: message.audioUri },
+      { shouldPlay: true }
+    );
+    soundRef.current = sound;
+    setIsPlaying(true);
+    sound.setOnPlaybackStatusUpdate((s) => {
+      if (!s.isLoaded || ("didJustFinish" in s && s.didJustFinish)) {
+        sound.unloadAsync().catch(() => {});
+        soundRef.current = null;
+        setIsPlaying(false);
+      }
+    });
+  };
 
   return (
     <View
@@ -49,9 +89,26 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
         </Text>
         {/* Translated text */}
         {message.translated ? (
-          <Text style={[styles.translated, isA ? styles.translatedA : styles.translatedB]}>
-            {message.translated}
-          </Text>
+          <View style={styles.translatedRow}>
+            <Text
+              style={[styles.translated, isA ? styles.translatedA : styles.translatedB]}
+            >
+              {message.translated}
+            </Text>
+            {message.audioUri ? (
+              <Pressable
+                onPress={toggleReplay}
+                accessibilityLabel={isPlaying ? "Stop playback" : "Replay translation"}
+                style={({ pressed }) => [styles.replayBtn, { opacity: pressed ? 0.6 : 1 }]}
+              >
+                <Feather
+                  name={isPlaying ? "square" : "volume-2"}
+                  size={14}
+                  color={isA ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0.75)"}
+                />
+              </Pressable>
+            ) : null}
+          </View>
         ) : null}
         {/* Timestamp */}
         <Text style={[styles.time, isA ? styles.timeA : styles.timeB]}>
@@ -102,11 +159,20 @@ const styles = StyleSheet.create({
   textLight: {
     color: "#FFFFFF",
   },
+  translatedRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    marginTop: 4,
+    gap: 6,
+  },
   translated: {
+    flex: 1,
     fontSize: 13,
     fontStyle: "italic",
-    marginTop: 4,
     lineHeight: 19,
+  },
+  replayBtn: {
+    padding: 2,
   },
   translatedA: {
     color: "rgba(255,255,255,0.82)",

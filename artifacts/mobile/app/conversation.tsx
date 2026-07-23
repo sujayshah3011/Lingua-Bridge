@@ -181,6 +181,9 @@ export default function ConversationScreen() {
           try {
             await soundRef.current?.unloadAsync();
             const fileUri = await synthesizeSpeech(translated, targetLangCode, voiceGender, ttsProvider);
+            setMessages((prev) =>
+              prev.map((m) => (m.id === msg.id ? { ...m, audioUri: fileUri } : m))
+            );
             const { sound } = await Audio.Sound.createAsync(
               { uri: fileUri },
               { shouldPlay: true }
