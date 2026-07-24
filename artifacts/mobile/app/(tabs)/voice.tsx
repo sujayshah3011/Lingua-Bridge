@@ -274,13 +274,21 @@ export default function VoiceScreen() {
       await playUri(fileUri);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
-      if (!["INSUFFICIENT_CREDITS", "RATE_LIMIT", "NOT_SIGNED_IN", "TTS_EMPTY_RESPONSE"].includes(msg) && !msg.startsWith("TTS_ERROR_")) {
+      // Server includes its real balance when it rejects for insufficient
+      // credits (INSUFFICIENT_CREDITS:<amount>) — sync that back so a stale
+      // local display can't keep showing a balance the server disagrees with.
+      const insufficientMatch = msg.match(/^INSUFFICIENT_CREDITS(?::(-?[\d.]+))?$/);
+      const realBalance = insufficientMatch?.[1] !== undefined ? Number(insufficientMatch[1]) : undefined;
+      if (realBalance !== undefined) setCredits(realBalance);
+      if (!insufficientMatch && !["RATE_LIMIT", "NOT_SIGNED_IN", "TTS_EMPTY_RESPONSE"].includes(msg) && !msg.startsWith("TTS_ERROR_")) {
         console.error("[Voice TTS] Unhandled error:", msg);
       }
       Alert.alert(
         "Playback Failed",
-        msg === "INSUFFICIENT_CREDITS"
-          ? "No credits remaining."
+        insufficientMatch
+          ? realBalance !== undefined
+            ? `No credits remaining (server balance: ₹${realBalance.toFixed(2)}).`
+            : "No credits remaining."
           : msg === "RATE_LIMIT"
           ? "Rate limit reached, please wait."
           : msg === "NOT_SIGNED_IN"
@@ -296,7 +304,7 @@ export default function VoiceScreen() {
     } finally {
       setTtsLoading(false);
     }
-  }, [translation, targetLang, voiceGender, ttsProvider, ttsLoading, credits, isPlaying, playUri, stopSpeakingSound]);
+  }, [translation, targetLang, voiceGender, ttsProvider, ttsLoading, credits, isPlaying, playUri, stopSpeakingSound, setCredits]);
 
   const isRecording = state === "recording";
   const isProcessing = state === "processing";

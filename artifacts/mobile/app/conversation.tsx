@@ -203,8 +203,27 @@ export default function ConversationScreen() {
               }
             });
           } catch (err) {
+            const ttsMsg = err instanceof Error ? err.message : "";
+            // Server includes its real balance when it rejects for
+            // insufficient credits — sync it so a stale local display can't
+            // keep disagreeing with what the server actually charged against.
+            const insufficientMatch = ttsMsg.match(/^INSUFFICIENT_CREDITS(?::(-?[\d.]+))?$/);
+            const realBalance = insufficientMatch?.[1] !== undefined ? Number(insufficientMatch[1]) : undefined;
+            if (realBalance !== undefined) setCredits(realBalance);
+
             // TTS failure is non-fatal — the translated text is still shown
-            console.error("[Conversation TTS] Unhandled error:", err instanceof Error ? err.message : err);
+            // regardless — but silent failure here reads as "the speaker
+            // isn't working", so surface it instead of only logging.
+            if (insufficientMatch) {
+              Alert.alert(
+                "Playback Failed",
+                realBalance !== undefined
+                  ? `No credits remaining to speak the translation (server balance: ₹${realBalance.toFixed(2)}).`
+                  : "No credits remaining to speak the translation."
+              );
+            } else {
+              console.error("[Conversation TTS] Unhandled error:", ttsMsg || err);
+            }
           }
         }
       } catch (err: unknown) {

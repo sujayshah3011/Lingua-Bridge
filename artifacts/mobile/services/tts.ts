@@ -51,6 +51,16 @@ function resolveTTSProvider(targetLang: string, preferred: TTSProvider): TTSProv
   return preferred;
 }
 
+// The server includes the real balance it saw when it rejected the charge —
+// surfacing that number (instead of a bare "INSUFFICIENT_CREDITS") is the
+// only way to tell a genuinely empty wallet apart from a stale client-side
+// display, without guessing.
+async function insufficientCreditsError(res: Response): Promise<Error> {
+  const body = await res.json().catch(() => ({} as Record<string, unknown>));
+  const credits = typeof body?.["credits"] === "number" ? (body["credits"] as number) : undefined;
+  return new Error(credits !== undefined ? `INSUFFICIENT_CREDITS:${credits}` : "INSUFFICIENT_CREDITS");
+}
+
 let _currentSound: Audio.Sound | null = null;
 
 export const stopSpeaking = async (): Promise<void> => {
@@ -100,7 +110,7 @@ async function speakTextSarvam(
     }),
   });
 
-  if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
+  if (res.status === 402) throw await insufficientCreditsError(res);
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
     const detail = await extractErrorDetail(res);
@@ -149,7 +159,7 @@ async function speakTextElevenLabs(
     }),
   });
 
-  if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
+  if (res.status === 402) throw await insufficientCreditsError(res);
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
     const detail = await extractErrorDetail(res);
@@ -220,7 +230,7 @@ async function synthesizeSarvam(
     }),
   });
 
-  if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
+  if (res.status === 402) throw await insufficientCreditsError(res);
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
     const detail = await extractErrorDetail(res);
@@ -252,7 +262,7 @@ async function synthesizeElevenLabs(
     }),
   });
 
-  if (res.status === 402) throw new Error("INSUFFICIENT_CREDITS");
+  if (res.status === 402) throw await insufficientCreditsError(res);
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) {
     const detail = await extractErrorDetail(res);
