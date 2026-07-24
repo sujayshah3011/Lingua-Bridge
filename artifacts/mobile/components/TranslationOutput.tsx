@@ -28,6 +28,7 @@ interface TranslationOutputProps {
   onCopy?: () => void;
   onSpeak?: () => void;
   isSpeaking?: boolean;
+  isPlaying?: boolean;
 }
 
 export function TranslationOutput({
@@ -38,6 +39,7 @@ export function TranslationOutput({
   onCopy,
   onSpeak,
   isSpeaking = false,
+  isPlaying = false,
 }: TranslationOutputProps) {
   const { theme, isDark } = useTheme();
   const [copied, setCopied] = useState(false);
@@ -110,10 +112,11 @@ export function TranslationOutput({
               onPress={handleSpeak}
               hitSlop={12}
               disabled={isSpeaking}
+              accessibilityLabel={isPlaying ? "Stop playback" : "Play translation"}
               style={({ pressed }) => [
                 styles.actionBtn,
                 {
-                  backgroundColor: isSpeaking
+                  backgroundColor: isSpeaking || isPlaying
                     ? theme.primary + "20"
                     : theme.surfaceSecondary,
                   opacity: pressed ? 0.7 : 1,
@@ -122,6 +125,8 @@ export function TranslationOutput({
             >
               {isSpeaking ? (
                 <ActivityIndicator size={14} color={theme.primary} />
+              ) : isPlaying ? (
+                <Feather name="square" size={13} color={theme.primary} />
               ) : (
                 <Feather name="volume-2" size={15} color={theme.primary} />
               )}

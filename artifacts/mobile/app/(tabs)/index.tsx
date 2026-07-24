@@ -33,6 +33,7 @@ export default function TranslateScreen() {
   const {
     user,
     credits,
+    setCredits,
     sourceLang,
     setSourceLang,
     targetLang,
@@ -61,10 +62,14 @@ export default function TranslateScreen() {
   }>({ msg: "", type: "info", visible: false });
   const [hasShownCopyToast, setHasShownCopyToast] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTranslatedRef = useRef<string>("");
   const soundRef = useRef<Audio.Sound | null>(null);
+  // Caches the last synthesized clip so repeat taps on the same translation
+  // replay for free instead of paying for a fresh synthesis every time.
+  const lastAudioRef = useRef<{ key: string; uri: string } | null>(null);
 
   const showToast = useCallback(
     (msg: string, type: "info" | "error" | "success" = "info") => {
@@ -200,8 +205,53 @@ export default function TranslateScreen() {
     }
   };
 
+  const stopSpeakingSound = useCallback(async () => {
+    if (soundRef.current) {
+      await soundRef.current.stopAsync().catch(() => {});
+      await soundRef.current.unloadAsync().catch(() => {});
+      soundRef.current = null;
+    }
+    setIsPlaying(false);
+  }, []);
+
+  const playUri = useCallback(async (uri: string) => {
+    await stopSpeakingSound();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+    });
+    const { sound } = await Audio.Sound.createAsync(
+      { uri },
+      { shouldPlay: true }
+    );
+    soundRef.current = sound;
+    setIsPlaying(true);
+
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (!status.isLoaded || status.didJustFinish) {
+        sound.unloadAsync().catch(() => {});
+        if (soundRef.current === sound) soundRef.current = null;
+        setIsPlaying(false);
+      }
+    });
+  }, [stopSpeakingSound]);
+
   const handleSpeak = useCallback(async () => {
     if (!translatedText || isSpeaking) return;
+
+    // Tapping while it's already playing just stops it — no re-synthesis.
+    if (isPlaying) {
+      await stopSpeakingSound();
+      return;
+    }
+
+    const cacheKey = `${translatedText}|${targetLang}|${voiceGender}|${ttsProvider}`;
+    if (lastAudioRef.current?.key === cacheKey) {
+      await playUri(lastAudioRef.current.uri);
+      return;
+    }
+
     if (credits < 0.01) {
       showToast("No credits remaining", "error");
       return;
@@ -211,49 +261,41 @@ export default function TranslateScreen() {
 
     try {
       setIsSpeaking(true);
-      if (soundRef.current) {
-        await soundRef.current.stopAsync().catch(() => {});
-        await soundRef.current.unloadAsync().catch(() => {});
-        soundRef.current = null;
-      }
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-      });
       const uri = await synthesizeSpeech(translatedText, targetLang, voiceGender, ttsProvider);
-      const { sound } = await Audio.Sound.createAsync(
-        { uri },
-        { shouldPlay: true }
-      );
-      soundRef.current = sound;
-
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (!status.isLoaded || status.didJustFinish) {
-          setIsSpeaking(false);
-          sound.unloadAsync().catch(() => {});
-          soundRef.current = null;
-        }
-      });
+      lastAudioRef.current = { key: cacheKey, uri };
+      await playUri(uri);
     } catch (err: unknown) {
-      setIsSpeaking(false);
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg === "INSUFFICIENT_CREDITS") {
-        showToast("No credits remaining", "error");
+      // Server includes its real balance when it rejects for insufficient
+      // credits — sync it so a stale local display can't keep disagreeing
+      // with what the server actually charged against.
+      const insufficientMatch = msg.match(/^INSUFFICIENT_CREDITS(?::(-?[\d.]+))?$/);
+      const realBalance = insufficientMatch?.[1] !== undefined ? Number(insufficientMatch[1]) : undefined;
+      if (realBalance !== undefined) setCredits(realBalance);
+
+      if (insufficientMatch) {
+        showToast(
+          realBalance !== undefined
+            ? `No credits remaining (balance: ₹${realBalance.toFixed(2)})`
+            : "No credits remaining",
+          "error"
+        );
       } else if (msg === "RATE_LIMIT") {
         showToast("Rate limit reached, please wait", "error");
       } else if (msg === "NOT_SIGNED_IN") {
         showToast("Please sign in to use voice", "error");
       } else if (msg.startsWith("TTS_ERROR_")) {
-        showToast("Speech synthesis failed. Please try again.", "error");
+        showToast(`Speech synthesis failed: ${msg}`, "error");
       } else if (msg === "TTS_EMPTY_RESPONSE") {
         showToast("No audio received from the server.", "error");
       } else {
         console.error("[TTS] Unhandled error:", msg);
         showToast(`Could not play audio: ${msg}`, "error");
       }
+    } finally {
+      setIsSpeaking(false);
     }
-  }, [translatedText, targetLang, voiceGender, ttsProvider, isSpeaking, credits, user, showToast]);
+  }, [translatedText, targetLang, voiceGender, ttsProvider, isSpeaking, isPlaying, credits, user, showToast, playUri, stopSpeakingSound, setCredits]);
 
   useEffect(() => {
     return () => {
@@ -261,6 +303,7 @@ export default function TranslateScreen() {
       soundRef.current?.unloadAsync().catch(() => {});
       soundRef.current = null;
       setIsSpeaking(false);
+      setIsPlaying(false);
     };
   }, [translatedText]);
 
@@ -354,6 +397,7 @@ export default function TranslateScreen() {
             onCopy={handleCopy}
             onSpeak={handleSpeak}
             isSpeaking={isSpeaking}
+            isPlaying={isPlaying}
           />
           {Platform.OS !== "web" && !!translatedText && (
             <VoiceSelector
