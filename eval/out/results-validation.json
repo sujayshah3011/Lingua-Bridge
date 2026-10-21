@@ -1,0 +1,1193 @@
+[
+ {
+  "id": "val-01",
+  "tgt": "en-IN",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "sent": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "target": "The patient will have an injection at 12:30.",
+  "back": "The patient will have an injection at 12:30.",
+  "expect": [
+   8.25
+  ],
+  "lost": [
+   8.25
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-01",
+  "tgt": "ta-IN",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "sent": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "target": "நோயாளியின் உடலில் 12:50 மணிக்கு ஊசி செலுத்தப்படும்.",
+  "back": "The needle is put into the patient's body at 12:50.",
+  "expect": [
+   8.25
+  ],
+  "lost": [
+   8.25
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-01",
+  "tgt": "te-IN",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "sent": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "target": "రోగికి 12:30 గంటలకు ఇంజెక్షన్ ఉంటుంది.",
+  "back": "The patient is to be injected with 12:30.",
+  "expect": [
+   8.25
+  ],
+  "lost": [
+   8.25
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-01",
+  "tgt": "bn-IN",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "sent": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "target": "রোগীর 12:30-এ একটি ইনজেকশন দেওয়া হবে।",
+  "back": "The patient will be given an injection at 12:30.",
+  "expect": [
+   8.25
+  ],
+  "lost": [
+   8.25
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-02",
+  "tgt": "en-IN",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "sent": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "target": "The pharmacy closes at 11:30.",
+  "back": "The pharmacy closes at 11:30.",
+  "expect": [
+   11.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-02",
+  "tgt": "ta-IN",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "sent": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "target": "மருந்துக் கடை 11:30 மணிக்கு மூடப்படும்.",
+  "back": "The pharmacy closes at 11:30 p.m.",
+  "expect": [
+   11.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-02",
+  "tgt": "te-IN",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "sent": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "target": "ఫార్మసీ 11:30 గంటలకు మూసివేయబడుతుంది.",
+  "back": "The pharmacy closes at 11:30 p.m.",
+  "expect": [
+   11.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-02",
+  "tgt": "bn-IN",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "sent": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "target": "ফার্মেসিটি 11:30-এ বন্ধ হয়ে যায়।",
+  "back": "The pharmacy closes at 11:30 p.m.",
+  "expect": [
+   11.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-03",
+  "tgt": "en-IN",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "sent": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "target": "Submit the form by 12:30 PM.",
+  "back": "Submit the form by 12:30 PM.",
+  "expect": [
+   11.75
+  ],
+  "lost": [
+   11.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-03",
+  "tgt": "ta-IN",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "sent": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "target": "பிற்பகல் 12:30 மணிக்குள் படிவத்தை சமர்ப்பிக்கவும்.",
+  "back": "Submit the form by 12:30 PM.",
+  "expect": [
+   11.75
+  ],
+  "lost": [
+   11.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-03",
+  "tgt": "te-IN",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "sent": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "target": "ఫారమ్‌ను మధ్యాహ్నం 12:30 గంటలకల్లా సమర్పించండి.",
+  "back": "Submit the form by 12:30 p.m.",
+  "expect": [
+   11.75
+  ],
+  "lost": [
+   11.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-03",
+  "tgt": "bn-IN",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "sent": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "target": "ফর্মটি দুপুর 12:30 এর মধ্যে জমা দিন।",
+  "back": "Submit the form by 12:30 p.m.",
+  "expect": [
+   11.75
+  ],
+  "lost": [
+   11.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-04",
+  "tgt": "en-IN",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "sent": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "target": "The doctor will only be in after 1:30.",
+  "back": "The doctor will only be in after 1:30.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-04",
+  "tgt": "ta-IN",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "sent": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "target": "மருத்துவர் 1:30க்கு பிறகுதான் வருவார்.",
+  "back": "The doctor will be here after 1:30.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-04",
+  "tgt": "te-IN",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "sent": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "target": "డాక్టర్ గారు 1:30 తర్వాత మాత్రమే వస్తారు.",
+  "back": "The doctor will only come after 1:30.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-04",
+  "tgt": "bn-IN",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "sent": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "target": "ডাক্তার 1:30-এর পরে আসবেন।",
+  "back": "The doctor will be here after 1:30.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-05",
+  "tgt": "en-IN",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "sent": "ढाई बजे की बस पकड़नी है।",
+  "target": "I need to catch the 2:30 bus.",
+  "back": "I need to catch the 2:30 bus.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-05",
+  "tgt": "ta-IN",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "sent": "ढाई बजे की बस पकड़नी है।",
+  "target": "நான் 2:30 பேருந்தைப் பிடிக்க வேண்டும்.",
+  "back": "I need to catch the 2:30 bus.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-05",
+  "tgt": "te-IN",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "sent": "ढाई बजे की बस पकड़नी है।",
+  "target": "నేను 2:30 బస్సును పట్టుకోవాలి.",
+  "back": "I need to catch the 2:30 bus.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-05",
+  "tgt": "bn-IN",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "sent": "ढाई बजे की बस पकड़नी है।",
+  "target": "আমার 2:30-এর বাস ধরতে হবে।",
+  "back": "I need to catch the 2:30 bus.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-06",
+  "tgt": "en-IN",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "sent": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "target": "The total cost of treatment is about 3.5 lakhs.",
+  "back": "The total cost of treatment is about 3.5 lakhs.",
+  "expect": [
+   350000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-06",
+  "tgt": "ta-IN",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "sent": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "target": "சிகிச்சையின் மொத்த செலவு சுமார் 3.5 லட்சம்.",
+  "back": "The total cost of treatment was about 3.5 lakhs.",
+  "expect": [
+   350000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-06",
+  "tgt": "te-IN",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "sent": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "target": "చికిత్సకు మొత్తం ఖర్చు సుమారు 3.5 లక్షలు.",
+  "back": "The total cost for treatment was about 3.5 lakhs.",
+  "expect": [
+   350000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-06",
+  "tgt": "bn-IN",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "sent": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "target": "চিকিৎসার মোট খরচ প্রায় 3.5 লক্ষ টাকা।",
+  "back": "The total cost of treatment was about 3.5 lakhs.",
+  "expect": [
+   350000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-07",
+  "tgt": "en-IN",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "sent": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "target": "Five thousand five hundred rupees have been deducted from your account.",
+  "back": "Five thousand five hundred rupees have been deducted from your account.",
+  "expect": [
+   5250
+  ],
+  "lost": [
+   5250
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-07",
+  "tgt": "ta-IN",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "sent": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "target": "உங்கள் கணக்கிலிருந்து ஐந்தாயிரத்து ஐந்நூறு ரூபாய் பிடித்தம் செய்யப்பட்டுள்ளது.",
+  "back": "Five thousand five hundred rupees have been deducted from your account.",
+  "expect": [
+   5250
+  ],
+  "lost": [
+   5250
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-07",
+  "tgt": "te-IN",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "sent": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "target": "మీ ఖాతా నుండి ఐదు వేల ఐదు వందల రూపాయలు తీసివేయబడ్డాయి.",
+  "back": "Five thousand five hundred rupees have been deducted from your account.",
+  "expect": [
+   5250
+  ],
+  "lost": [
+   5250
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-07",
+  "tgt": "bn-IN",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "sent": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "target": "আপনার অ্যাকাউন্ট থেকে পাঁচ হাজার পাঁচশ টাকা কাটা হয়েছে।",
+  "back": "Five thousand five hundred rupees have been deducted from your account.",
+  "expect": [
+   5250
+  ],
+  "lost": [
+   5250
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-08",
+  "tgt": "en-IN",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "sent": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "target": "I have a home loan of ₹4.25 lakh remaining.",
+  "back": "I have a home loan of ₹4.25 lakh remaining.",
+  "expect": [
+   375000
+  ],
+  "lost": [
+   375000
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-08",
+  "tgt": "ta-IN",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "sent": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "target": "எனக்கு சுமார் நான்கரை லட்சம் ரூபாய் வீட்டுக் கடன் மீதமுள்ளது.",
+  "back": "I have approximately four and a half lakh rupees remaining as a home loan.",
+  "expect": [
+   375000
+  ],
+  "lost": [
+   375000
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-08",
+  "tgt": "te-IN",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "sent": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "target": "నాకు దాదాపు నాలుగు కోట్ల నలభై వేల రూపాయల గృహ రుణం ఇంకా మిగిలి ఉంది.",
+  "back": "I still have a home loan of approximately four crore forty thousand rupees.",
+  "expect": [
+   375000
+  ],
+  "lost": [
+   375000
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-08",
+  "tgt": "bn-IN",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "sent": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "target": "আমার প্রায় সাড়ে চার লক্ষ টাকার একটি গৃহঋণ বাকি আছে।",
+  "back": "I have a home loan of approximately four and a half lakh rupees remaining.",
+  "expect": [
+   375000
+  ],
+  "lost": [
+   375000
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-09",
+  "tgt": "en-IN",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "sent": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "target": "The price of the car is six and a half lakh rupees.",
+  "back": "The price of the car is six and a half lakh rupees.",
+  "expect": [
+   650000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-09",
+  "tgt": "ta-IN",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "sent": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "target": "அந்த காரின் விலை ஆறரை லட்சம் ரூபாய்.",
+  "back": "The price of that car is six and a half lakh rupees.",
+  "expect": [
+   650000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-09",
+  "tgt": "te-IN",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "sent": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "target": "కారు ధర ఆరున్నర లక్ష రూపాయలు.",
+  "back": "The price of the car is six and a half lakh rupees.",
+  "expect": [
+   650000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-09",
+  "tgt": "bn-IN",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "sent": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "target": "গাড়িটির দাম সাড়ে ছয় লাখ টাকা।",
+  "back": "The car costs six and a half lakh rupees.",
+  "expect": [
+   650000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-10",
+  "tgt": "en-IN",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "sent": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "target": "The government has sanctioned ₹1.5 crore.",
+  "back": "The government has sanctioned ₹1.5 crore.",
+  "expect": [
+   15000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-10",
+  "tgt": "ta-IN",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "sent": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "target": "அரசாங்கம் ₹1.5 கோடி ஒதுக்கியுள்ளது.",
+  "back": "The government has allocated ₹1.5 crore for the project.",
+  "expect": [
+   15000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-10",
+  "tgt": "te-IN",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "sent": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "target": "ప్రభుత్వం 1.5 కోట్ల రూపాయలు మంజూరు చేసింది.",
+  "back": "The government has sanctioned ₹1.5 crore.",
+  "expect": [
+   15000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-10",
+  "tgt": "bn-IN",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "sent": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "target": "সরকার 1.5 কোটি টাকা মঞ্জুর করেছে।",
+  "back": "The government has sanctioned ₹1.5 crore.",
+  "expect": [
+   15000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-11",
+  "tgt": "en-IN",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "sent": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "target": "Save two and a half thousand rupees every month.",
+  "back": "Save two and a half thousand rupees every month.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-11",
+  "tgt": "ta-IN",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "sent": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "target": "ஒவ்வொரு மாதமும் இரண்டாயிரத்து ஐநூறு ரூபாய் சேமிக்கவும்.",
+  "back": "Save two thousand five hundred rupees every month.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-11",
+  "tgt": "te-IN",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "sent": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "target": "ప్రతి నెల రెండున్నర వేల రూపాయలు ఆదా చేయండి.",
+  "back": "Save two and a half thousand rupees every month.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-11",
+  "tgt": "bn-IN",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "sent": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "target": "প্রতি মাসে আড়াই হাজার টাকা করে বাঁচান।",
+  "back": "Save two and a half thousand rupees every month.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-12",
+  "tgt": "en-IN",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "sent": "बच्चे को सवा चम्मच दवा दें।",
+  "target": "Give the child one and a quarter teaspoons of medicine.",
+  "back": "Give the child one and a quarter teaspoons of medicine.",
+  "expect": [
+   1.25
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-12",
+  "tgt": "ta-IN",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "sent": "बच्चे को सवा चम्मच दवा दें।",
+  "target": "குழந்தைக்கு ஒன்றரை தேக்கரண்டி மருந்து கொடுங்கள்.",
+  "back": "Give the child one and a half teaspoons of medicine.",
+  "expect": [
+   1.25
+  ],
+  "lost": [
+   1.25
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-12",
+  "tgt": "te-IN",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "sent": "बच्चे को सवा चम्मच दवा दें।",
+  "target": "పిల్లవాడికి ఒకటిన్నర టీస్పూన్ల మందు ఇవ్వండి.",
+  "back": "Give the child one and a half teaspoons of the medicine.",
+  "expect": [
+   1.25
+  ],
+  "lost": [
+   1.25
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-12",
+  "tgt": "bn-IN",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "sent": "बच्चे को सवा चम्मच दवा दें।",
+  "target": "শিশুকে এক এবং এক-চতুর্থাংশ চা চামচ ওষুধ দিন।",
+  "back": "Give the child one and a quarter teaspoons of the medicine.",
+  "expect": [
+   1.25
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-13",
+  "tgt": "en-IN",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "sent": "पौने दो लीटर पानी रोज़ पीना है।",
+  "target": "Three-quarters of a liter of water should be drunk daily.",
+  "back": "Three-quarters of a liter of water should be drunk daily.",
+  "expect": [
+   1.75
+  ],
+  "lost": [
+   1.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-13",
+  "tgt": "ta-IN",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "sent": "पौने दो लीटर पानी रोज़ पीना है।",
+  "target": "தினமும் முக்கால் லிட்டர் தண்ணீர் குடிக்க வேண்டும்.",
+  "back": "Three-quarters of a liter of water should be drunk every day.",
+  "expect": [
+   1.75
+  ],
+  "lost": [
+   1.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-13",
+  "tgt": "te-IN",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "sent": "पौने दो लीटर पानी रोज़ पीना है।",
+  "target": "రోజుకు మూడు వంతుల లీటరు నీరు తాగాలి.",
+  "back": "Three-quarters of a liter of water a day.",
+  "expect": [
+   1.75
+  ],
+  "lost": [
+   1.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-13",
+  "tgt": "bn-IN",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "sent": "पौने दो लीटर पानी रोज़ पीना है।",
+  "target": "প্রতিদিন পৌনে এক লিটার জল পান করা উচিত।",
+  "back": "A quarter to three litres of water should be drunk per day.",
+  "expect": [
+   1.75
+  ],
+  "lost": [
+   1.75
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-14",
+  "tgt": "en-IN",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "sent": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "target": "The bill for five hundred and fifty rupees has arrived.",
+  "back": "The bill for five hundred and fifty rupees has arrived.",
+  "expect": [
+   550
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-14",
+  "tgt": "ta-IN",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "sent": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "target": "ஐநூற்று ஐம்பது ரூபாய் கட்டண ரசீது வந்துவிட்டது.",
+  "back": "The bill receipt for five hundred and fifty rupees has arrived.",
+  "expect": [
+   550
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-14",
+  "tgt": "te-IN",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "sent": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "target": "ఐదు వందల యాభై రూపాయల బిల్లు వచ్చింది.",
+  "back": "The bill came for five hundred and fifty rupees.",
+  "expect": [
+   550
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-14",
+  "tgt": "bn-IN",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "sent": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "target": "পাঁচশো পঞ্চাশ টাকার বিল এসে গেছে।",
+  "back": "A bill for five hundred and fifty rupees has arrived.",
+  "expect": [
+   550
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-15",
+  "tgt": "en-IN",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "sent": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "target": "My fee is 4,500 rupees, and it needs to be paid by the 10th.",
+  "back": "My fee is 4,500 rupees, and it needs to be paid by the 10th.",
+  "expect": [
+   4500,
+   10
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-15",
+  "tgt": "ta-IN",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "sent": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "target": "என்னுடைய கட்டணம் 4,500 ரூபாய், அதை 10-ஆம் தேதிக்குள் செலுத்த வேண்டும்.",
+  "back": "My fee is 4,500 rupees, and it needs to be paid by the 10th.",
+  "expect": [
+   4500,
+   10
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-15",
+  "tgt": "te-IN",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "sent": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "target": "నా ఫీజు 4,500 రూపాయలు, మరియు దానిని 10వ తేదీలోగా చెల్లించాలి.",
+  "back": "My fee is 4,500 rupees, and it must be paid by the 10th.",
+  "expect": [
+   4500,
+   10
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-15",
+  "tgt": "bn-IN",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "sent": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "target": "আমার পারিশ্রমিক 4,500 টাকা, এবং এটি 10 তারিখের মধ্যে পরিশোধ করতে হবে।",
+  "back": "My remuneration is 4,500 rupees, and it needs to be paid by the 10th.",
+  "expect": [
+   4500,
+   10
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-16",
+  "tgt": "en-IN",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "sent": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "target": "Call the helpline number 1800 180 1551.",
+  "back": "Call the helpline number 1800 180 1551.",
+  "expect": [
+   {
+    "digits": "18001801551"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-16",
+  "tgt": "ta-IN",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "sent": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "target": "உதவி எண் 1800 180 1551-ஐ அழைக்கவும்.",
+  "back": "Please call the helpline number 1800 180 1551.",
+  "expect": [
+   {
+    "digits": "18001801551"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-16",
+  "tgt": "te-IN",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "sent": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "target": "హెల్ప్‌లైన్ నంబర్ 1800 180 1551కు కాల్ చేయండి.",
+  "back": "Call the helpline number 1800 180 1551.",
+  "expect": [
+   {
+    "digits": "18001801551"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-16",
+  "tgt": "bn-IN",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "sent": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "target": "হেল্পলাইন নম্বর 1800 180 1551-এ কল করুন।",
+  "back": "Please call the helpline number 1800 180 1551.",
+  "expect": [
+   {
+    "digits": "18001801551"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-17",
+  "tgt": "en-IN",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "sent": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "target": "The operation took place at 9 am on 12 December.",
+  "back": "The operation took place at 9 am on 12 December.",
+  "expect": [
+   12,
+   "december",
+   9
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-17",
+  "tgt": "ta-IN",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "sent": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "target": "இந்த நடவடிக்கை டிசம்பர் 12ஆம் தேதி காலை 9 மணிக்கு நடந்தது.",
+  "back": "The operation took place at 9 am on 12 December.",
+  "expect": [
+   12,
+   "december",
+   9
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-17",
+  "tgt": "te-IN",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "sent": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "target": "డిసెంబర్ 12న ఉదయం 9 గంటలకు ఈ ఆపరేషన్ జరిగింది.",
+  "back": "The operation took place at 9 am on 12 December.",
+  "expect": [
+   12,
+   "december",
+   9
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-17",
+  "tgt": "bn-IN",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "sent": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "target": "12ই ডিসেম্বর সকাল 9টায় এই অপারেশনটি হয়।",
+  "back": "The operation took place at 9 am on 12 December.",
+  "expect": [
+   12,
+   "december",
+   9
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-18",
+  "tgt": "en-IN",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "sent": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "target": "I will arrive in 45 minutes.",
+  "back": "I will arrive in 45 minutes.",
+  "expect": [
+   45
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-18",
+  "tgt": "ta-IN",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "sent": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "target": "நான் 45 நிமிடங்களில் வந்து சேருவேன்.",
+  "back": "I will arrive in 45 minutes.",
+  "expect": [
+   45
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-18",
+  "tgt": "te-IN",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "sent": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "target": "నేను 45 నిమిషాల్లో వస్తాను.",
+  "back": "I will be here in 45 minutes.",
+  "expect": [
+   45
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-18",
+  "tgt": "bn-IN",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "sent": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "target": "আমি 45 মিনিটের মধ্যে পৌঁছাব।",
+  "back": "I will arrive in 45 minutes.",
+  "expect": [
+   45
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-19",
+  "tgt": "en-IN",
+  "hi": "दाम पचास रुपये किलो है।",
+  "sent": "दाम पचास रुपये किलो है।",
+  "target": "The price is fifty rupees per kilo.",
+  "back": "The price is fifty rupees per kilo.",
+  "expect": [
+   50
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-19",
+  "tgt": "ta-IN",
+  "hi": "दाम पचास रुपये किलो है।",
+  "sent": "दाम पचास रुपये किलो है।",
+  "target": "ஒரு கிலோ ஐம்பது ரூபாய்.",
+  "back": "Fifty rupees per kilo.",
+  "expect": [
+   50
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-19",
+  "tgt": "te-IN",
+  "hi": "दाम पचास रुपये किलो है।",
+  "sent": "दाम पचास रुपये किलो है।",
+  "target": "ధర కిలోకు యాభై రూపాయలు.",
+  "back": "The price is fifty rupees per kilogram.",
+  "expect": [
+   50
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-19",
+  "tgt": "bn-IN",
+  "hi": "दाम पचास रुपये किलो है।",
+  "sent": "दाम पचास रुपये किलो है।",
+  "target": "দাম প্রতি কিলো পঞ্চাশ টাকা।",
+  "back": "The price is fifty rupees per kilo.",
+  "expect": [
+   50
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-20",
+  "tgt": "en-IN",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "sent": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "target": "The workers would be paid Rs. 700 and two meals a day.",
+  "back": "The workers would be paid Rs. 700 and two meals a day.",
+  "expect": [
+   700,
+   2
+  ],
+  "lost": [
+   700,
+   2
+  ],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-20",
+  "tgt": "ta-IN",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "sent": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "target": "பணியாளர்களுக்கு ஒரு நாளைக்கு இரண்டு வேளை உணவு மற்றும் ரூ.700 வழங்கப்படும்.",
+  "back": "The workers would be paid Rs. 700 for two days of work.",
+  "expect": [
+   700,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-20",
+  "tgt": "te-IN",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "sent": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "target": "కార్మికులకు రోజుకు రెండు పూటలా భోజనంతో పాటు రూ.700 చెల్లించేవారు.",
+  "back": "The labourers were paid Rs. 700 each for two days of work.",
+  "expect": [
+   700,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ },
+ {
+  "id": "val-20",
+  "tgt": "bn-IN",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "sent": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "target": "শ্রমিকদের 700 টাকা এবং দিনে দু'বেলা খাবার দেওয়া হবে।",
+  "back": "The workers would be paid 700 rupees and provided with two meals a day.",
+  "expect": [
+   700,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null
+ }
+]
