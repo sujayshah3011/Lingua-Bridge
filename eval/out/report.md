@@ -1,15 +1,26 @@
 # Number accuracy baseline — Sarvam translate (hi-IN source, 36 cases)
 
-| Target | Cases | Values lost | Failure rate |
-|---|---|---|---|
-| en-IN | 36 | 1 | 2.8% |
-| ta-IN | 36 | 2 | 5.6% |
-| te-IN | 36 | 2 | 5.6% |
-| bn-IN | 36 | 3 | 8.3% |
+| Target | Cases | Values lost | Wrong currency | Failure rate |
+|---|---|---|---|---|
+| en-IN | 36 | 1 | 1 | 5.6% |
+| ta-IN | 36 | 2 | 1 | 8.3% |
+| te-IN | 36 | 2 | 1 | 8.3% |
+| bn-IN | 36 | 3 | 0 | 8.3% |
 
-**Overall: 8/144 translations lost at least one value.**
+**Overall: 11/144 translations lost a value or changed the currency.**
 
 ## Failures
+### clinic-10 → en-IN — wrong currency
+- Hindi: ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।
+- Translation: The operation cost about 125 thousand rubles.
+### clinic-10 → ta-IN — wrong currency
+- Hindi: ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।
+- Translation: இந்த அறுவை சிகிச்சைக்கு சுமார் 125 ஆயிரம் ரூபிள் செலவானது.
+- Back to English: The surgery cost about 125 thousand rubles.
+### clinic-10 → te-IN — wrong currency
+- Hindi: ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।
+- Translation: ఆపరేషన్ ఖర్చు సుమారు 125 వేల రూబిళ్లు.
+- Back to English: The cost of the operation was about 125 thousand rubles.
 ### clinic-10 → bn-IN — lost [125000]
 - Hindi: ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।
 - Translation: অপারেশনটির খরচ প্রায় এক কোটি পঁচিশ লক্ষ টাকা।

@@ -1,13 +1,13 @@
 # Number accuracy baseline — Sarvam translate (hi-IN source, 13 cases)
 
-| Target | Cases | Values lost | Failure rate |
-|---|---|---|---|
-| en-IN | 13 | 4 | 30.8% |
-| ta-IN | 13 | 5 | 38.5% |
-| te-IN | 13 | 4 | 30.8% |
-| bn-IN | 13 | 5 | 38.5% |
+| Target | Cases | Values lost | Wrong currency | Failure rate |
+|---|---|---|---|---|
+| en-IN | 13 | 4 | 1 | 38.5% |
+| ta-IN | 13 | 5 | 1 | 46.2% |
+| te-IN | 13 | 4 | 1 | 38.5% |
+| bn-IN | 13 | 4 | 0 | 30.8% |
 
-**Overall: 18/52 translations lost at least one value.**
+**Overall: 20/52 translations lost a value or changed the currency.**
 
 ## Failures
 ### hold-01 → en-IN — lost [225000]
@@ -74,7 +74,14 @@
 - Hindi: पौने छह बजे तक रिपोर्ट मिल जाएगी।
 - Translation: রিপোর্টটি বিকেল 4:30 এর মধ্যে পাওয়া যাবে।
 - Back to English: The report will be available by 4:30 p.m.
-### hold-13 → bn-IN — lost [25000000]
+### hold-13 → en-IN — wrong currency
 - Hindi: यह ढाई करोड़ रुपये का प्रोजेक्ट है।
-- Translation: এটি 2 কোটি 50 লক্ষ টাকার একটি প্রকল্প।
-- Back to English: It is a Rs 250 million dollar project.
+- Translation: It is a Rs 25 million dollar project.
+### hold-13 → ta-IN — wrong currency
+- Hindi: यह ढाई करोड़ रुपये का प्रोजेक्ट है।
+- Translation: இது 25 மில்லியன் டாலர் மதிப்பிலான திட்டம்.
+- Back to English: The project is worth up to $25 million.
+### hold-13 → te-IN — wrong currency
+- Hindi: यह ढाई करोड़ रुपये का प्रोजेक्ट है।
+- Translation: ఇది 25 మిలియన్ డాలర్ల ప్రాజెక్ట్.
+- Back to English: It is a US$25 million project.
