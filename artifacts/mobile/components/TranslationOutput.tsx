@@ -19,6 +19,8 @@ import Animated, {
 import { tintedShadow } from "@/constants/colors";
 import { getLanguageByCode } from "@/constants/languages";
 import { useTheme } from "@/hooks/useTheme";
+import { NumberWarning } from "@/components/NumberWarning";
+import type { NumberCheck } from "@/services/sarvam";
 
 interface TranslationOutputProps {
   translatedText: string;
@@ -29,6 +31,7 @@ interface TranslationOutputProps {
   onSpeak?: () => void;
   isSpeaking?: boolean;
   isPlaying?: boolean;
+  numberCheck?: NumberCheck;
 }
 
 export function TranslationOutput({
@@ -40,6 +43,7 @@ export function TranslationOutput({
   onSpeak,
   isSpeaking = false,
   isPlaying = false,
+  numberCheck,
 }: TranslationOutputProps) {
   const { theme, isDark } = useTheme();
   const [copied, setCopied] = useState(false);
@@ -188,6 +192,7 @@ export function TranslationOutput({
             >
               {translatedText}
             </Text>
+            <NumberWarning check={numberCheck} color={theme.amber} />
           </Animated.View>
         ) : (
           <Text style={[styles.placeholder, { color: theme.textMuted }]}>

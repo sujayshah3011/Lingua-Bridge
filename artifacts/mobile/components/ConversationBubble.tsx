@@ -11,6 +11,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Audio } from "expo-av";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/colors";
+import { NumberWarning } from "./NumberWarning";
+import type { NumberCheck } from "../services/sarvam";
 
 export interface Message {
   id: string;
@@ -23,6 +25,7 @@ export interface Message {
   // Set once the translation's speech is synthesized, so the replay button
   // can play the already-paid-for clip again without a new synthesis call.
   audioUri?: string;
+  numberCheck?: NumberCheck;
 }
 
 interface Props {
@@ -110,6 +113,7 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
             ) : null}
           </View>
         ) : null}
+        <NumberWarning check={message.numberCheck} color="#FFE08A" />
         {/* Timestamp */}
         <Text style={[styles.time, isA ? styles.timeA : styles.timeB]}>
           {time}

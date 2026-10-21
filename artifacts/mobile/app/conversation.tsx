@@ -163,7 +163,7 @@ export default function ConversationScreen() {
           return;
         }
 
-        const { translatedText: translated, credits: newCredits } = await translateText({
+        const { translatedText: translated, credits: newCredits, numberCheck } = await translateText({
           input: sttResult.transcript,
           sourceLanguageCode: sttResult.languageCode ?? sourceLang,
           targetLanguageCode: targetLangCode,
@@ -181,8 +181,16 @@ export default function ConversationScreen() {
           targetLangLabel:
             LANGUAGES.find((l) => l.code === targetLangCode)?.name ?? targetLangCode,
           timestamp: Date.now(),
+          numberCheck,
         };
         addMessage(msg);
+
+        // Never auto-speak a number we couldn't verify: the bubble shows what to
+        // confirm, and the replay button still plays it once the speaker agrees.
+        const unverified = numberCheck?.ok === false;
+        if (unverified && Platform.OS !== "web") {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        }
 
         if (translated) {
           try {
@@ -191,6 +199,7 @@ export default function ConversationScreen() {
             setMessages((prev) =>
               prev.map((m) => (m.id === msg.id ? { ...m, audioUri: fileUri } : m))
             );
+            if (unverified) return;
             const { sound } = await Audio.Sound.createAsync(
               { uri: fileUri },
               { shouldPlay: true }

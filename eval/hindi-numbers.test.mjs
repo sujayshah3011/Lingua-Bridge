@@ -1,0 +1,31 @@
+// node --experimental-strip-types eval/hindi-numbers.test.mjs
+import { strictEqual } from "node:assert";
+import { normalizeHindiNumbers as norm } from "../artifacts/api-server/src/lib/hindi-numbers.ts";
+
+const eq = (input, expected) => strictEqual(norm(input), expected.normalize("NFC"), input);
+
+eq("पौने नौ बजे तक खाली पेट रहना है", "8:45 बजे तक खाली पेट रहना है");
+eq("साढ़े तीन बजे दोबारा आइए", "3:30 बजे दोबारा आइए");
+eq("सवा दो बजे", "2:15 बजे");
+eq("पौने एक बजे", "12:45 बजे");
+eq("ढाई बजे", "2:30 बजे");
+eq("सवा लाख रुपये", "1 लाख 25 हज़ार रुपये");
+eq("साढ़े सात हज़ार महीना", "7500 महीना"); // precomposed ज़
+eq("साढ़े सात हज़ार महीना", "7500 महीना"); // decomposed ज + ़
+eq("पौने दो लाख", "1 लाख 75 हज़ार");
+eq("ढाई लाख रुपये का लोन", "2 लाख 50 हज़ार रुपये का लोन");
+eq("सवा करोड़", "1 करोड़ 25 लाख");
+eq("साढ़े 7 हजार", "7500");
+eq("ढाई सौ ग्राम दाल", "250 ग्राम दाल");
+eq("साढ़े बारह सौ", "1250");
+eq("सवा दो लाख", "2 लाख 25 हज़ार");
+eq("ढाई करोड़", "2 करोड़ 50 लाख");
+eq("डेढ़ लाख", "1 लाख 50 हज़ार");
+eq("डेढ़ गोली सुबह", "1.5 गोली सुबह");
+eq("ढाई चम्मच सिरप", "2.5 चम्मच सिरप");
+eq("ब्याज दर साढ़े नौ प्रतिशत", "ब्याज दर 9.5 प्रतिशत");
+// Untouched: no fraction word, or a word that only starts like one.
+eq("दो हज़ार पाँच सौ रुपये", "दो हज़ार पाँच सौ रुपये");
+eq("मेरा सवाल यह है", "मेरा सवाल यह है");
+eq("साढ़े कितने बजे?", "साढ़े कितने बजे?");
+console.log("hindi-numbers self-check passed");

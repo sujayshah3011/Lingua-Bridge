@@ -25,7 +25,7 @@ import { Language } from "@/constants/languages";
 import { useApp } from "@/context/AppContext";
 import { Colors } from "@/constants/colors";
 import { useTheme } from "@/hooks/useTheme";
-import { translateText } from "@/services/sarvam";
+import { translateText, type NumberCheck } from "@/services/sarvam";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
 
@@ -51,6 +51,8 @@ export default function TranslateScreen() {
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
+  // Only shown alongside translatedText, so it never needs clearing on its own.
+  const [numberCheck, setNumberCheck] = useState<NumberCheck>();
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLang, setDetectedLang] = useState<string | undefined>();
   const [showSourcePicker, setShowSourcePicker] = useState(false);
@@ -107,6 +109,7 @@ export default function TranslateScreen() {
         });
 
         setTranslatedText(result.translatedText);
+        setNumberCheck(result.numberCheck);
         if (result.detectedSourceLang) {
           setDetectedLang(result.detectedSourceLang);
         }
@@ -398,6 +401,7 @@ export default function TranslateScreen() {
             onSpeak={handleSpeak}
             isSpeaking={isSpeaking}
             isPlaying={isPlaying}
+            numberCheck={numberCheck}
           />
           {Platform.OS !== "web" && !!translatedText && (
             <VoiceSelector
