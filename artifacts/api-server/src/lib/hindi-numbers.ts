@@ -39,7 +39,10 @@ export function normalizeHindiNumbers(text: string): string {
       if (num) return match;
       value = FIXED[prefix]!;
     } else {
-      const n = num === undefined ? (scale ? 1 : undefined) : /^\d/.test(num) ? Number(num) : NUMS[num];
+      // Bare "सवा" means 1¼ ("सवा चम्मच"); bare साढ़े/पौने aren't numbers.
+      const n = num !== undefined ? (/^\d/.test(num) ? Number(num) : NUMS[num])
+        : scale || prefix === "सवा" ? 1
+        : undefined;
       if (n === undefined) return match;
       value = n + OFFSETS[prefix]!;
     }

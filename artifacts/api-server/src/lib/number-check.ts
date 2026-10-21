@@ -70,10 +70,12 @@ const canAdd = (cur: number, v: number) =>
 function parseNumbers(t: string, strict: boolean): number[] {
   const out: number[] = [];
   let total = 0, cur = 0, open = false;
+  // A word never extends a digit: "Rs. 700 and two meals" is 700 and 2, not 702.
+  let curFromDigits = false;
   const flush = () => {
     if (open) strict ? out.push(total + cur) : out.push(total + cur, total, cur);
     total = cur = 0;
-    open = false;
+    open = curFromDigits = false;
   };
   const tokens = t.match(/\d+(?:\.\d+)?|[a-z]+|[^\sa-z\d]/g) ?? [];
   tokens.forEach((w, i) => {
@@ -81,11 +83,12 @@ function parseNumbers(t: string, strict: boolean): number[] {
     if (/^\d/.test(w)) {
       if (cur) flush();
       cur = parseFloat(w);
-      open = true;
+      open = curFromDigits = true;
     } else if (w in WORDS) {
-      if (!canAdd(cur, WORDS[w]!)) flush();
+      if ((cur && curFromDigits) || !canAdd(cur, WORDS[w]!)) flush();
       cur += WORDS[w]!;
       open = true;
+      curFromDigits = false;
     } else if (strict && !open && (w === "hundred" || w in SCALES)) {
       // Source side: a scale word with no digit before it ("एक करोड़") is spelled-out
       // Hindi, which this check leaves to the model — don't invent "1 crore".

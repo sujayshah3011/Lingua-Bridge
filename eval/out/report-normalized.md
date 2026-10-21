@@ -11,9 +11,9 @@
 
 ## Runtime number check
 
-| Real errors | Caught | Missed | False alarms | Needed a back-translation |
-|---|---|---|---|---|
-| 4 | 4 | 0 | 0/140 | 1/144 |
+| Errors left | Caught | Missed | False alarms | Needed a back-translation | Fixed by falling back to original wording |
+|---|---|---|---|---|---|
+| 4 | 4 | 0 | 0/140 | 1/144 | 0 |
 
 ## Failures
 ### clinic-10 → en-IN — wrong currency

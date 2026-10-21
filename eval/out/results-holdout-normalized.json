@@ -16,7 +16,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-01",
@@ -35,7 +36,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-01",
@@ -54,7 +56,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-01",
@@ -73,7 +76,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-02",
@@ -92,7 +96,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-02",
@@ -111,7 +116,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-02",
@@ -130,7 +136,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-02",
@@ -149,7 +156,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-03",
@@ -168,7 +176,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-03",
@@ -187,7 +196,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-03",
@@ -206,7 +216,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-03",
@@ -225,7 +236,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-04",
@@ -244,7 +256,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-04",
@@ -263,7 +276,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-04",
@@ -282,7 +296,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-04",
@@ -301,7 +316,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-05",
@@ -320,7 +336,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-05",
@@ -339,7 +356,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-05",
@@ -358,7 +376,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-05",
@@ -377,7 +396,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-06",
@@ -396,7 +416,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-06",
@@ -415,7 +436,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-06",
@@ -434,7 +456,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-06",
@@ -457,7 +480,8 @@
    ],
    "wrongCurrency": false,
    "backTranslated": true
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-07",
@@ -476,7 +500,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-07",
@@ -495,7 +520,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-07",
@@ -514,7 +540,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-07",
@@ -533,7 +560,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-08",
@@ -552,7 +580,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-08",
@@ -571,7 +600,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-08",
@@ -590,7 +620,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-08",
@@ -609,7 +640,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-09",
@@ -628,7 +660,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-09",
@@ -647,7 +680,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-09",
@@ -666,7 +700,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-09",
@@ -685,7 +720,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-10",
@@ -704,7 +740,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-10",
@@ -723,7 +760,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-10",
@@ -742,7 +780,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-10",
@@ -761,7 +800,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-11",
@@ -780,7 +820,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-11",
@@ -799,7 +840,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-11",
@@ -818,7 +860,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-11",
@@ -837,7 +880,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-12",
@@ -856,7 +900,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-12",
@@ -875,7 +920,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-12",
@@ -894,7 +940,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-12",
@@ -913,7 +960,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-13",
@@ -932,7 +980,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-13",
@@ -951,7 +1000,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-13",
@@ -970,7 +1020,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "hold-13",
@@ -989,6 +1040,7 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  }
 ]

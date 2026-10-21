@@ -2,12 +2,12 @@
 
 | Target | Cases | Values lost | Wrong currency | Failure rate |
 |---|---|---|---|---|
-| en-IN | 20 | 6 | 0 | 30.0% |
+| en-IN | 20 | 5 | 0 | 25.0% |
 | ta-IN | 20 | 6 | 0 | 30.0% |
 | te-IN | 20 | 6 | 0 | 30.0% |
 | bn-IN | 20 | 5 | 0 | 25.0% |
 
-**Overall: 23/80 translations lost a value or changed the currency.**
+**Overall: 22/80 translations lost a value or changed the currency.**
 
 ## Failures
 ### val-01 → en-IN — lost [8.25]
@@ -93,6 +93,3 @@
 - Hindi: पौने दो लीटर पानी रोज़ पीना है।
 - Translation: প্রতিদিন পৌনে এক লিটার জল পান করা উচিত।
 - Back to English: A quarter to three litres of water should be drunk per day.
-### val-20 → en-IN — lost [700,2]
-- Hindi: मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।
-- Translation: The workers would be paid Rs. 700 and two meals a day.

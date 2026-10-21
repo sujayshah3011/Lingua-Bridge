@@ -64,12 +64,23 @@ const rows = [];
 for (const c of cases) {
   const sent = prep(c.hi);
   for (const tgt of TARGETS) {
-    const target = await translate(sent, "hi-IN", tgt);
-    const back = tgt === "en-IN" ? target : await translate(target, tgt, "en-IN");
+    const attempt = async (input) => {
+      const target = await translate(input, "hi-IN", tgt);
+      const back = tgt === "en-IN" ? target : await translate(target, tgt, "en-IN");
+      // The server's runtime check, fed the cached back-translation instead of a new call.
+      const check = NORMALIZE ? await checkNumbers(sent, target, tgt === "en-IN" ? null : async () => back) : null;
+      return { target, back, check };
+    };
+    let result = await attempt(sent);
+    // Mirrors routes/sarvam.ts: on a failed check, keep the original wording if it passes.
+    let fellBack = false;
+    if (NORMALIZE && !result.check.ok && sent !== c.hi) {
+      const alt = await attempt(c.hi);
+      if (alt.check.ok) [result, fellBack] = [alt, true];
+    }
+    const { target, back, check } = result;
     const wrongCurrency = RUPEE.test(c.hi) && FOREIGN.test(target);
-    // The server's runtime check, fed the cached back-translation instead of a new call.
-    const check = NORMALIZE ? await checkNumbers(sent, target, tgt === "en-IN" ? null : async () => back) : null;
-    rows.push({ id: c.id, tgt, hi: c.hi, sent, target, back, expect: c.expect, lost: missing(c.expect, [target, back]), wrongCurrency, check });
+    rows.push({ id: c.id, tgt, hi: c.hi, sent, target, back, expect: c.expect, lost: missing(c.expect, [target, back]), wrongCurrency, check, fellBack });
   }
 }
 
@@ -82,13 +93,14 @@ function checkReport() {
   const missed = rows.filter((r) => isBad(r) && r.check.ok);
   const falseAlarms = flagged.filter((r) => !isBad(r));
   const backTranslated = rows.filter((r) => r.check.backTranslated).length;
+  const fellBack = rows.filter((r) => r.fellBack).length;
   const row = (r) => `- ${r.id} → ${r.tgt}: ${r.target}${r.tgt === "en-IN" ? "" : ` (back: ${r.back})`} — check said ${JSON.stringify(r.check)}`;
   return [
     "## Runtime number check",
     "",
-    "| Real errors | Caught | Missed | False alarms | Needed a back-translation |",
-    "|---|---|---|---|---|",
-    `| ${failed.length} | ${caught.length} | ${missed.length} | ${falseAlarms.length}/${rows.length - failed.length} | ${backTranslated}/${rows.length} |`,
+    "| Errors left | Caught | Missed | False alarms | Needed a back-translation | Fixed by falling back to original wording |",
+    "|---|---|---|---|---|---|",
+    `| ${failed.length} | ${caught.length} | ${missed.length} | ${falseAlarms.length}/${rows.length - failed.length} | ${backTranslated}/${rows.length} | ${fellBack} |`,
     "",
     ...(missed.length ? ["Missed:", ...missed.map(row), ""] : []),
     ...(falseAlarms.length ? ["False alarms:", ...falseAlarms.map(row), ""] : []),

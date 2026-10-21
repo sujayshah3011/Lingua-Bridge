@@ -16,7 +16,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-01",
@@ -35,7 +36,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-01",
@@ -54,7 +56,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-01",
@@ -73,7 +76,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-02",
@@ -93,7 +97,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-02",
@@ -113,7 +118,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-02",
@@ -133,7 +139,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-02",
@@ -153,7 +160,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-03",
@@ -172,7 +180,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-03",
@@ -191,7 +200,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-03",
@@ -210,7 +220,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-03",
@@ -229,7 +240,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": true
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-04",
@@ -249,7 +261,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-04",
@@ -269,7 +282,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-04",
@@ -289,7 +303,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-04",
@@ -309,7 +324,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-05",
@@ -328,7 +344,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-05",
@@ -347,7 +364,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-05",
@@ -366,7 +384,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-05",
@@ -385,7 +404,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-06",
@@ -405,7 +425,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-06",
@@ -425,7 +446,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-06",
@@ -445,7 +467,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-06",
@@ -465,7 +488,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-07",
@@ -485,7 +509,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-07",
@@ -505,7 +530,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-07",
@@ -525,7 +551,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-07",
@@ -545,7 +572,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-08",
@@ -564,7 +592,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-08",
@@ -583,7 +612,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-08",
@@ -602,7 +632,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-08",
@@ -621,7 +652,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-09",
@@ -640,7 +672,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-09",
@@ -659,7 +692,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-09",
@@ -678,7 +712,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-09",
@@ -697,7 +732,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-10",
@@ -716,7 +752,8 @@
    "missing": [],
    "wrongCurrency": true,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-10",
@@ -735,7 +772,8 @@
    "missing": [],
    "wrongCurrency": true,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-10",
@@ -754,7 +792,8 @@
    "missing": [],
    "wrongCurrency": true,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-10",
@@ -773,7 +812,8 @@
    "missing": [],
    "wrongCurrency": true,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-11",
@@ -793,7 +833,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-11",
@@ -813,7 +854,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-11",
@@ -833,7 +875,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-11",
@@ -853,7 +896,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-12",
@@ -872,7 +916,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-12",
@@ -891,7 +936,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-12",
@@ -910,7 +956,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-12",
@@ -929,7 +976,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-13",
@@ -948,7 +996,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-13",
@@ -967,7 +1016,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-13",
@@ -986,7 +1036,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-13",
@@ -1005,7 +1056,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-14",
@@ -1024,7 +1076,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-14",
@@ -1043,7 +1096,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-14",
@@ -1062,7 +1116,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "clinic-14",
@@ -1081,7 +1136,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-01",
@@ -1101,7 +1157,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-01",
@@ -1121,7 +1178,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-01",
@@ -1141,7 +1199,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-01",
@@ -1161,7 +1220,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-02",
@@ -1180,7 +1240,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-02",
@@ -1199,7 +1260,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-02",
@@ -1218,7 +1280,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-02",
@@ -1237,7 +1300,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-03",
@@ -1256,7 +1320,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-03",
@@ -1275,7 +1340,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-03",
@@ -1294,7 +1360,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-03",
@@ -1313,7 +1380,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-04",
@@ -1332,7 +1400,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-04",
@@ -1351,7 +1420,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-04",
@@ -1370,7 +1440,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-04",
@@ -1389,7 +1460,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-05",
@@ -1410,7 +1482,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-05",
@@ -1431,7 +1504,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-05",
@@ -1452,7 +1526,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-05",
@@ -1473,7 +1548,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-06",
@@ -1492,7 +1568,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-06",
@@ -1511,7 +1588,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-06",
@@ -1530,7 +1608,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-06",
@@ -1549,7 +1628,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-07",
@@ -1568,7 +1648,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-07",
@@ -1587,7 +1668,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-07",
@@ -1606,7 +1688,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-07",
@@ -1625,7 +1708,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-08",
@@ -1646,7 +1730,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-08",
@@ -1667,7 +1752,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-08",
@@ -1688,7 +1774,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-08",
@@ -1709,7 +1796,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-09",
@@ -1729,7 +1817,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-09",
@@ -1749,7 +1838,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-09",
@@ -1769,7 +1859,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-09",
@@ -1789,7 +1880,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-10",
@@ -1808,7 +1900,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-10",
@@ -1827,7 +1920,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-10",
@@ -1846,7 +1940,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-10",
@@ -1865,7 +1960,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-11",
@@ -1884,7 +1980,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-11",
@@ -1903,7 +2000,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-11",
@@ -1922,7 +2020,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "bank-11",
@@ -1941,7 +2040,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-01",
@@ -1961,7 +2061,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-01",
@@ -1981,7 +2082,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-01",
@@ -2001,7 +2103,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-01",
@@ -2021,7 +2124,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-02",
@@ -2042,7 +2146,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-02",
@@ -2063,7 +2168,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-02",
@@ -2084,7 +2190,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-02",
@@ -2105,7 +2212,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-03",
@@ -2125,7 +2233,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-03",
@@ -2145,7 +2254,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-03",
@@ -2165,7 +2275,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-03",
@@ -2185,7 +2296,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-04",
@@ -2205,7 +2317,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-04",
@@ -2225,7 +2338,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-04",
@@ -2245,7 +2359,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-04",
@@ -2265,7 +2380,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-05",
@@ -2285,7 +2401,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-05",
@@ -2305,7 +2422,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-05",
@@ -2325,7 +2443,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-05",
@@ -2345,7 +2464,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-06",
@@ -2365,7 +2485,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-06",
@@ -2385,7 +2506,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-06",
@@ -2405,7 +2527,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-06",
@@ -2425,7 +2548,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-07",
@@ -2445,7 +2569,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-07",
@@ -2465,7 +2590,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-07",
@@ -2485,7 +2611,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-07",
@@ -2505,7 +2632,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-08",
@@ -2525,7 +2653,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-08",
@@ -2545,7 +2674,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-08",
@@ -2565,7 +2695,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-08",
@@ -2585,7 +2716,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-09",
@@ -2604,7 +2736,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-09",
@@ -2623,7 +2756,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-09",
@@ -2642,7 +2776,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-09",
@@ -2661,7 +2796,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-10",
@@ -2680,7 +2816,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-10",
@@ -2699,7 +2836,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-10",
@@ -2718,7 +2856,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-10",
@@ -2737,7 +2876,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-11",
@@ -2757,7 +2897,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-11",
@@ -2777,7 +2918,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-11",
@@ -2797,7 +2939,8 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  },
  {
   "id": "field-11",
@@ -2817,6 +2960,7 @@
    "missing": [],
    "wrongCurrency": false,
    "backTranslated": false
-  }
+  },
+  "fellBack": false
  }
 ]

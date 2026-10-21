@@ -11,9 +11,9 @@
 
 ## Runtime number check
 
-| Real errors | Caught | Missed | False alarms | Needed a back-translation |
-|---|---|---|---|---|
-| 1 | 1 | 0 | 0/51 | 1/52 |
+| Errors left | Caught | Missed | False alarms | Needed a back-translation | Fixed by falling back to original wording |
+|---|---|---|---|---|---|
+| 1 | 1 | 0 | 0/51 | 1/52 | 0 |
 
 ## Failures
 ### hold-06 → bn-IN — lost [7.25]

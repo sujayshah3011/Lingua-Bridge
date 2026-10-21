@@ -27,6 +27,8 @@ has("seven and a half thousand per month", 7500);
 has("My salary is eighteen thousand, not paid for 3 months", 18000, 3);
 has("BP is 150/95", 150, 95);
 has("EMI of ₹12,450 on the 5th", 12450, 5);
+has("The workers would be paid Rs. 700 and two meals a day.", 700, 2);
+has("2 lakh twenty five thousand", 225000);
 has("அடுத்த சோதனை ௧௫ நவம்பர்", 15);
 has("next check-up on 15 November", 15, "november");
 has("call me on 98765 43210", { digits: "9876543210" });
