@@ -199,27 +199,30 @@ export default function SettingsScreen() {
                     Sign in required
                   </Text>
                   <Text style={[styles.cardDesc, { color: theme.textSecondary }]}>
-                    Sign in with Google to use BhaashAI.
+                    Sign in to use BhaashAI.
                   </Text>
                 </View>
               </View>
-              <Pressable
-                onPress={handleSignIn}
-                disabled={signingIn}
-                style={({ pressed }) => [
-                  styles.googleBtn,
-                  { backgroundColor: pressed ? "#f5f5f5" : "#fff", borderColor: theme.border, opacity: signingIn ? 0.7 : 1 },
-                ]}
-              >
-                {signingIn ? (
-                  <ActivityIndicator size="small" color={theme.primary} />
-                ) : (
-                  <>
-                    <Feather name="log-in" size={16} color="#4285F4" />
-                    <Text style={styles.googleBtnText}>Continue with Google</Text>
-                  </>
-                )}
-              </Pressable>
+              {/* Google sign-in only works on web; phones use email sign-in on the welcome screen. */}
+              {Platform.OS === "web" && (
+                <Pressable
+                  onPress={handleSignIn}
+                  disabled={signingIn}
+                  style={({ pressed }) => [
+                    styles.googleBtn,
+                    { backgroundColor: pressed ? "#f5f5f5" : "#fff", borderColor: theme.border, opacity: signingIn ? 0.7 : 1 },
+                  ]}
+                >
+                  {signingIn ? (
+                    <ActivityIndicator size="small" color={theme.primary} />
+                  ) : (
+                    <>
+                      <Feather name="log-in" size={16} color="#4285F4" />
+                      <Text style={styles.googleBtnText}>Continue with Google</Text>
+                    </>
+                  )}
+                </Pressable>
+              )}
             </>
           )}
         </View>
