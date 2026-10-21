@@ -1,0 +1,24 @@
+rules_version = '2';
+// Balances are server-only: the API server charges through the Admin SDK, which
+// bypasses these rules. Clients may create their own user doc with exactly the
+// welcome credit (constants/pricing.ts WELCOME_CREDIT_INR), then only touch
+// profile and stats fields. No delete — that would allow re-creating for a new
+// welcome credit.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.credits == 100
+        && request.resource.data.totalCredited == 100
+        && request.resource.data.totalDebited == 0;
+      allow update: if request.auth != null && request.auth.uid == uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['credits', 'totalCredited', 'totalDebited', 'plan', 'isActive']);
+    }
+    match /transactions/{txId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+    }
+  }
+}
