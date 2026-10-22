@@ -38,15 +38,10 @@ router.post("/tts", requireAuth, async (req: Request, res: Response) => {
   }
 
   try {
-    // getVoiceId falls back to a default multilingual voice for any language
-    // code without a curated voice — ElevenLabs' model reads the language
-    // from the input text itself, so passing the real code through (instead
-    // of silently swapping to en-IN) lets it attempt the correct language
-    // even without a hand-picked voice for it.
-    const langCode = body.target_language_code ?? "en-IN";
-
+    // ElevenLabs' model reads the language from the text itself, so the voice
+    // only picks gender (see lib/voice-map.ts).
     const gender = body.speaker === "male" ? "male" : "female";
-    const voiceId = getVoiceId(langCode, gender);
+    const voiceId = getVoiceId(gender);
 
     const result = await synthesizeSpeech({
       text,

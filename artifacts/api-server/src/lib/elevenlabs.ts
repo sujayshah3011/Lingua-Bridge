@@ -1,4 +1,4 @@
-import { ELEVENLABS_VOICE_MAP } from "./voice-map";
+import { ELEVENLABS_VOICES } from "./voice-map";
 
 interface ElevenLabsTTSOptions {
   text: string;
@@ -12,9 +12,8 @@ interface TTSResponse {
   voice_id: string;
 }
 
-export function getVoiceId(langCode: string, gender: "female" | "male"): string {
-  return ELEVENLABS_VOICE_MAP[langCode]?.[gender]
-    ?? ELEVENLABS_VOICE_MAP["default"]![gender];
+export function getVoiceId(gender: "female" | "male"): string {
+  return ELEVENLABS_VOICES[gender];
 }
 
 export async function synthesizeSpeech(opts: ElevenLabsTTSOptions): Promise<TTSResponse> {
