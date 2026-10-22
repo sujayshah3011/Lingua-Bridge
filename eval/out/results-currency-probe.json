@@ -1,0 +1,232 @@
+[
+ {
+  "id": "probe-symbol-1",
+  "tgt": "en-IN",
+  "hi": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "target": "The operation cost approximately ₹1.25 million.",
+  "back": "The operation cost approximately ₹1.25 million.",
+  "expect": [
+   125000
+  ],
+  "lost": [
+   125000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-symbol-1",
+  "tgt": "ta-IN",
+  "hi": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "target": "இந்த அறுவை சிகிச்சைக்கு சுமார் ₹1.25 மில்லியன் செலவானது.",
+  "back": "The surgery cost about ₹1.25 million.",
+  "expect": [
+   125000
+  ],
+  "lost": [
+   125000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-symbol-1",
+  "tgt": "te-IN",
+  "hi": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "target": "ఆపరేషన్ ఖర్చు సుమారు ₹1.25 మిలియన్లు.",
+  "back": "The cost of the operation was about ₹1.25 million.",
+  "expect": [
+   125000
+  ],
+  "lost": [
+   125000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-symbol-1",
+  "tgt": "bn-IN",
+  "hi": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग ₹1 लाख 25 हज़ार आएगा।",
+  "target": "অপারেশনটির খরচ ছিল প্রায় ₹12.5 লক্ষ টাকা।",
+  "back": "The cost of the surgery was about Rs. 12.5 lakh.",
+  "expect": [
+   125000
+  ],
+  "lost": [
+   125000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-1",
+  "tgt": "en-IN",
+  "hi": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "target": "The operation cost about ₹125,000.",
+  "back": "The operation cost about ₹125,000.",
+  "expect": [
+   125000
+  ],
+  "lost": [],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-1",
+  "tgt": "ta-IN",
+  "hi": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "target": "இந்த அறுவை சிகிச்சைக்கு சுமார் 125 ஆயிரம் இந்திய ரூபாய் செலவானது.",
+  "back": "The surgery cost around ₹125 thousand Rupees.",
+  "expect": [
+   125000
+  ],
+  "lost": [],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-1",
+  "tgt": "te-IN",
+  "hi": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "target": "ఆపరేషన్ ఖర్చు సుమారు 125 వేల భారతీయ రూపాయలు.",
+  "back": "The operation cost approximately 125 thousand Indian Rupees.",
+  "expect": [
+   125000
+  ],
+  "lost": [],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-1",
+  "tgt": "bn-IN",
+  "hi": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग 1 लाख 25 हज़ार भारतीय रुपये आएगा।",
+  "target": "অপারেশনটির খরচ ছিল প্রায় 125 হাজার ভারতীয় টাকা।",
+  "back": "The operation cost approximately 125 thousand Indian Rupees.",
+  "expect": [
+   125000
+  ],
+  "lost": [],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-symbol-2",
+  "tgt": "en-IN",
+  "hi": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "sent": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "target": "It is a ₹250 million project.",
+  "back": "It is a ₹250 million project.",
+  "expect": [
+   25000000
+  ],
+  "lost": [
+   25000000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-symbol-2",
+  "tgt": "ta-IN",
+  "hi": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "sent": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "target": "இது ₹250 மில்லியன் மதிப்பிலான திட்டம்.",
+  "back": "The project is estimated to cost about $250 million.",
+  "expect": [
+   25000000
+  ],
+  "lost": [
+   25000000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-symbol-2",
+  "tgt": "te-IN",
+  "hi": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "sent": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "target": "ఇది 25 కోట్ల రూపాయల ప్రాజెక్ట్.",
+  "back": "The film is a Rs 25 crore production.",
+  "expect": [
+   25000000
+  ],
+  "lost": [
+   25000000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-symbol-2",
+  "tgt": "bn-IN",
+  "hi": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "sent": "यह ₹2 करोड़ 50 लाख का प्रोजेक्ट है।",
+  "target": "এটি 25 কোটি টাকার একটি প্রকল্প।",
+  "back": "It is a Rs 250 million dollar project.",
+  "expect": [
+   25000000
+  ],
+  "lost": [
+   25000000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-2",
+  "tgt": "en-IN",
+  "hi": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "sent": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "target": "It is a project with a total cost of ₹250 million.",
+  "back": "It is a project with a total cost of ₹250 million.",
+  "expect": [
+   25000000
+  ],
+  "lost": [
+   25000000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-2",
+  "tgt": "ta-IN",
+  "hi": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "sent": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "target": "இது 25 மில்லியன் ரூபாய் மதிப்பிலான திட்டம்.",
+  "back": "The project is estimated to cost Rs 25 million.",
+  "expect": [
+   25000000
+  ],
+  "lost": [],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-2",
+  "tgt": "te-IN",
+  "hi": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "sent": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "target": "ఇది మొత్తం 250 మిలియన్ల రూపాయల వ్యయంతో కూడిన ప్రాజెక్ట్.",
+  "back": "It is a Rs. 250 million project.",
+  "expect": [
+   25000000
+  ],
+  "lost": [
+   25000000
+  ],
+  "wrongCurrency": false
+ },
+ {
+  "id": "probe-indian-2",
+  "tgt": "bn-IN",
+  "hi": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "sent": "यह 2 करोड़ 50 लाख भारतीय रुपये का प्रोजेक्ट है।",
+  "target": "এটি 25 কোটি টাকা মোট ব্যয়ের একটি প্রকল্প।",
+  "back": "It is a Rs 250 million dollar project.",
+  "expect": [
+   25000000
+  ],
+  "lost": [
+   25000000
+  ],
+  "wrongCurrency": false
+ }
+]

@@ -1,0 +1,2262 @@
+[
+ {
+  "id": "clinic-01",
+  "tgt": "en-IN",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "sent": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "target": "The drug is taken twice a day, after meals.",
+  "back": "The drug is taken twice a day, after meals.",
+  "expect": [
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-01",
+  "tgt": "ta-IN",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "sent": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "target": "இந்த மருந்தை ஒரு நாளைக்கு இரண்டு முறை, உணவுக்குப் பிறகு எடுத்துக்கொள்ள வேண்டும்.",
+  "back": "The drug is taken twice a day, after meals.",
+  "expect": [
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-01",
+  "tgt": "te-IN",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "sent": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "target": "ఈ మందును రోజుకు రెండుసార్లు, భోజనం తర్వాత తీసుకోవాలి.",
+  "back": "The drug is taken twice a day, after meals.",
+  "expect": [
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-01",
+  "tgt": "bn-IN",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "sent": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "target": "খাবার পরে, দিনে দুবার ওষুধটি গ্রহণ করতে হয়।",
+  "back": "The medication has to be taken twice a day, after a meal.",
+  "expect": [
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-02",
+  "tgt": "en-IN",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "sent": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "target": "Take one tablet of paracetamol 500mg, every 6 hours.",
+  "back": "Take one tablet of paracetamol 500mg, every 6 hours.",
+  "expect": [
+   500,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-02",
+  "tgt": "ta-IN",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "sent": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "target": "ஒவ்வொரு 6 மணி நேரத்திற்கும் ஒரு முறை 500mg பாராசிட்டமால் மாத்திரை எடுத்துக் கொள்ளுங்கள்.",
+  "back": "Take 500mg of paracetamol every 6 hours.",
+  "expect": [
+   500,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-02",
+  "tgt": "te-IN",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "sent": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "target": "ప్రతి 6 గంటలకు ఒక పారాసెటమాల్ 500mg టాబ్లెట్ తీసుకోండి.",
+  "back": "Take one paracetamol 500mg tablet every 6 hours.",
+  "expect": [
+   500,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-02",
+  "tgt": "bn-IN",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "sent": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "target": "প্রতি 6 ঘণ্টা পর পর প্যারাসিটামল 500মিগ্রা-এর একটি ট্যাবলেট খান।",
+  "back": "Take one 500mg tablet of paracetamol every 6 hours.",
+  "expect": [
+   500,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-03",
+  "tgt": "en-IN",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "sent": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "target": "Give the child two and a half teaspoons of syrup to drink before bedtime.",
+  "back": "Give the child two and a half teaspoons of syrup to drink before bedtime.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-03",
+  "tgt": "ta-IN",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "sent": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "target": "தூங்கும் முன் குழந்தைக்கு இரண்டரை தேக்கரண்டி சிரப்பை குடிக்கக் கொடுங்கள்.",
+  "back": "Give the child 2.5 teaspoons of syrup to drink before going to sleep.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-03",
+  "tgt": "te-IN",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "sent": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "target": "పడుకునే ముందు పిల్లవాడికి రెండున్నర టీస్పూన్ల సిరప్ తాగడానికి ఇవ్వండి.",
+  "back": "Give the child 2.5 teaspoons of syrup to drink before going to bed.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-03",
+  "tgt": "bn-IN",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "sent": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "target": "শিশুকে শোবার আগে আড়াই চা চামচ সিরাপ পান করতে দিন।",
+  "back": "Give the child 2½ teaspoons of syrup to drink before going to bed.",
+  "expect": [
+   2.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-04",
+  "tgt": "en-IN",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "sent": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "target": "Your sugar level is 180, you need to get it down to 140.",
+  "back": "Your sugar level is 180, you need to get it down to 140.",
+  "expect": [
+   180,
+   140
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-04",
+  "tgt": "ta-IN",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "sent": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "target": "உங்களுடைய சர்க்கரை அளவு 180 ஆக உள்ளது, அதை 140 ஆக குறைக்க வேண்டும்.",
+  "back": "Your sugar level is 180, and you need to get it down to 140.",
+  "expect": [
+   180,
+   140
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-04",
+  "tgt": "te-IN",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "sent": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "target": "మీ చక్కెర స్థాయి 180 ఉంది, మీరు దానిని 140కి తగ్గించాలి.",
+  "back": "Your sugar level is 180, and you need to get it down to 140.",
+  "expect": [
+   180,
+   140
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-04",
+  "tgt": "bn-IN",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "sent": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "target": "আপনার সুগারের মাত্রা 180, আপনাকে 140-এ নামিয়ে আনতে হবে।",
+  "back": "Your sugar level is 180, you need to get it down to 140.",
+  "expect": [
+   180,
+   140
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-05",
+  "tgt": "en-IN",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "sent": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "target": "Come again at 3:30, then the doctor will see you.",
+  "back": "Come again at 3:30, then the doctor will see you.",
+  "expect": [
+   3.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-05",
+  "tgt": "ta-IN",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "sent": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "target": "3:30 மணிக்கு மீண்டும் வாருங்கள், அப்போது மருத்துவர் உங்களை பார்ப்பார்.",
+  "back": "Come back at 3:30 when the doctor will see you.",
+  "expect": [
+   3.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-05",
+  "tgt": "te-IN",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "sent": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "target": "మళ్ళీ 3:30కి రండి, అప్పుడు డాక్టర్ మిమ్మల్ని చూస్తారు.",
+  "back": "Come back at 3:30 and the doctor will see you.",
+  "expect": [
+   3.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-05",
+  "tgt": "bn-IN",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "sent": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "target": "আবার 3:30-এ আসুন, তাহলে ডাক্তার আপনাকে দেখবেন।",
+  "back": "Come back at 3:30 and the doctor will see you.",
+  "expect": [
+   3.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-06",
+  "tgt": "en-IN",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "sent": "अगली जांच 15 नवंबर को होगी।",
+  "target": "The next scheduled hearing is on November 15.",
+  "back": "The next scheduled hearing is on November 15.",
+  "expect": [
+   15,
+   "november"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-06",
+  "tgt": "ta-IN",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "sent": "अगली जांच 15 नवंबर को होगी।",
+  "target": "அடுத்த விசாரணை நவம்பர் 15ஆம் தேதி நடைபெறும்.",
+  "back": "The next scheduled hearing is November 15.",
+  "expect": [
+   15,
+   "november"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-06",
+  "tgt": "te-IN",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "sent": "अगली जांच 15 नवंबर को होगी।",
+  "target": "తదుపరి షెడ్యూల్ చేయబడిన విచారణ నవంబర్ 15న ఉంది.",
+  "back": "The next scheduled hearing is November 15.",
+  "expect": [
+   15,
+   "november"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-06",
+  "tgt": "bn-IN",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "sent": "अगली जांच 15 नवंबर को होगी।",
+  "target": "পরবর্তী নির্ধারিত শুনানি 15ই নভেম্বর।",
+  "back": "The next scheduled hearing is November 15.",
+  "expect": [
+   15,
+   "november"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-07",
+  "tgt": "en-IN",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "sent": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "target": "The dosage is 10 insulin units in the morning and 8 insulin units at night.",
+  "back": "The dosage is 10 insulin units in the morning and 8 insulin units at night.",
+  "expect": [
+   10,
+   8
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-07",
+  "tgt": "ta-IN",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "sent": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "target": "இதன் மருந்தளவு காலையில் 10 இன்சுலின் அலகுகள் மற்றும் இரவில் 8 இன்சுலின் அலகுகள் ஆகும்.",
+  "back": "Its dosage is 10 insulin units in the morning and 8 insulin units at night.",
+  "expect": [
+   10,
+   8
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-07",
+  "tgt": "te-IN",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "sent": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "target": "మోతాదు ఉదయం 10 ఇన్సులిన్ యూనిట్లు మరియు రాత్రి 8 ఇన్సులిన్ యూనిట్లు.",
+  "back": "The dose is 10 insulin units in the morning and 8 insulin units at night.",
+  "expect": [
+   10,
+   8
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-07",
+  "tgt": "bn-IN",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "sent": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "target": "সকালে 10টি ইনসুলিন ইউনিট এবং রাতে 8টি ইনসুলিন ইউনিট ডোজ।",
+  "back": "Dose 10 insulin units in the morning and 8 insulin units at night.",
+  "expect": [
+   10,
+   8
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-08",
+  "tgt": "en-IN",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "sent": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "target": "If your fever goes above 102, get to a hospital right away.",
+  "back": "If your fever goes above 102, get to a hospital right away.",
+  "expect": [
+   102
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-08",
+  "tgt": "ta-IN",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "sent": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "target": "உங்களுக்கு 102க்கு மேல் காய்ச்சல் இருந்தால், உடனடியாக மருத்துவமனைக்குச் செல்லுங்கள்.",
+  "back": "If your fever is over 102, go to a hospital immediately.",
+  "expect": [
+   102
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-08",
+  "tgt": "te-IN",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "sent": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "target": "మీ జ్వరం 102 కంటే ఎక్కువ ఉంటే, వెంటనే ఆసుపత్రికి వెళ్లండి.",
+  "back": "If your fever is over 102 degrees, get to a hospital soon.",
+  "expect": [
+   102
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-08",
+  "tgt": "bn-IN",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "sent": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "target": "যদি আপনার জ্বর 102-এর উপরে যায়, তাহলে অবিলম্বে হাসপাতালে যান।",
+  "back": "If your fever goes above 102, go to the hospital immediately.",
+  "expect": [
+   102
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-09",
+  "tgt": "en-IN",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "sent": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "target": "This course of action will last all seven days and should not be interrupted.",
+  "back": "This course of action will last all seven days and should not be interrupted.",
+  "expect": [
+   7
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-09",
+  "tgt": "ta-IN",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "sent": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "target": "இந்த படிப்பு ஏழு நாட்கள் நீடிக்கும், இதை உடைக்கக் கூடாது.",
+  "back": "The fast lasts for seven days and is not broken.",
+  "expect": [
+   7
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-09",
+  "tgt": "te-IN",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "sent": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "target": "ఈ అధ్యయన కోర్సు ఏడు రోజుల పాటు ఉంటుంది మరియు విచ్ఛిన్నం చేయకూడదు.",
+  "back": "The study course of is seven days and is not to be broken.",
+  "expect": [
+   7
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-09",
+  "tgt": "bn-IN",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "sent": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "target": "এই কর্মপন্থাটি সাত দিন ধরে চলবে এবং এটি ব্যাহত করা উচিত নয়।",
+  "back": "This course of action would last seven days and was not to be interrupted.",
+  "expect": [
+   7
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-10",
+  "tgt": "en-IN",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "target": "The operation cost about 125 thousand rubles.",
+  "back": "The operation cost about 125 thousand rubles.",
+  "expect": [
+   125000
+  ],
+  "lost": [],
+  "wrongCurrency": true,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-10",
+  "tgt": "ta-IN",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "target": "இந்த அறுவை சிகிச்சைக்கு சுமார் 125 ஆயிரம் ரூபிள் செலவானது.",
+  "back": "The surgery cost about 125 thousand rubles.",
+  "expect": [
+   125000
+  ],
+  "lost": [],
+  "wrongCurrency": true,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-10",
+  "tgt": "te-IN",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "target": "ఆపరేషన్ ఖర్చు సుమారు 125 వేల రూబిళ్లు.",
+  "back": "The cost of the operation was about 125 thousand rubles.",
+  "expect": [
+   125000
+  ],
+  "lost": [],
+  "wrongCurrency": true,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-10",
+  "tgt": "bn-IN",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "sent": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "target": "অপারেশনটির খরচ প্রায় এক কোটি পঁচিশ লক্ষ টাকা।",
+  "back": "The cost of the operation is approximately 12.5 million rupees.",
+  "expect": [
+   125000
+  ],
+  "lost": [
+   125000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-11",
+  "tgt": "en-IN",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "sent": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "target": "The patient's blood pressure is 150 over 95.",
+  "back": "The patient's blood pressure is 150 over 95.",
+  "expect": [
+   150,
+   95
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-11",
+  "tgt": "ta-IN",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "sent": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "target": "நோயாளியின் இரத்த அழுத்தம் 150க்கு மேல் 95 ஆக உள்ளது.",
+  "back": "The patient's blood pressure is 150 over 95.",
+  "expect": [
+   150,
+   95
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-11",
+  "tgt": "te-IN",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "sent": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "target": "ఆ రోగి యొక్క రక్తపోటు 150 ఓవర్ 95.",
+  "back": "The patient's blood pressure is 150 over 95.",
+  "expect": [
+   150,
+   95
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-11",
+  "tgt": "bn-IN",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "sent": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "target": "রোগীর রক্তচাপ 150/95।",
+  "back": "The patient's blood pressure is 150/95.",
+  "expect": [
+   150,
+   95
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-12",
+  "tgt": "en-IN",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "sent": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "target": "One and a half tablets should be taken in the morning on an empty stomach.",
+  "back": "One and a half tablets should be taken in the morning on an empty stomach.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-12",
+  "tgt": "ta-IN",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "sent": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "target": "ஒன்றரை மாத்திரைகளை காலையில் வெறும் வயிற்றில் எடுத்துக் கொள்ள வேண்டும்.",
+  "back": "One and half tablets has to be taken in the morning on an empty stomach .",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-12",
+  "tgt": "te-IN",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "sent": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "target": "ఒకటిన్నర మాత్రలను ఉదయం ఖాళీ కడుపుతో తీసుకోవాలి.",
+  "back": "One and half to two tablets should be taken in the morning on an empty stomach.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-12",
+  "tgt": "bn-IN",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "sent": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "target": "সকালে খালি পেটে দেড়টি ট্যাবলেট খেতে হবে।",
+  "back": "The tablets should be taken on an empty stomach first thing in the morning.",
+  "expect": [
+   1.5
+  ],
+  "lost": [
+   1.5
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-13",
+  "tgt": "en-IN",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "sent": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "target": "You have to stay on an empty stomach until 9:45, then there will be a test.",
+  "back": "You have to stay on an empty stomach until 9:45, then there will be a test.",
+  "expect": [
+   8.75
+  ],
+  "lost": [
+   8.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-13",
+  "tgt": "ta-IN",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "sent": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "target": "நீங்கள் 9:45 வரை வெறும் வயிற்றில் இருக்க வேண்டும், பிறகு ஒரு சோதனை இருக்கும்.",
+  "back": "You will need to be on an empty stomach until 9:45, and then take a test.",
+  "expect": [
+   8.75
+  ],
+  "lost": [
+   8.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-13",
+  "tgt": "te-IN",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "sent": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "target": "మీరు 9:45 వరకు ఖాళీ కడుపుతో ఉండాలి, ఆ తర్వాత పరీక్ష ఉంటుంది.",
+  "back": "You will need to be on an empty stomach until 9:45, after which there will be a test.",
+  "expect": [
+   8.75
+  ],
+  "lost": [
+   8.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-13",
+  "tgt": "bn-IN",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "sent": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "target": "আপনাকে 9টা 45 মিনিট পর্যন্ত খালি পেটে থাকতে হবে, তারপর একটি পরীক্ষা হবে।",
+  "back": "You will need to be fasting for 9½ hours, then take a test.",
+  "expect": [
+   8.75
+  ],
+  "lost": [
+   8.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-14",
+  "tgt": "en-IN",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "sent": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "target": "Call 108 for an ambulance.",
+  "back": "Call 108 for an ambulance.",
+  "expect": [
+   108
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-14",
+  "tgt": "ta-IN",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "sent": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "target": "சிகிச்சைக்காக 108க்கு அழைக்கவும்.",
+  "back": "Please call 108 for treatment.",
+  "expect": [
+   108
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-14",
+  "tgt": "te-IN",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "sent": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "target": "అంబులెన్స్ కోసం 108 కి కాల్ చేయండి.",
+  "back": "Call 108 for an ambulance.",
+  "expect": [
+   108
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "clinic-14",
+  "tgt": "bn-IN",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "sent": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "target": "অ্যাম্বুলেন্সের জন্য 108 নম্বরে কল করুন।",
+  "back": "Call 108 for an ambulance.",
+  "expect": [
+   108
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-01",
+  "tgt": "en-IN",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "sent": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "target": "Your loan EMI of ₹12,450 will be deducted on the 5th of every month.",
+  "back": "Your loan EMI of ₹12,450 will be deducted on the 5th of every month.",
+  "expect": [
+   12450,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-01",
+  "tgt": "ta-IN",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "sent": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "target": "உங்களுடைய ₹12,450 கடன் EMI ஒவ்வொரு மாதமும் 5ஆம் தேதி கழிக்கப்படும்.",
+  "back": "Your loan EMI of ₹12,450 will be deducted on the 5th of every month.",
+  "expect": [
+   12450,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-01",
+  "tgt": "te-IN",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "sent": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "target": "మీ రుణ EMI ₹12,450 ప్రతి నెల 5వ తేదీన తీసివేయబడుతుంది.",
+  "back": "Your loan EMI of ₹12,450 will be deducted on the 5th of every month.",
+  "expect": [
+   12450,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-01",
+  "tgt": "bn-IN",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "sent": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "target": "আপনার ঋণের ইএমআই ₹12,450 প্রতি মাসের 5 তারিখে কাটা হবে।",
+  "back": "Your loan payment is $12,450 and is due on the 5th of each month.",
+  "expect": [
+   12450,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-02",
+  "tgt": "en-IN",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "sent": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "target": "You are approved for a loan of Rs. 2.5 lakh.",
+  "back": "You are approved for a loan of Rs. 2.5 lakh.",
+  "expect": [
+   250000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-02",
+  "tgt": "ta-IN",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "sent": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "target": "உங்களுக்கு ரூ. 2.5 லட்சம் கடன் வழங்க ஒப்புதல் அளிக்கப்படுகிறது.",
+  "back": "You are approved for a loan of Rs. 2.5 lakh.",
+  "expect": [
+   250000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-02",
+  "tgt": "te-IN",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "sent": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "target": "మీకు రూ. 2.5 లక్షల రుణం మంజూరు చేయబడింది.",
+  "back": "You are approved for a loan of Rs. 2.5 lakh.",
+  "expect": [
+   250000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-02",
+  "tgt": "bn-IN",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "sent": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "target": "আপনাকে 2.5 লক্ষ টাকার ঋণের জন্য অনুমোদন করা হলো।",
+  "back": "You are approved for a loan of Rs. 2.5 lakh.",
+  "expect": [
+   250000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-03",
+  "tgt": "en-IN",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "sent": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "target": "The interest rate is nine and a half percent per year.",
+  "back": "The interest rate is nine and a half percent per year.",
+  "expect": [
+   9.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-03",
+  "tgt": "ta-IN",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "sent": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "target": "வட்டி விகிதம் ஆண்டுக்கு ஒன்பதரை சதவீதம்.",
+  "back": "The interest rate is 9.5 percent per year.",
+  "expect": [
+   9.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-03",
+  "tgt": "te-IN",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "sent": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "target": "వడ్డీ రేటు సంవత్సరానికి తొమ్మిదిన్నర శాతం.",
+  "back": "The interest rate is nine and a half percent per year.",
+  "expect": [
+   9.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-03",
+  "tgt": "bn-IN",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "sent": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "target": "সুদের হার হল বছরে সাড়ে নয় শতাংশ।",
+  "back": "The interest rate is 9.5 percent per year.",
+  "expect": [
+   9.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-04",
+  "tgt": "en-IN",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "sent": "लोन की अवधि 36 महीने है।",
+  "target": "The loan is paid off in 36 months.",
+  "back": "The loan is paid off in 36 months.",
+  "expect": [
+   36
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-04",
+  "tgt": "ta-IN",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "sent": "लोन की अवधि 36 महीने है।",
+  "target": "36 மாதங்களில் கடன் திருப்பிச் செலுத்தப்படுகிறது.",
+  "back": "The loan is paid off in 36 months.",
+  "expect": [
+   36
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-04",
+  "tgt": "te-IN",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "sent": "लोन की अवधि 36 महीने है।",
+  "target": "రుణాన్ని 36 నెలల్లో తిరిగి చెల్లిస్తారు.",
+  "back": "The loan is to be repaid in 36 months.",
+  "expect": [
+   36
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-04",
+  "tgt": "bn-IN",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "sent": "लोन की अवधि 36 महीने है।",
+  "target": "ঋণটি 36 মাসে পরিশোধ করা হয়।",
+  "back": "The loan is paid off in 36 months.",
+  "expect": [
+   36
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-05",
+  "tgt": "en-IN",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "sent": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "target": "You have 3,200 rupees outstanding in your account, deposit it by September 30th.",
+  "back": "You have 3,200 rupees outstanding in your account, deposit it by September 30th.",
+  "expect": [
+   3200,
+   30,
+   "september"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-05",
+  "tgt": "ta-IN",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "sent": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "target": "உங்கள் கணக்கில் 3,200 ரூபாய் நிலுவையில் உள்ளது, அதை செப்டம்பர் 30-ஆம் தேதிக்குள் டெபாசிட் செய்யுங்கள்.",
+  "back": "You have a balance of $3,200 in your account and you have until September 30th to deposit it.",
+  "expect": [
+   3200,
+   30,
+   "september"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-05",
+  "tgt": "te-IN",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "sent": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "target": "మీ ఖాతాలో 3,200 రూపాయలు బకాయి ఉన్నాయి, వాటిని సెప్టెంబర్ 30వ తేదీలోగా జమ చేయండి.",
+  "back": "You have a balance of ₹3,200 in your account, and you must deposit it by September 30th.",
+  "expect": [
+   3200,
+   30,
+   "september"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-05",
+  "tgt": "bn-IN",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "sent": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "target": "আপনার অ্যাকাউন্টে 3,200 টাকা বকেয়া আছে, 30শে সেপ্টেম্বরের মধ্যে জমা করুন।",
+  "back": "You have a balance of $3,200 in your account. Please deposit by September 30th.",
+  "expect": [
+   3200,
+   30,
+   "september"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-06",
+  "tgt": "en-IN",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "sent": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "target": "A penalty of ₹ 750 will be the additional cost.",
+  "back": "A penalty of ₹ 750 will be the additional cost.",
+  "expect": [
+   750
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-06",
+  "tgt": "ta-IN",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "sent": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "target": "₹750 அபராதம் கூடுதல் கட்டணமாக விதிக்கப்படும்.",
+  "back": "A penalty of ₹750 will be the additional charge.",
+  "expect": [
+   750
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-06",
+  "tgt": "te-IN",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "sent": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "target": "₹750 జరిమానా అదనపు ఖర్చు అవుతుంది.",
+  "back": "A penalty of ₹750 will be the additional cost.",
+  "expect": [
+   750
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-06",
+  "tgt": "bn-IN",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "sent": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "target": "অতিরিক্ত খরচ হবে ₹ 750 জরিমানা।",
+  "back": "The additional cost would be a ₹750 fine.",
+  "expect": [
+   750
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-07",
+  "tgt": "en-IN",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "sent": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "target": "The total amount is twelve million rupees.",
+  "back": "The total amount is twelve million rupees.",
+  "expect": [
+   12000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-07",
+  "tgt": "ta-IN",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "sent": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "target": "மொத்த தொகை பன்னிரண்டு மில்லியன் ரூபாய்.",
+  "back": "The total amount is twelve million rupees.",
+  "expect": [
+   12000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-07",
+  "tgt": "te-IN",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "sent": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "target": "మొత్తం మొత్తం పన్నెండు మిలియన్ల రూపాయలు.",
+  "back": "The total amount is twelve million rupees.",
+  "expect": [
+   12000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-07",
+  "tgt": "bn-IN",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "sent": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "target": "মোট পরিমাণ বারো মিলিয়ন রুপি।",
+  "back": "The total amount is twelve million rupees.",
+  "expect": [
+   12000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-08",
+  "tgt": "en-IN",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "sent": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "target": "My number is 98765 43210, call on this number.",
+  "back": "My number is 98765 43210, call on this number.",
+  "expect": [
+   {
+    "digits": "9876543210"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-08",
+  "tgt": "ta-IN",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "sent": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "target": "என்னுடைய எண் 98765 43210, இந்த எண்ணிற்கு அழைக்கவும்.",
+  "back": "My number is 98765 43210, please call this number.",
+  "expect": [
+   {
+    "digits": "9876543210"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-08",
+  "tgt": "te-IN",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "sent": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "target": "నా నంబర్ 98765 43210, ఈ నంబర్‌కు కాల్ చేయండి.",
+  "back": "My number is 98765 43210, call this number.",
+  "expect": [
+   {
+    "digits": "9876543210"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-08",
+  "tgt": "bn-IN",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "sent": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "target": "আমার নম্বর হল 98765 43210, এই নম্বরে কল করুন।",
+  "back": "My number is 98765 43210, please call this number.",
+  "expect": [
+   {
+    "digits": "9876543210"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-09",
+  "tgt": "en-IN",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "sent": "आधार के आखिरी चार अंक 4821 हैं।",
+  "target": "The last four digits of the base are 4821.",
+  "back": "The last four digits of the base are 4821.",
+  "expect": [
+   4,
+   4821
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-09",
+  "tgt": "ta-IN",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "sent": "आधार के आखिरी चार अंक 4821 हैं।",
+  "target": "அடிப்படையின் கடைசி நான்கு இலக்கங்கள் 4821 ஆகும்.",
+  "back": "The last four digits of the base are 4821.",
+  "expect": [
+   4,
+   4821
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-09",
+  "tgt": "te-IN",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "sent": "आधार के आखिरी चार अंक 4821 हैं।",
+  "target": "ఆధారంలోని చివరి నాలుగు అంకెలు 4821.",
+  "back": "The last four digits of the base are 4821.",
+  "expect": [
+   4,
+   4821
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-09",
+  "tgt": "bn-IN",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "sent": "आधार के आखिरी चार अंक 4821 हैं।",
+  "target": "ভিত্তির শেষ চারটি অঙ্ক হল 4821।",
+  "back": "The last four digits of the base are 4821.",
+  "expect": [
+   4,
+   4821
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-10",
+  "tgt": "en-IN",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "sent": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "target": "An installment of two thousand five hundred rupees has to be paid every month.",
+  "back": "An installment of two thousand five hundred rupees has to be paid every month.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-10",
+  "tgt": "ta-IN",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "sent": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "target": "ஒவ்வொரு மாதமும் இரண்டாயிரத்து ஐந்நூறு ரூபாய் தவணை செலுத்தப்பட வேண்டும்.",
+  "back": "A monthly installment of two thousand five hundred rupees must be paid.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-10",
+  "tgt": "te-IN",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "sent": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "target": "ప్రతి నెల రెండు వేల ఐదు వందల రూపాయల వాయిదా చెల్లించాలి.",
+  "back": "A monthly installment of two thousand five hundred rupees must be paid.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-10",
+  "tgt": "bn-IN",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "sent": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "target": "প্রতি মাসে দুই হাজার পাঁচশ' টাকা করে কিস্তি পরিশোধ করতে হবে।",
+  "back": "The installment must be paid at the rate of two thousand five hundred rupees per month.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-11",
+  "tgt": "en-IN",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "sent": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "target": "The insurance premium is 18,000 rupees annually.",
+  "back": "The insurance premium is 18,000 rupees annually.",
+  "expect": [
+   18000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-11",
+  "tgt": "ta-IN",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "sent": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "target": "காப்பீட்டு பிரீமியம் ஆண்டுக்கு 18,000 ரூபாய்.",
+  "back": "The insurance premium is 18,000 rupees per year.",
+  "expect": [
+   18000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-11",
+  "tgt": "te-IN",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "sent": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "target": "బీమా ప్రీమియం సంవత్సరానికి 18,000 రూపాయలు.",
+  "back": "The insurance premium is 18,000 Rupees per year.",
+  "expect": [
+   18000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "bank-11",
+  "tgt": "bn-IN",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "sent": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "target": "বীমার প্রিমিয়াম বার্ষিক 18,000 টাকা।",
+  "back": "The insurance premium is 18,000 taka per year.",
+  "expect": [
+   18000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-01",
+  "tgt": "en-IN",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "sent": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "target": "Your package will arrive in 3 to 5 days.",
+  "back": "Your package will arrive in 3 to 5 days.",
+  "expect": [
+   3,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-01",
+  "tgt": "ta-IN",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "sent": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "target": "உங்கள் பார்சல் 3 முதல் 5 நாட்களில் வந்து சேரும்.",
+  "back": "Your package will arrive in 3 to 5 days.",
+  "expect": [
+   3,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-01",
+  "tgt": "te-IN",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "sent": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "target": "మీ ప్యాకేజీ 3 నుండి 5 రోజుల్లో వస్తుంది.",
+  "back": "Your package will arrive in 3 to 5 days.",
+  "expect": [
+   3,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-01",
+  "tgt": "bn-IN",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "sent": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "target": "আপনার প্যাকেট 3 থেকে 5 দিনের মধ্যে এসে পৌঁছাবে।",
+  "back": "Your package will arrive in 3 to 5 days.",
+  "expect": [
+   3,
+   5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-02",
+  "tgt": "en-IN",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "sent": "डिलीवरी का OTP 4 7 1 9 है।",
+  "target": "The delivery OTP is 4 7 1 9.",
+  "back": "The delivery OTP is 4 7 1 9.",
+  "expect": [
+   {
+    "digits": "4719"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-02",
+  "tgt": "ta-IN",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "sent": "डिलीवरी का OTP 4 7 1 9 है।",
+  "target": "டெலிவரி OTP 4 7 1 9.",
+  "back": "Delivery OTP 4 7 1 9.",
+  "expect": [
+   {
+    "digits": "4719"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-02",
+  "tgt": "te-IN",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "sent": "डिलीवरी का OTP 4 7 1 9 है।",
+  "target": "డెలివరీ OTP 4 7 1 9.",
+  "back": "Delivery OTP 4 7 1 9.",
+  "expect": [
+   {
+    "digits": "4719"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-02",
+  "tgt": "bn-IN",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "sent": "डिलीवरी का OTP 4 7 1 9 है।",
+  "target": "ডেলিভারি ওটিপি হল 4 7 1 9।",
+  "back": "The delivery OTP is 4 7 1 9.",
+  "expect": [
+   {
+    "digits": "4719"
+   }
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-03",
+  "tgt": "en-IN",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "sent": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "target": "The wage is 650 rupees a day, 6 days a week.",
+  "back": "The wage is 650 rupees a day, 6 days a week.",
+  "expect": [
+   650,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-03",
+  "tgt": "ta-IN",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "sent": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "target": "வாரத்தில் 6 நாட்கள், ஒரு நாளுக்கு 650 ரூபாய் ஊதியம் வழங்கப்படுகிறது.",
+  "back": "The wage is 650 rupees a day, for 6 days a week.",
+  "expect": [
+   650,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-03",
+  "tgt": "te-IN",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "sent": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "target": "వారానికి 6 రోజులు, రోజుకు 650 రూపాయలు వేతనం.",
+  "back": "The wage is 650 rupees a day for 6 days a week.",
+  "expect": [
+   650,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-03",
+  "tgt": "bn-IN",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "sent": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "target": "সপ্তাহে 6 দিন, প্রতিদিন 650 টাকা মজুরি।",
+  "back": "650 per day, 6 days a week.",
+  "expect": [
+   650,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-04",
+  "tgt": "en-IN",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "sent": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "target": "The rent is seven and a half thousand per month, and you have to pay two months' advance.",
+  "back": "The rent is seven and a half thousand per month, and you have to pay two months' advance.",
+  "expect": [
+   7500,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-04",
+  "tgt": "ta-IN",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "sent": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "target": "மாத வாடகை ஏழாயிரத்து ஐம்பது, மேலும் நீங்கள் இரண்டு மாத முன்பணம் செலுத்த வேண்டும்.",
+  "back": "The monthly rent is seven thousand and fifty, and you have to pay two months' deposit.",
+  "expect": [
+   7500,
+   2
+  ],
+  "lost": [
+   7500
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-04",
+  "tgt": "te-IN",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "sent": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "target": "అద్దె నెలకు ఏడున్నర వేలు, మరియు మీరు రెండు నెలల అడ్వాన్స్ చెల్లించాలి.",
+  "back": "The rent is seven and a half hundred rupees per month, and you have to pay two months' advance.",
+  "expect": [
+   7500,
+   2
+  ],
+  "lost": [
+   7500
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-04",
+  "tgt": "bn-IN",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "sent": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "target": "মাসিক ভাড়া সাড়ে সাত হাজার, এবং আপনাকে দুই মাসের অগ্রিম দিতে হবে।",
+  "back": "The monthly rent is seven and a half thousand, and you have to pay two months' advance.",
+  "expect": [
+   7500,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-05",
+  "tgt": "en-IN",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "sent": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "target": "We need to reach the site by 8 AM, and we will be dismissed by 6 PM.",
+  "back": "We need to reach the site by 8 AM, and we will be dismissed by 6 PM.",
+  "expect": [
+   8,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-05",
+  "tgt": "ta-IN",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "sent": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "target": "நாங்கள் காலை 8 மணிக்குள் அந்த இடத்தை அடைய வேண்டும், மாலை 6 மணிக்குள் நாங்கள் பணிநீக்கம் செய்யப்படுவோம்.",
+  "back": "We need to be at the place by 8 AM and by 6 PM we will be dismissed.",
+  "expect": [
+   8,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-05",
+  "tgt": "te-IN",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "sent": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "target": "మనం ఉదయం 8 గంటలకు ఆ ప్రదేశానికి చేరుకోవాలి, సాయంత్రం 6 గంటలకు మనల్ని పంపిస్తారు.",
+  "back": "We need to be at the place by 8 AM and will be dismissed by 6 PM.",
+  "expect": [
+   8,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-05",
+  "tgt": "bn-IN",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "sent": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "target": "আমাদের সকাল 8টার মধ্যে সাইটে পৌঁছাতে হবে, এবং সন্ধ্যা 6টার মধ্যে আমাদের বরখাস্ত করা হবে।",
+  "back": "We need to reach the site by 8 AM, and we will be dismissed by 6 PM.",
+  "expect": [
+   8,
+   6
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-06",
+  "tgt": "en-IN",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "sent": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "target": "The cylinder was booked on October 21st.",
+  "back": "The cylinder was booked on October 21st.",
+  "expect": [
+   21,
+   "october"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-06",
+  "tgt": "ta-IN",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "sent": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "target": "அக்டோபர் 21ஆம் தேதி உருளை முன்பதிவு செய்யப்பட்டது.",
+  "back": "The cylinder was booked for October 21.",
+  "expect": [
+   21,
+   "october"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-06",
+  "tgt": "te-IN",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "sent": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "target": "సిలిండర్ అక్టోబర్ 21న బుక్ చేయబడింది.",
+  "back": "The cylinder was booked on October 21st.",
+  "expect": [
+   21,
+   "october"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-06",
+  "tgt": "bn-IN",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "sent": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "target": "সিলিন্ডারটি 21শে অক্টোবর বুক করা হয়েছিল।",
+  "back": "The cylinder was booked on October 21.",
+  "expect": [
+   21,
+   "october"
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-07",
+  "tgt": "en-IN",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "sent": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "target": "The train will leave platform number 4 at 10:45.",
+  "back": "The train will leave platform number 4 at 10:45.",
+  "expect": [
+   4,
+   10.75
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-07",
+  "tgt": "ta-IN",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "sent": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "target": "ரயில் 10:45 மணிக்கு நடைமேடை எண் 4-ல் இருந்து புறப்படும்.",
+  "back": "The train leaves at 10:45 from platform number 4.",
+  "expect": [
+   4,
+   10.75
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-07",
+  "tgt": "te-IN",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "sent": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "target": "రైలు ప్లాట్‌ఫారమ్ నంబర్ 4 నుండి 10:45 గంటలకు బయలుదేరుతుంది.",
+  "back": "The train departs from platform number 4 at 10:45.",
+  "expect": [
+   4,
+   10.75
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-07",
+  "tgt": "bn-IN",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "sent": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "target": "ট্রেনটি প্ল্যাটফর্ম নম্বর 4 থেকে 10:45-এ ছাড়বে।",
+  "back": "The train leaves platform number 4 at 10:45.",
+  "expect": [
+   4,
+   10.75
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-08",
+  "tgt": "en-IN",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "sent": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "target": "Please provide 250 grams of lentils and two kilograms of rice.",
+  "back": "Please provide 250 grams of lentils and two kilograms of rice.",
+  "expect": [
+   250,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-08",
+  "tgt": "ta-IN",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "sent": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "target": "தயவுசெய்து 250 கிராம் பருப்பு மற்றும் இரண்டு கிலோ அரிசி கொடுங்கள்.",
+  "back": "Please give me 250 grams of lentils and two kilograms of rice.",
+  "expect": [
+   250,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-08",
+  "tgt": "te-IN",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "sent": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "target": "దయచేసి 250 గ్రాముల పప్పు మరియు రెండు కిలోల బియ్యం అందించండి.",
+  "back": "Please provide 250 grams of lentils and two kilograms of rice.",
+  "expect": [
+   250,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-08",
+  "tgt": "bn-IN",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "sent": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "target": "অনুগ্রহ করে 250 গ্রাম মসুর ডাল এবং দুই কেজি চাল দিন।",
+  "back": "Please provide 250 grams of masoor dal and two kilograms of rice.",
+  "expect": [
+   250,
+   2
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-09",
+  "tgt": "en-IN",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "sent": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "target": "Three hundred and fifty rupees are to be returned separately.",
+  "back": "Three hundred and fifty rupees are to be returned separately.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-09",
+  "tgt": "ta-IN",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "sent": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "target": "முந்நூற்று ஐம்பது ரூபாய் தனித்தனியாக திருப்பித் தரப்பட வேண்டும்.",
+  "back": "Three hundred and fifty rupees should be returned separately.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-09",
+  "tgt": "te-IN",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "sent": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "target": "మూడు వందల యాభై రూపాయలు విడిగా తిరిగి చెల్లించాలి.",
+  "back": "Three hundred and fifty rupees should be refunded separately.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-09",
+  "tgt": "bn-IN",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "sent": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "target": "তিনশো পঞ্চাশ টাকা আলাদাভাবে ফেরত দিতে হবে।",
+  "back": "Three hundred and fifty rupees must be returned separately.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-10",
+  "tgt": "en-IN",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "sent": "बच्चे की उम्र साढ़े चार साल है।",
+  "target": "The child is four and a half years old.",
+  "back": "The child is four and a half years old.",
+  "expect": [
+   4.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-10",
+  "tgt": "ta-IN",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "sent": "बच्चे की उम्र साढ़े चार साल है।",
+  "target": "அந்தப் பெண் குழந்தைக்கு நாலரை வயது ஆகிறது.",
+  "back": "The girl is four and a half years old.",
+  "expect": [
+   4.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-10",
+  "tgt": "te-IN",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "sent": "बच्चे की उम्र साढ़े चार साल है।",
+  "target": "ఆ పిల్లవాడికి నాలుగున్నర సంవత్సరాలు.",
+  "back": "The child is four and a half years old.",
+  "expect": [
+   4.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-10",
+  "tgt": "bn-IN",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "sent": "बच्चे की उम्र साढ़े चार साल है।",
+  "target": "মেয়েটির বয়স সাড়ে চার বছর।",
+  "back": "The daughter is four and a half years old.",
+  "expect": [
+   4.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-11",
+  "tgt": "en-IN",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "sent": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "target": "My salary is eighteen thousand, and I haven't received it for 3 months yet.",
+  "back": "My salary is eighteen thousand, and I haven't received it for 3 months yet.",
+  "expect": [
+   18000,
+   3
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-11",
+  "tgt": "ta-IN",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "sent": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "target": "என் சம்பளம் பதினெட்டாயிரம், இன்னும் 3 மாதமாக எனக்கு அது வரவில்லை.",
+  "back": "My salary is eighteen thousand, and I haven't received it for the past 3 months.",
+  "expect": [
+   18000,
+   3
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-11",
+  "tgt": "te-IN",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "sent": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "target": "నా జీతం పద్దెనిమిది వేలు, ఇంకా 3 నెలలుగా నాకు అది అందలేదు.",
+  "back": "My salary is eighteen thousand and I have not received it for the past 3 months.",
+  "expect": [
+   18000,
+   3
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "field-11",
+  "tgt": "bn-IN",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "sent": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "target": "আমার বেতন আঠারো হাজার, এবং আমি এখনও 3 মাস ধরে তা পাইনি।",
+  "back": "My salary is eighteen thousand, and I haven't received it for the past 3 months.",
+  "expect": [
+   18000,
+   3
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ }
+]

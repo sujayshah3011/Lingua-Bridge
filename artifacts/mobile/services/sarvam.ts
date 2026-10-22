@@ -7,10 +7,20 @@ export interface TranslateParams {
   formalMode: boolean;
 }
 
+// Mirrors NumberCheck in artifacts/api-server/src/lib/number-check.ts.
+export interface NumberCheck {
+  ok: boolean;
+  missing: string[];
+  wrongCurrency: boolean;
+  backTranslated: boolean;
+}
+
 export interface TranslateResult {
   translatedText: string;
   detectedSourceLang?: string;
   credits?: number;
+  // Absent when the server couldn't run the check — treat as unverified, not failed.
+  numberCheck?: NumberCheck;
 }
 
 export async function detectLanguage(input: string): Promise<string> {
@@ -72,5 +82,6 @@ export async function translateText(
     translatedText: data.translated_text ?? "",
     detectedSourceLang: sourceLang,
     credits: data.credits,
+    numberCheck: data.number_check,
   };
 }

@@ -1,0 +1,816 @@
+[
+ {
+  "id": "hold-01",
+  "tgt": "en-IN",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "sent": "सवा दो लाख रुपये का बिल बना है।",
+  "target": "The bill is for two hundred thousand rupees.",
+  "back": "The bill is for two hundred thousand rupees.",
+  "expect": [
+   225000
+  ],
+  "lost": [
+   225000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-01",
+  "tgt": "ta-IN",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "sent": "सवा दो लाख रुपये का बिल बना है।",
+  "target": "இந்த பில் இரண்டு லட்சம் ரூபாய்.",
+  "back": "This bill is two hundred thousand rupees.",
+  "expect": [
+   225000
+  ],
+  "lost": [
+   225000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-01",
+  "tgt": "te-IN",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "sent": "सवा दो लाख रुपये का बिल बना है।",
+  "target": "బిల్లు రెండు లక్షల రూపాయలు.",
+  "back": "The bill is two hundred thousand rupees.",
+  "expect": [
+   225000
+  ],
+  "lost": [
+   225000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-01",
+  "tgt": "bn-IN",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "sent": "सवा दो लाख रुपये का बिल बना है।",
+  "target": "বিলটি দুই লক্ষ টাকার।",
+  "back": "The bill is for two hundred thousand rupees.",
+  "expect": [
+   225000
+  ],
+  "lost": [
+   225000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-02",
+  "tgt": "en-IN",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "sent": "पौने तीन लाख का लोन अभी बाकी है।",
+  "target": "Three and a quarter lakhs of rupees are still left as a loan.",
+  "back": "Three and a quarter lakhs of rupees are still left as a loan.",
+  "expect": [
+   275000
+  ],
+  "lost": [
+   275000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-02",
+  "tgt": "ta-IN",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "sent": "पौने तीन लाख का लोन अभी बाकी है।",
+  "target": "மூன்று லட்சத்து கால் லட்சம் ரூபாய் இன்னும் கடனாக மீதமுள்ளது.",
+  "back": "Three lakh and forty-five thousand rupees are still remaining as a loan.",
+  "expect": [
+   275000
+  ],
+  "lost": [
+   275000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-02",
+  "tgt": "te-IN",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "sent": "पौने तीन लाख का लोन अभी बाकी है।",
+  "target": "నాలుగున్నర లక్షల రూపాయలు ఇంకా రుణంగా మిగిలి ఉన్నాయి.",
+  "back": "Four and a half lakh rupees are still remaining as a loan.",
+  "expect": [
+   275000
+  ],
+  "lost": [
+   275000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-02",
+  "tgt": "bn-IN",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "sent": "पौने तीन लाख का लोन अभी बाकी है।",
+  "target": "পঁয়ত্রিশ লক্ষ টাকা এখনও ঋণ হিসেবে বাকি আছে।",
+  "back": "Thirty-five hundred thousand taka is still outstanding as a loan.",
+  "expect": [
+   275000
+  ],
+  "lost": [
+   275000
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-03",
+  "tgt": "en-IN",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "sent": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "target": "I will receive a monthly salary of twelve and a half thousand rupees.",
+  "back": "I will receive a monthly salary of twelve and a half thousand rupees.",
+  "expect": [
+   12500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-03",
+  "tgt": "ta-IN",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "sent": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "target": "எனக்கு மாதச் சம்பளமாக பன்னிரெண்டாயிரத்து ஐம்பதாயிரம் ரூபாய் கிடைக்கும்.",
+  "back": "I get a monthly salary of twelve thousand fifty thousand rupees.",
+  "expect": [
+   12500
+  ],
+  "lost": [
+   12500
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-03",
+  "tgt": "te-IN",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "sent": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "target": "నాకు నెలకి పన్నెండున్నర వేల రూపాయల జీతం వస్తుంది.",
+  "back": "I get a salary of twelve and a half thousand rupees per month.",
+  "expect": [
+   12500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-03",
+  "tgt": "bn-IN",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "sent": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "target": "আমি প্রতি মাসে সাড়ে বারো হাজার টাকা বেতন পাব।",
+  "back": "I will receive a salary of twelve and a half thousand rupees per month.",
+  "expect": [
+   12500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-04",
+  "tgt": "en-IN",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "sent": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "target": "One and a half lakh rupees will have to be deposited as advance.",
+  "back": "One and a half lakh rupees will have to be deposited as advance.",
+  "expect": [
+   150000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-04",
+  "tgt": "ta-IN",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "sent": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "target": "ஒன்றரை லட்சம் ரூபாய் முன்பணமாக செலுத்த வேண்டும்.",
+  "back": "A deposit of one and a half lakh rupees is required.",
+  "expect": [
+   150000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-04",
+  "tgt": "te-IN",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "sent": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "target": "ఒకటిన్నర లక్ష రూపాయలు అడ్వాన్స్ గా డిపాజిట్ చేయవలసి ఉంటుంది.",
+  "back": "One and a half lakh rupees have to be deposited as an advance.",
+  "expect": [
+   150000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-04",
+  "tgt": "bn-IN",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "sent": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "target": "অগ্রিম হিসেবে দেড় লাখ টাকা জমা দিতে হবে।",
+  "back": "One and a half lakh rupees have to be deposited as an advance.",
+  "expect": [
+   150000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-05",
+  "tgt": "en-IN",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "sent": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "target": "Medicines worth two and a half thousand rupees have been prescribed.",
+  "back": "Medicines worth two and a half thousand rupees have been prescribed.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-05",
+  "tgt": "ta-IN",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "sent": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "target": "இரண்டாயிரத்து ஐநூறு ரூபாய் மதிப்புள்ள மருந்துகள் பரிந்துரைக்கப்பட்டுள்ளன.",
+  "back": "Medicines worth two thousand five hundred rupees have been prescribed.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-05",
+  "tgt": "te-IN",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "sent": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "target": "రెండున్నర వేల రూపాయల విలువైన మందులు సూచించబడ్డాయి.",
+  "back": "Medicines worth two and a half thousand rupees were prescribed.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-05",
+  "tgt": "bn-IN",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "sent": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "target": "আড়াই হাজার টাকার ওষুধ দেওয়া হয়েছে।",
+  "back": "Medicines worth two and a half thousand rupees have been given.",
+  "expect": [
+   2500
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-06",
+  "tgt": "en-IN",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "sent": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "target": "At 7:00, the patient is moved to the operating theatre.",
+  "back": "At 7:00, the patient is moved to the operating theatre.",
+  "expect": [
+   7.25
+  ],
+  "lost": [
+   7.25
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-06",
+  "tgt": "ta-IN",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "sent": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "target": "7:00 மணிக்கு, நோயாளி அறுவை சிகிச்சை அறைக்கு கொண்டு செல்லப்படுகிறார்.",
+  "back": "At 7:00, the patient is moved to the operating theatre.",
+  "expect": [
+   7.25
+  ],
+  "lost": [
+   7.25
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-06",
+  "tgt": "te-IN",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "sent": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "target": "7:00 గంటలకు, రోగిని ఆపరేషన్ థియేటర్‌కు తరలిస్తారు.",
+  "back": "At 7:00, the patient is moved to the operating theatre.",
+  "expect": [
+   7.25
+  ],
+  "lost": [
+   7.25
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-06",
+  "tgt": "bn-IN",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "sent": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "target": "সাড়ে সাতটায় রোগীকে অপারেশন থিয়েটারে নিয়ে যাওয়া হয়।",
+  "back": "At 7:30 a.m., the patient was taken to the operating theatre.",
+  "expect": [
+   7.25
+  ],
+  "lost": [
+   7.25
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-07",
+  "tgt": "en-IN",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "sent": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "target": "The report will be available by 4:30 PM.",
+  "back": "The report will be available by 4:30 PM.",
+  "expect": [
+   5.75
+  ],
+  "lost": [
+   5.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-07",
+  "tgt": "ta-IN",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "sent": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "target": "அறிக்கை மாலை 4:30 மணிக்குள் கிடைக்கும்.",
+  "back": "The report will be available by 4:30 p.m.",
+  "expect": [
+   5.75
+  ],
+  "lost": [
+   5.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-07",
+  "tgt": "te-IN",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "sent": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "target": "నివేదిక సాయంత్రం 4:30 గంటలకు అందుబాటులో ఉంటుంది.",
+  "back": "The report will be available by 4:30 p.m.",
+  "expect": [
+   5.75
+  ],
+  "lost": [
+   5.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-07",
+  "tgt": "bn-IN",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "sent": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "target": "রিপোর্টটি বিকেল 4:30 এর মধ্যে পাওয়া যাবে।",
+  "back": "The report will be available by 4:30 p.m.",
+  "expect": [
+   5.75
+  ],
+  "lost": [
+   5.75
+  ],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-08",
+  "tgt": "en-IN",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "sent": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "target": "The bank opens at 10:30, come then.",
+  "back": "The bank opens at 10:30, come then.",
+  "expect": [
+   10.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-08",
+  "tgt": "ta-IN",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "sent": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "target": "வங்கி 10:30 மணிக்கு திறக்கும், அப்போது வாருங்கள்.",
+  "back": "The bank opens at 10:30, so be there.",
+  "expect": [
+   10.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-08",
+  "tgt": "te-IN",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "sent": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "target": "బ్యాంకు ఉదయం 10:30 గంటలకు తెరుచుకుంటుంది, అప్పుడు రండి.",
+  "back": "The bank opens at 10:30 AM, so please be there.",
+  "expect": [
+   10.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-08",
+  "tgt": "bn-IN",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "sent": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "target": "ব্যাঙ্কটি সকাল 10:30-এ খোলে, তখন এসো।",
+  "back": "The bank opens at 10:30 AM, so be there then.",
+  "expect": [
+   10.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-09",
+  "tgt": "en-IN",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "sent": "डेढ़ बजे लंच के बाद आना।",
+  "target": "Come after lunch at 1:30.",
+  "back": "Come after lunch at 1:30.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-09",
+  "tgt": "ta-IN",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "sent": "डेढ़ बजे लंच के बाद आना।",
+  "target": "மதிய உணவுக்குப் பிறகு 1:30 மணிக்கு வாருங்கள்.",
+  "back": "Show up at 1:30 PM for lunch.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-09",
+  "tgt": "te-IN",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "sent": "डेढ़ बजे लंच के बाद आना।",
+  "target": "మధ్యాహ్న భోజనం తర్వాత 1:30 కి రండి.",
+  "back": "Show up around 1:30 p.m. after lunch.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-09",
+  "tgt": "bn-IN",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "sent": "डेढ़ बजे लंच के बाद आना।",
+  "target": "দুপুরের খাবারের পর 1:30-এ এসো।",
+  "back": "Come at 1:30 PM after lunch.",
+  "expect": [
+   1.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-10",
+  "tgt": "en-IN",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "sent": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "target": "Give the patient three and a half hundred ml of water to drink.",
+  "back": "Give the patient three and a half hundred ml of water to drink.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-10",
+  "tgt": "ta-IN",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "sent": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "target": "நோயாளிக்கு முந்நூற்று ஐம்பது மில்லி லிட்டர் தண்ணீர் கொடுங்கள்.",
+  "back": "Give the patient three hundred and fifty milliliters of water.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-10",
+  "tgt": "te-IN",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "sent": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "target": "రోగికి మూడున్నర వందల ml నీరు ఇవ్వండి.",
+  "back": "Give the patient three and a half hundred ml of water.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-10",
+  "tgt": "bn-IN",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "sent": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "target": "রোগীকে সাড়ে তিনশো মিলি জল পান করতে দিন।",
+  "back": "Let the patient drink three hundred and fifty milliliters of water.",
+  "expect": [
+   350
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-11",
+  "tgt": "en-IN",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "sent": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "target": "Please recharge for one hundred and twenty-five rupees.",
+  "back": "Please recharge for one hundred and twenty-five rupees.",
+  "expect": [
+   125
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-11",
+  "tgt": "ta-IN",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "sent": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "target": "தயவுசெய்து நூற்றி இருபத்தைந்து ரூபாய்க்கு ரீசார்ஜ் செய்யவும்.",
+  "back": "Please recharge for one hundred and twenty-five rupees.",
+  "expect": [
+   125
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-11",
+  "tgt": "te-IN",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "sent": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "target": "దయచేసి నూట ఇరవై ఐదు రూపాయలకు రీఛార్జ్ చేయండి.",
+  "back": "Please recharge for one hundred and twenty-five rupees.",
+  "expect": [
+   125
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-11",
+  "tgt": "bn-IN",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "sent": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "target": "অনুগ্রহ করে একশো পঁচিশ টাকার রিচার্জ করুন।",
+  "back": "Please recharge for one hundred and twenty-five rupees.",
+  "expect": [
+   125
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-12",
+  "tgt": "en-IN",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "sent": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "target": "The child weighs twelve and a half kilos.",
+  "back": "The child weighs twelve and a half kilos.",
+  "expect": [
+   12.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-12",
+  "tgt": "ta-IN",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "sent": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "target": "அந்தப் பெண் குழந்தை பன்னிரெண்டரை கிலோ எடை கொண்டது.",
+  "back": "The baby girl weighed 12.5 kg.",
+  "expect": [
+   12.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-12",
+  "tgt": "te-IN",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "sent": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "target": "ఆ పిల్ల బరువు పన్నెండున్నర కిలోలు.",
+  "back": "The child weighs twelve and a half kilograms.",
+  "expect": [
+   12.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-12",
+  "tgt": "bn-IN",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "sent": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "target": "মেয়েটির ওজন সাড়ে বারো কেজি।",
+  "back": "The girl weighs twelve and a half kilograms.",
+  "expect": [
+   12.5
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-13",
+  "tgt": "en-IN",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "sent": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "target": "It is a Rs 25 million dollar project.",
+  "back": "It is a Rs 25 million dollar project.",
+  "expect": [
+   25000000
+  ],
+  "lost": [],
+  "wrongCurrency": true,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-13",
+  "tgt": "ta-IN",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "sent": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "target": "இது 25 மில்லியன் டாலர் மதிப்பிலான திட்டம்.",
+  "back": "The project is worth up to $25 million.",
+  "expect": [
+   25000000
+  ],
+  "lost": [],
+  "wrongCurrency": true,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-13",
+  "tgt": "te-IN",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "sent": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "target": "ఇది 25 మిలియన్ డాలర్ల ప్రాజెక్ట్.",
+  "back": "It is a US$25 million project.",
+  "expect": [
+   25000000
+  ],
+  "lost": [],
+  "wrongCurrency": true,
+  "check": null,
+  "fellBack": false
+ },
+ {
+  "id": "hold-13",
+  "tgt": "bn-IN",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "sent": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "target": "এটি 2 কোটি 50 লক্ষ টাকার একটি প্রকল্প।",
+  "back": "It is a Rs 250 million dollar project.",
+  "expect": [
+   25000000
+  ],
+  "lost": [],
+  "wrongCurrency": false,
+  "check": null,
+  "fellBack": false
+ }
+]

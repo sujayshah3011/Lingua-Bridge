@@ -28,7 +28,8 @@ import {
 } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
-import { translateText } from "@/services/sarvam";
+import { translateText, type NumberCheck } from "@/services/sarvam";
+import { NumberWarning } from "@/components/NumberWarning";
 
 type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
@@ -73,6 +74,8 @@ export default function VoiceScreen() {
   const [state, setState] = useState<RecordingState>("idle");
   const [transcript, setTranscript] = useState("");
   const [translation, setTranslation] = useState("");
+  // Only shown inside the translation card, so it never needs clearing on its own.
+  const [numberCheck, setNumberCheck] = useState<NumberCheck>();
   const [detectedLang, setDetectedLang] = useState<string | null>(null);
   const [statusText, setStatusText] = useState("");
   const [ttsLoading, setTtsLoading] = useState(false);
@@ -153,7 +156,7 @@ export default function VoiceScreen() {
       if (result.languageCode) setDetectedLang(result.languageCode);
       setStatusText("Translating…");
 
-      const { translatedText, detectedSourceLang, credits: newCredits } = await translateText({
+      const { translatedText, detectedSourceLang, credits: newCredits, numberCheck: check } = await translateText({
         input: result.transcript,
         sourceLanguageCode: result.languageCode ?? voiceSourceLang,
         targetLanguageCode: targetLang,
@@ -163,6 +166,7 @@ export default function VoiceScreen() {
       if (typeof newCredits === "number") setCredits(newCredits);
       if (detectedSourceLang) setDetectedLang(detectedSourceLang);
       setTranslation(translatedText || "Translation unavailable.");
+      setNumberCheck(check);
       setStatusText("");
 
       incrementUsage(
@@ -494,6 +498,7 @@ export default function VoiceScreen() {
                 <Text style={[styles.translationText, { color: C.text }]}>
                   {translation}
                 </Text>
+                <NumberWarning check={numberCheck} color={C.amber} />
               </View>
             ) : null}
           </>

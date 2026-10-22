@@ -1,0 +1,10 @@
+**/node_modules
+.git
+.github
+.do
+attached_assets
+UI
+artifacts/mobile
+**/dist
+**/.DS_Store
+.env*

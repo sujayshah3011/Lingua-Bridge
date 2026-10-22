@@ -316,18 +316,22 @@ export function WelcomeScreen() {
                   )}
                 </SpringPressable>
 
-                <Divider />
-
-                <SpringPressable
-                  onPress={handleGoogleSignIn}
-                  disabled={loading}
-                  style={styles.googleBtn}
-                >
-                  <View style={styles.googleIcon}>
-                    <Text style={styles.googleIconText}>G</Text>
-                  </View>
-                  <Text style={styles.googleBtnText}>Continue with Google</Text>
-                </SpringPressable>
+                {/* Google sign-in only works on web; on phones signIn() always fails. */}
+                {Platform.OS === "web" && (
+                  <>
+                    <Divider />
+                    <SpringPressable
+                      onPress={handleGoogleSignIn}
+                      disabled={loading}
+                      style={styles.googleBtn}
+                    >
+                      <View style={styles.googleIcon}>
+                        <Text style={styles.googleIconText}>G</Text>
+                      </View>
+                      <Text style={styles.googleBtnText}>Continue with Google</Text>
+                    </SpringPressable>
+                  </>
+                )}
 
                 {__DEV__ && (
                   <Pressable
@@ -452,18 +456,22 @@ export function WelcomeScreen() {
                   </Text>
                 </View>
 
-                <Divider />
-
-                <SpringPressable
-                  onPress={handleGoogleSignIn}
-                  disabled={loading}
-                  style={styles.googleBtn}
-                >
-                  <View style={styles.googleIcon}>
-                    <Text style={styles.googleIconText}>G</Text>
-                  </View>
-                  <Text style={styles.googleBtnText}>Continue with Google</Text>
-                </SpringPressable>
+                {/* Google sign-in only works on web; on phones signIn() always fails. */}
+                {Platform.OS === "web" && (
+                  <>
+                    <Divider />
+                    <SpringPressable
+                      onPress={handleGoogleSignIn}
+                      disabled={loading}
+                      style={styles.googleBtn}
+                    >
+                      <View style={styles.googleIcon}>
+                        <Text style={styles.googleIconText}>G</Text>
+                      </View>
+                      <Text style={styles.googleBtnText}>Continue with Google</Text>
+                    </SpringPressable>
+                  </>
+                )}
               </>
             )}
 
