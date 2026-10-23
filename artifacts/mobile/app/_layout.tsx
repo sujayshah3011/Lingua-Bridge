@@ -8,6 +8,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -51,12 +52,16 @@ const splash = StyleSheet.create({
 });
 
 function RootLayoutNav() {
-  const { user, authLoading } = useApp();
+  const { user, authLoading, isDark } = useApp();
+  // Dark icons on the light cream screens (they rendered white and unreadable).
+  const statusBar = <StatusBar style={isDark ? "light" : "dark"} />;
 
   if (authLoading) return <AppSplash />;
-  if (!user) return <WelcomeScreen />;
+  if (!user) return <>{statusBar}<WelcomeScreen /></>;
 
   return (
+    <>
+    {statusBar}
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
@@ -80,6 +85,7 @@ function RootLayoutNav() {
         }}
       />
     </Stack>
+    </>
   );
 }
 

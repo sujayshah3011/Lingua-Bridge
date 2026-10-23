@@ -356,8 +356,8 @@ export default function ConversationScreen() {
   const langALabel = LANGUAGES.find((l) => l.code === langA)?.name ?? langA;
   const langBLabel = LANGUAGES.find((l) => l.code === langB)?.name ?? langB;
 
-  const messagesA = messages.filter((m) => m.speaker === "A");
-  const messagesB = messages.filter((m) => m.speaker === "B");
+  // Both halves show the latest turns; each bubble adapts to whose half it is.
+  const recent = messages.slice(-3);
 
   const badgeColor =
     credits > 20 ? "#16A34A" : credits > 5 ? "#EA580C" : "#DC2626";
@@ -478,8 +478,8 @@ export default function ConversationScreen() {
             </Pressable>
 
             <ScrollView style={styles.bubbleFeed} ref={scrollRef}>
-              {messagesB.slice(-3).map((msg) => (
-                <ConversationBubble key={msg.id} message={msg} />
+              {recent.map((msg) => (
+                <ConversationBubble key={msg.id} message={msg} viewer="B" />
               ))}
             </ScrollView>
 
@@ -521,8 +521,8 @@ export default function ConversationScreen() {
             </Pressable>
 
             <ScrollView style={styles.bubbleFeed}>
-              {messagesA.slice(-3).map((msg) => (
-                <ConversationBubble key={msg.id} message={msg} />
+              {recent.map((msg) => (
+                <ConversationBubble key={msg.id} message={msg} viewer="A" />
               ))}
             </ScrollView>
 
@@ -530,6 +530,7 @@ export default function ConversationScreen() {
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
+                style={styles.phraseScroll}
                 contentContainerStyle={styles.phraseRow}
               >
                 {CLINIC_PHRASES.map((p) => (
@@ -624,7 +625,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   hintText: { flex: 1, fontSize: 12, lineHeight: 17 },
-  phraseRow: { gap: 8, paddingHorizontal: 12, paddingVertical: 6 },
+  // flexGrow 0 + centered items: the row takes one chip's height instead of
+  // stretching into the space the conversation needs (seen on a device).
+  phraseScroll: { flexGrow: 0 },
+  phraseRow: { gap: 8, paddingHorizontal: 12, paddingVertical: 6, alignItems: "center" },
   phraseChip: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
   phraseText: { fontSize: 13 },
   navRight: {
