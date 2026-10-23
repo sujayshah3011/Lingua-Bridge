@@ -143,7 +143,7 @@ export default function SettingsScreen() {
                     style={[styles.profileName, { color: theme.text }]}
                     numberOfLines={1}
                   >
-                    {user.displayName ?? "Google User"}
+                    {user.displayName || user.email?.split("@")[0] || "BhaashAI user"}
                   </Text>
                   <Text
                     style={[styles.profileEmail, { color: theme.textSecondary }]}

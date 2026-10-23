@@ -16,6 +16,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 
+import { WELCOME_CREDIT_INR } from "@/constants/pricing";
+
 const { width: SCREEN_W } = Dimensions.get("window");
 const ONBOARDING_KEY = "onboarding_completed";
 
@@ -30,23 +32,23 @@ const SLIDES: Slide[] = [
   {
     id: "s1",
     icon: "mic",
-    title: "Speak any\nIndian language",
+    title: "Speak Hindi,\nthey hear Tamil",
     subtitle:
-      "BhaashAI listens to you in real time and translates across all 22 official Indian languages plus English.",
+      "Two people, two languages, one phone. BhaashAI translates both ways across 22 Indian languages and speaks it aloud.",
   },
   {
     id: "s2",
-    icon: "globe",
-    title: "Instant real-time\ntranslation",
+    icon: "check-circle",
+    title: "Every number,\nchecked",
     subtitle:
-      "Powered by Sarvam AI — purpose-built for Indian languages with native script, transliteration, and natural voice output.",
+      "Translators slip on times, doses and amounts — \"पौने नौ\" becomes 9:45. BhaashAI checks every number before speaking it, and warns you when one doesn't match.",
   },
   {
     id: "s3",
     icon: "zap",
-    title: "Start translating\nfor free",
+    title: `Start with\n₹${WELCOME_CREDIT_INR} free`,
     subtitle:
-      "Your account starts with 50 free translation credits. Each translation costs 1 credit, voice recognition costs 2. No sign-up required.",
+      "Create a free account and get credit to try everything. You pay only for what you use — no subscription.",
   },
 ];
 
@@ -130,7 +132,7 @@ export default function OnboardingScreen() {
               <View style={styles.creditsRow}>
                 <View style={styles.creditBadge}>
                   <Feather name="zap" size={14} color="#84A98C" />
-                  <Text style={styles.creditBadgeText}>50 free credits</Text>
+                  <Text style={styles.creditBadgeText}>₹{WELCOME_CREDIT_INR} free credit</Text>
                 </View>
                 <Text style={styles.creditDetail}>Translate · Voice · Conversation</Text>
               </View>
