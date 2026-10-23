@@ -2,7 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "./firebase-admin";
 import { round6 } from "./pricing";
 
-export type ChargeType = "translate" | "tts" | "tts_elevenlabs" | "stt" | "transliterate";
+export type ChargeType = "translate" | "tts" | "tts_elevenlabs" | "stt" | "transliterate" | "reminder_call";
 
 export class InsufficientCreditsError extends Error {
   credits: number;
