@@ -521,7 +521,7 @@ export default function ConversationScreen() {
         mode="target"
         selectedCode={langB}
       />
-      <AgreedSummary visible={showSummary} onClose={() => setShowSummary(false)} messages={messages} />
+      <AgreedSummary visible={showSummary} onClose={() => setShowSummary(false)} messages={messages} patientLang={langA} />
     </SafeAreaView>
   );
 }

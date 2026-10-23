@@ -5,6 +5,7 @@
 #   export SARVAM_API_KEY=...
 #   export ELEVENLABS_API_KEY=...
 #   export FIREBASE_SA_JSON=/path/to/firebase-service-account.json
+#   export BOLNA_API_KEY=... BOLNA_AGENT_ID=...   (optional: reminder calls)
 #   ./deploy/aws-lambda.sh
 set -euo pipefail
 
@@ -33,7 +34,10 @@ env = {
   "FIREBASE_PROJECT_ID": "$FB_PROJECT",
   "FIREBASE_CLIENT_EMAIL": "$FB_EMAIL",
   "FIREBASE_PRIVATE_KEY_B64": "$FB_KEY_B64",
+  "BOLNA_API_KEY": "${BOLNA_API_KEY:-}",
+  "BOLNA_AGENT_ID": "${BOLNA_AGENT_ID:-}",
 }
+env = {k: v for k, v in env.items() if v}
 s = json.dumps({"Variables": env})
 assert len(s) < 4000, "Lambda env vars are capped at 4KB"
 print(s)
