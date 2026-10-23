@@ -402,5 +402,15 @@
  "v3 transcribe|val-18-aditya": "मैं पैंतालीस मिनट में पहुँच जाऊँगा।",
  "v4|val-18-aditya": "मैं 45 मिनट में पहुँच जाऊँगा।",
  "v2.5 (current app)|val-19-neha": "The price is fifty rupees per kilogram.",
- "v3 transcribe|val-19-neha": "दाम पचास रुपये किलो है।"
+ "v3 transcribe|val-19-neha": "दाम पचास रुपये किलो है।",
+ "v4|val-19-neha": "दाम ₹50 किलो है।",
+ "v2.5 (current app)|val-19-aditya": "The price is ₹50 per kilogram.",
+ "v3 transcribe|val-19-aditya": "दाम ₹50 किलो है।",
+ "v4|val-19-aditya": "दाम ₹50 किलो है।",
+ "v2.5 (current app)|val-20-neha": "The laborer will get seven hundred rupees daily and two meals.",
+ "v3 transcribe|val-20-neha": "मजदूर को सात सौ रुपये रोज़ और दो बार खाना मिलेगा।",
+ "v4|val-20-neha": "मजदूर को 700 रुपये रोज़ और दो बार खाना मिलेगा।",
+ "v2.5 (current app)|val-20-aditya": "The laborers will get seven hundred rupees daily and twice a day.",
+ "v3 transcribe|val-20-aditya": "मजदूरों को सात सौ रुपये रोज़ और दो बार खाना मिलेगा।",
+ "v4|val-20-aditya": "मज़दूरों को 700 रुपये रोज़ और दो बार खाना मिलेगा।"
 }

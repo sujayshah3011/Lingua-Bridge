@@ -3312,5 +3312,85 @@
   "hi": "दाम पचास रुपये किलो है।",
   "transcript": "दाम पचास रुपये किलो है।",
   "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "दाम ₹50 किलो है।",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "The price is ₹50 per kilogram.",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "दाम ₹50 किलो है।",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "दाम ₹50 किलो है।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "The laborer will get seven hundred rupees daily and two meals.",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मजदूर को सात सौ रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मजदूर को 700 रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "The laborers will get seven hundred rupees daily and twice a day.",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मजदूरों को सात सौ रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मज़दूरों को 700 रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
  }
 ]

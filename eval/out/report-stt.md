@@ -2,9 +2,9 @@
 
 | STT | Clips | Lost a value | Failure rate |
 |---|---|---|---|
-| v2.5 (current app) | 135 | 13 | 9.6% |
-| v3 transcribe | 135 | 21 | 15.6% |
-| v4 | 134 | 3 | 2.2% |
+| v2.5 (current app) | 138 | 13 | 9.4% |
+| v3 transcribe | 138 | 21 | 15.2% |
+| v4 | 138 | 3 | 2.2% |
 
 A clip fails if an expected value is missing from the transcript (after the server's own
 Hindi number normalization). Speech is synthetic (Sarvam bulbul:v3, 16 kHz).
