@@ -200,7 +200,7 @@ export function WelcomeScreen() {
             <Text style={styles.appName}>BhaashAI</Text>
             <Text style={styles.devanagari}>भाषा-AI</Text>
             <Text style={styles.tagline}>
-              Voice translation across 22 Indian languages, with every number checked before it's spoken
+              Voice translation across 11 Indian languages, with every number checked before it's spoken
             </Text>
 
             <View style={styles.chipsRow}>

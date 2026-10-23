@@ -34,7 +34,7 @@ const SLIDES: Slide[] = [
     icon: "mic",
     title: "Speak Hindi,\nthey hear Tamil",
     subtitle:
-      "Two people, two languages, one phone. BhaashAI translates both ways across 22 Indian languages and speaks it aloud.",
+      "Two people, two languages, one phone. BhaashAI translates both ways across 11 Indian languages and speaks it aloud.",
   },
   {
     id: "s2",

@@ -264,7 +264,9 @@ export default function ConversationScreen() {
                 : "No credits remaining to speak the translation."
             );
           } else {
+            // Silent failure here hid a broken voice for months ("niharika"), so say it.
             console.error("[Conversation TTS] Unhandled error:", ttsMsg || err);
+            Alert.alert("Couldn't play the translation", ttsMsg || "Please try the replay button.");
           }
         }
       }

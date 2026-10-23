@@ -4,51 +4,25 @@ import { API_BASE, extractErrorDetail, jsonHeaders } from "./api";
 export type VoiceGender = "female" | "male";
 export type TTSProvider = "sarvam" | "elevenlabs";
 
+// Sarvam bulbul:v3 voices, each checked against the API. "niharika" (the old
+// female voice for ta/ml/bn) isn't a v3 speaker and failed with HTTP 400, so
+// female speech silently never played in those languages.
 export const SPEAKER_MAP: Record<string, { female: string; male: string }> = {
-  "hi-IN":  { female: "neha",     male: "aditya"   },
-  "en-IN":  { female: "ritu",     male: "aditya"   },
-  "ta-IN":  { female: "niharika", male: "kabir"    },
-  "te-IN":  { female: "kavitha",  male: "rahul"    },
-  "kn-IN":  { female: "shreya",   male: "manan"    },
-  "ml-IN":  { female: "niharika", male: "varun"    },
-  "bn-IN":  { female: "niharika", male: "rohan"    },
-  "gu-IN":  { female: "priya",    male: "dev"      },
-  "mr-IN":  { female: "kavya",    male: "amit"     },
-  "pa-IN":  { female: "simran",   male: "sumit"    },
-  "od-IN":  { female: "roopa",    male: "kabir"    },
-  "as-IN":  { female: "neha",     male: "aayan"    },
-  "ur-IN":  { female: "niharika", male: "rehan"    },
-  "sa-IN":  { female: "pooja",    male: "anand"    },
-  "mai-IN": { female: "tanya",    male: "tarun"    },
-  "brx-IN": { female: "shruti",   male: "sunny"    },
-  "doi-IN": { female: "suhani",   male: "mohit"    },
-  "kok-IN": { female: "rupali",   male: "soham"    },
-  "ks-IN":  { female: "sophia",   male: "advait"   },
-  "mni-IN": { female: "amelia",   male: "gokul"    },
-  "ne-IN":  { female: "neha",     male: "vijay"    },
-  "sat-IN": { female: "shubh",    male: "ashutosh" },
-  "sd-IN":  { female: "ratan",    male: "mani"     },
+  "hi-IN": { female: "neha",    male: "aditya" },
+  "en-IN": { female: "ritu",    male: "aditya" },
+  "ta-IN": { female: "kavitha", male: "kabir"  },
+  "te-IN": { female: "kavitha", male: "rahul"  },
+  "kn-IN": { female: "shreya",  male: "manan"  },
+  "ml-IN": { female: "shruti",  male: "varun"  },
+  "bn-IN": { female: "ishita",  male: "rohan"  },
+  "gu-IN": { female: "priya",   male: "dev"    },
+  "mr-IN": { female: "kavya",   male: "amit"   },
+  "pa-IN": { female: "simran",  male: "sumit"  },
+  "od-IN": { female: "roopa",   male: "kabir"  },
 };
 
 export function getSpeakerName(langCode: string, gender: VoiceGender): string {
   return SPEAKER_MAP[langCode]?.[gender] ?? (gender === "male" ? "aditya" : "neha");
-}
-
-// Sarvam's Bulbul TTS model only covers these 11 (of the app's 23 Indian
-// languages). ElevenLabs' multilingual models read language from the input
-// text itself, not from the voice_id, so they can attempt the rest — used as
-// the automatic fallback for the 12 Sarvam doesn't cover, instead of the old
-// behavior of silently speaking English over unsupported-language text.
-const SARVAM_TTS_SUPPORTED = new Set([
-  "hi-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN",
-  "bn-IN", "gu-IN", "mr-IN", "pa-IN", "od-IN", "en-IN",
-]);
-
-function resolveTTSProvider(targetLang: string, preferred: TTSProvider): TTSProvider {
-  if (preferred === "sarvam" && !SARVAM_TTS_SUPPORTED.has(targetLang)) {
-    return "elevenlabs";
-  }
-  return preferred;
 }
 
 // The server includes the real balance it saw when it rejected the charge —
@@ -80,8 +54,7 @@ export const speakText = async (
   const input = text.slice(0, 500).trim();
   if (!input) return;
 
-  const resolved = resolveTTSProvider(targetLang, provider);
-  if (resolved === "elevenlabs") {
+  if (provider === "elevenlabs") {
     return speakTextElevenLabs(input, targetLang, gender);
   }
 
@@ -200,8 +173,7 @@ export async function synthesizeSpeech(
   const input = text.slice(0, 500).trim();
   if (!input) throw new Error("TTS_EMPTY_INPUT");
 
-  const resolved = resolveTTSProvider(targetLanguageCode, provider);
-  if (resolved === "elevenlabs") {
+  if (provider === "elevenlabs") {
     return synthesizeElevenLabs(input, targetLanguageCode, gender);
   }
 

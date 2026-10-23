@@ -34,6 +34,7 @@ import { auth, db } from "@/services/firebase";
 import { VoiceGender, TTSProvider } from "@/services/tts";
 import { UserStats, useCredits } from "@/hooks/useCredits";
 import { WELCOME_CREDIT_INR } from "@/constants/pricing";
+import { LANGUAGES } from "@/constants/languages";
 
 export interface TranslationRecord {
   id: string;
@@ -316,10 +317,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const prefsJson = await AsyncStorage.getItem(PREFS_KEY);
         if (prefsJson) {
           const prefs = JSON.parse(prefsJson);
-          if (prefs.sourceLang) setSourceLang(prefs.sourceLang);
-          if (prefs.targetLang) setTargetLang(prefs.targetLang);
+          // Only restore languages still offered (12 were removed; see constants/languages.ts).
+          const known = (code: string) => code === "auto" || LANGUAGES.some((l) => l.code === code);
+          if (prefs.sourceLang && known(prefs.sourceLang)) setSourceLang(prefs.sourceLang);
+          if (prefs.targetLang && known(prefs.targetLang)) setTargetLang(prefs.targetLang);
           if (prefs.themeMode) setThemeModeState(prefs.themeMode);
-          if (prefs.recentLangs) setRecentLangs(prefs.recentLangs);
+          if (prefs.recentLangs) setRecentLangs(prefs.recentLangs.filter(known));
           if (prefs.autoDetect !== undefined) setAutoDetect(prefs.autoDetect);
           if (prefs.voiceGender) setVoiceGenderState(prefs.voiceGender);
           if (prefs.ttsProvider) setTTSProviderState(prefs.ttsProvider);
