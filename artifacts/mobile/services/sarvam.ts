@@ -11,6 +11,7 @@ export interface TranslateParams {
 export interface NumberCheck {
   ok: boolean;
   missing: string[];
+  verified?: string[];
   wrongCurrency: boolean;
   backTranslated: boolean;
 }
@@ -21,6 +22,8 @@ export interface TranslateResult {
   credits?: number;
   // Absent when the server couldn't run the check — treat as unverified, not failed.
   numberCheck?: NumberCheck;
+  // The input with Hindi number words as digits, when the server rewrote it.
+  normalizedInput?: string;
 }
 
 export async function detectLanguage(input: string): Promise<string> {
@@ -83,5 +86,6 @@ export async function translateText(
     detectedSourceLang: sourceLang,
     credits: data.credits,
     numberCheck: data.number_check,
+    normalizedInput: data.normalized_input,
   };
 }

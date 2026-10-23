@@ -22,6 +22,7 @@ import { Colors } from "@/constants/colors";
 import ConversationBubble, { Message } from "@/components/ConversationBubble";
 import MicButton from "@/components/MicButton";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
+import { AgreedSummary, hasNumbers } from "@/components/AgreedSummary";
 import {
   startVoiceRecording,
   stopAndTranscribe,
@@ -31,6 +32,33 @@ import { synthesizeSpeech } from "@/services/tts";
 import { translateText } from "@/services/sarvam";
 
 type Speaker = "A" | "B";
+
+// Tap-to-say clinic phrases for speaker A (Hindi). Each carries a number the model
+// is known to get wrong without the server's check (see eval/).
+const CLINIC_PHRASES = [
+  "पौने नौ बजे तक खाली पेट रहना है।",
+  "दवा दिन में दो बार खाने के बाद लेनी है।",
+  "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "अगली जांच 15 नवंबर को होगी।",
+  "सवा सात बजे ऑपरेशन थिएटर में ले जाएँगे।",
+];
+
+function showTranslateError(err: unknown) {
+  const msg = err instanceof Error ? err.message : "";
+  if (msg !== "INSUFFICIENT_CREDITS") {
+    console.error("[Conversation] Unhandled error:", msg);
+  }
+  Alert.alert(
+    "Error",
+    msg === "INSUFFICIENT_CREDITS"
+      ? "No credits remaining. Check Settings."
+      : msg === "NOT_SIGNED_IN"
+      ? "Please sign in to use Conversation mode."
+      : msg
+      ? `Translation failed: ${msg}`
+      : "Translation failed. Please try again."
+  );
+}
 type SpeakerState = "idle" | "recording" | "processing";
 
 export default function ConversationScreen() {
@@ -38,9 +66,17 @@ export default function ConversationScreen() {
   const C = isDark ? Colors.dark : Colors.light;
 
   const [langA, setLangA] = useState("hi-IN");
-  const [langB, setLangB] = useState("en-IN");
+  // Clinic defaults: Hindi-speaking patient, Tamil-speaking staff.
+  const [langB, setLangB] = useState("ta-IN");
   const [showPickerA, setShowPickerA] = useState(false);
   const [showPickerB, setShowPickerB] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  // Hands-free: a pause ends the turn, and after a verified translation is spoken
+  // the other side's mic opens by itself. Refs, because playback ends long after
+  // the callbacks that started it were created.
+  const [handsFree, setHandsFree] = useState(false);
+  const handsFreeRef = useRef(false);
+  handsFreeRef.current = handsFree;
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [stateA, setStateA] = useState<SpeakerState>("idle");
@@ -114,7 +150,7 @@ export default function ConversationScreen() {
       }
 
       try {
-        await startVoiceRecording();
+        await startVoiceRecording(handsFree ? () => stopSpeaker(speaker) : undefined);
 
         if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
         autoTimerRef.current = setTimeout(async () => {
@@ -135,7 +171,94 @@ export default function ConversationScreen() {
         setActiveRecorderBoth(null);
       }
     },
-    [credits, activeRecorder, langA, langB, ensurePermission, setActiveRecorderBoth]
+    [credits, activeRecorder, langA, langB, ensurePermission, setActiveRecorderBoth, handsFree]
+  );
+  const recordRef = useRef(recordAndTranslate);
+  recordRef.current = recordAndTranslate;
+
+  // The half of a turn after speech recognition: translate, check numbers, show
+  // the bubble, speak. Translation errors propagate to the caller.
+  const translateAndSpeak = useCallback(
+    async (speaker: Speaker, text: string, detectedLang?: string) => {
+      const sourceLang = speaker === "A" ? langA : langB;
+      const targetLangCode = speaker === "A" ? langB : langA;
+
+      const { translatedText: translated, credits: newCredits, numberCheck, normalizedInput } = await translateText({
+        input: text,
+        sourceLanguageCode: detectedLang ?? sourceLang,
+        targetLanguageCode: targetLangCode,
+        formalMode: true,
+      });
+      if (typeof newCredits === "number") setCredits(newCredits);
+
+      const msg: Message = {
+        id: `${Date.now()}_${speaker}`,
+        speaker,
+        original: text,
+        translated: translated ?? "Translation unavailable.",
+        sourceLangLabel:
+          LANGUAGES.find((l) => l.code === sourceLang)?.name ?? sourceLang,
+        targetLangLabel:
+          LANGUAGES.find((l) => l.code === targetLangCode)?.name ?? targetLangCode,
+        timestamp: Date.now(),
+        numberCheck,
+        normalizedInput,
+      };
+      addMessage(msg);
+
+      // Never auto-speak a number we couldn't verify: the bubble shows what to
+      // confirm, and the replay button still plays it once the speaker agrees.
+      const unverified = numberCheck?.ok === false;
+      if (unverified && Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      }
+
+      if (translated) {
+        try {
+          await soundRef.current?.unloadAsync();
+          const fileUri = await synthesizeSpeech(translated, targetLangCode, voiceGender, ttsProvider);
+          setMessages((prev) =>
+            prev.map((m) => (m.id === msg.id ? { ...m, audioUri: fileUri } : m))
+          );
+          if (unverified) return;
+          const { sound } = await Audio.Sound.createAsync(
+            { uri: fileUri },
+            { shouldPlay: true }
+          );
+          soundRef.current = sound;
+          sound.setOnPlaybackStatusUpdate((s) => {
+            if ("didJustFinish" in s && s.didJustFinish) {
+              sound.unloadAsync();
+              soundRef.current = null;
+              if (handsFreeRef.current) recordRef.current(speaker === "A" ? "B" : "A");
+            }
+          });
+        } catch (err) {
+          const ttsMsg = err instanceof Error ? err.message : "";
+          // Server includes its real balance when it rejects for
+          // insufficient credits — sync it so a stale local display can't
+          // keep disagreeing with what the server actually charged against.
+          const insufficientMatch = ttsMsg.match(/^INSUFFICIENT_CREDITS(?::(-?[\d.]+))?$/);
+          const realBalance = insufficientMatch?.[1] !== undefined ? Number(insufficientMatch[1]) : undefined;
+          if (realBalance !== undefined) setCredits(realBalance);
+
+          // TTS failure is non-fatal — the translated text is still shown
+          // regardless — but silent failure here reads as "the speaker
+          // isn't working", so surface it instead of only logging.
+          if (insufficientMatch) {
+            Alert.alert(
+              "Playback Failed",
+              realBalance !== undefined
+                ? `No credits remaining to speak the translation (server balance: ₹${realBalance.toFixed(2)}).`
+                : "No credits remaining to speak the translation."
+            );
+          } else {
+            console.error("[Conversation TTS] Unhandled error:", ttsMsg || err);
+          }
+        }
+      }
+    },
+    [addMessage, setCredits, langA, langB, voiceGender, ttsProvider]
   );
 
   const stopSpeaker = useCallback(
@@ -149,7 +272,6 @@ export default function ConversationScreen() {
 
       const setSpeakerState = speaker === "A" ? setStateA : setStateB;
       const sourceLang = speaker === "A" ? langA : langB;
-      const targetLangCode = speaker === "A" ? langB : langA;
 
       setSpeakerState("processing");
 
@@ -163,99 +285,34 @@ export default function ConversationScreen() {
           return;
         }
 
-        const { translatedText: translated, credits: newCredits, numberCheck } = await translateText({
-          input: sttResult.transcript,
-          sourceLanguageCode: sttResult.languageCode ?? sourceLang,
-          targetLanguageCode: targetLangCode,
-          formalMode: true,
-        });
-        if (typeof newCredits === "number") setCredits(newCredits);
-
-        const msg: Message = {
-          id: `${Date.now()}_${speaker}`,
-          speaker,
-          original: sttResult.transcript,
-          translated: translated ?? "Translation unavailable.",
-          sourceLangLabel:
-            LANGUAGES.find((l) => l.code === sourceLang)?.name ?? sourceLang,
-          targetLangLabel:
-            LANGUAGES.find((l) => l.code === targetLangCode)?.name ?? targetLangCode,
-          timestamp: Date.now(),
-          numberCheck,
-        };
-        addMessage(msg);
-
-        // Never auto-speak a number we couldn't verify: the bubble shows what to
-        // confirm, and the replay button still plays it once the speaker agrees.
-        const unverified = numberCheck?.ok === false;
-        if (unverified && Platform.OS !== "web") {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        }
-
-        if (translated) {
-          try {
-            await soundRef.current?.unloadAsync();
-            const fileUri = await synthesizeSpeech(translated, targetLangCode, voiceGender, ttsProvider);
-            setMessages((prev) =>
-              prev.map((m) => (m.id === msg.id ? { ...m, audioUri: fileUri } : m))
-            );
-            if (unverified) return;
-            const { sound } = await Audio.Sound.createAsync(
-              { uri: fileUri },
-              { shouldPlay: true }
-            );
-            soundRef.current = sound;
-            sound.setOnPlaybackStatusUpdate((s) => {
-              if ("didJustFinish" in s && s.didJustFinish) {
-                sound.unloadAsync();
-                soundRef.current = null;
-              }
-            });
-          } catch (err) {
-            const ttsMsg = err instanceof Error ? err.message : "";
-            // Server includes its real balance when it rejects for
-            // insufficient credits — sync it so a stale local display can't
-            // keep disagreeing with what the server actually charged against.
-            const insufficientMatch = ttsMsg.match(/^INSUFFICIENT_CREDITS(?::(-?[\d.]+))?$/);
-            const realBalance = insufficientMatch?.[1] !== undefined ? Number(insufficientMatch[1]) : undefined;
-            if (realBalance !== undefined) setCredits(realBalance);
-
-            // TTS failure is non-fatal — the translated text is still shown
-            // regardless — but silent failure here reads as "the speaker
-            // isn't working", so surface it instead of only logging.
-            if (insufficientMatch) {
-              Alert.alert(
-                "Playback Failed",
-                realBalance !== undefined
-                  ? `No credits remaining to speak the translation (server balance: ₹${realBalance.toFixed(2)}).`
-                  : "No credits remaining to speak the translation."
-              );
-            } else {
-              console.error("[Conversation TTS] Unhandled error:", ttsMsg || err);
-            }
-          }
-        }
+        await translateAndSpeak(speaker, sttResult.transcript, sttResult.languageCode);
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "";
-        if (msg !== "INSUFFICIENT_CREDITS") {
-          console.error("[Conversation] Unhandled error:", msg);
-        }
-        Alert.alert(
-          "Error",
-          msg === "INSUFFICIENT_CREDITS"
-            ? "No credits remaining. Check Settings."
-            : msg === "NOT_SIGNED_IN"
-            ? "Please sign in to use Conversation mode."
-            : msg
-            ? `Translation failed: ${msg}`
-            : "Translation failed. Please try again."
-        );
+        showTranslateError(err);
       } finally {
         setSpeakerState("idle");
         setActiveRecorderBoth(null);
       }
     },
-    [addMessage, setCredits, langA, langB, voiceGender, ttsProvider, setActiveRecorderBoth]
+    [setCredits, langA, langB, translateAndSpeak, setActiveRecorderBoth]
+  );
+
+  // Quick phrases skip speech recognition but take the same translate → check →
+  // speak path, so a demo turn behaves exactly like a spoken one.
+  const sayPhrase = useCallback(
+    async (text: string) => {
+      if (activeRecorderRef.current !== null) return;
+      setActiveRecorderBoth("A");
+      setStateA("processing");
+      try {
+        await translateAndSpeak("A", text);
+      } catch (err: unknown) {
+        showTranslateError(err);
+      } finally {
+        setStateA("idle");
+        setActiveRecorderBoth(null);
+      }
+    },
+    [translateAndSpeak, setActiveRecorderBoth]
   );
 
   const langALabel = LANGUAGES.find((l) => l.code === langA)?.name ?? langA;
@@ -291,6 +348,22 @@ export default function ConversationScreen() {
             <Text style={[styles.creditsText, { color: badgeColor }]}>
               ₹{credits.toFixed(2)}
             </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setHandsFree((v) => !v)}
+            accessibilityLabel={handsFree ? "Hands-free on" : "Hands-free off"}
+            accessibilityState={{ selected: handsFree }}
+            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+          >
+            <Feather name="headphones" size={20} color={handsFree ? C.primary : C.textMuted} />
+          </Pressable>
+          <Pressable
+            onPress={() => setShowSummary(true)}
+            disabled={!messages.some(hasNumbers)}
+            accessibilityLabel="What we agreed"
+            style={({ pressed }) => ({ opacity: !messages.some(hasNumbers) ? 0.3 : pressed ? 0.5 : 1 })}
+          >
+            <Feather name="clipboard" size={20} color={C.primary} />
           </Pressable>
           <Pressable
             onPress={() => setMessages([])}
@@ -391,6 +464,28 @@ export default function ConversationScreen() {
               ))}
             </ScrollView>
 
+            {langA === "hi-IN" && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.phraseRow}
+              >
+                {CLINIC_PHRASES.map((p) => (
+                  <Pressable
+                    key={p}
+                    onPress={() => sayPhrase(p)}
+                    disabled={activeRecorder !== null || credits < 0.05}
+                    style={({ pressed }) => [
+                      styles.phraseChip,
+                      { borderColor: C.sage + "60", backgroundColor: C.surfaceSecondary, opacity: activeRecorder !== null ? 0.4 : pressed ? 0.6 : 1 },
+                    ]}
+                  >
+                    <Text style={[styles.phraseText, { color: C.text }]} numberOfLines={1}>{p}</Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            )}
+
             <View style={styles.micRow}>
               {stateA === "processing" ? (
                 <ActivityIndicator color="#FF6B00" size="small" />
@@ -426,6 +521,7 @@ export default function ConversationScreen() {
         mode="target"
         selectedCode={langB}
       />
+      <AgreedSummary visible={showSummary} onClose={() => setShowSummary(false)} messages={messages} />
     </SafeAreaView>
   );
 }
@@ -444,6 +540,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: "Inter_600SemiBold",
   },
+  phraseRow: { gap: 8, paddingHorizontal: 12, paddingVertical: 6 },
+  phraseChip: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
+  phraseText: { fontSize: 13 },
   navRight: {
     flexDirection: "row",
     alignItems: "center",
