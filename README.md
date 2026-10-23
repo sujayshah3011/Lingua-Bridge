@@ -73,7 +73,7 @@ real words.
 Four tabs, all built around the clinic conversation:
 
 - **Clinic** (the app opens here): two people, one phone, Hindi ↔ Tamil by default and any
-  of 22 Indian languages.
+  of 11 Indian languages (every one with speech in and out).
   - Every verified number gets a green **✓ chip** (`✓ 8:45`), and the speaker sees
     **"You said: 8:45"**, so a mishearing can be caught.
   - A turn whose numbers couldn't be verified is shown with a warning and **isn't
