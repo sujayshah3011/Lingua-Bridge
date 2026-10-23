@@ -82,6 +82,11 @@ real words.
   speak path as speech.
 - **Hands-free:** a pause ends your turn, and after a verified translation is spoken
   the other person's mic opens.
+- **Reminder call ([Bolna](https://www.bolna.ai)):** from "What we agreed", book a call
+  to the patient for tomorrow at 10:00 or right away. A Bolna voice agent phones them in
+  Hindi and reads back **only the verified lines, word for word**. The agent uses Sarvam
+  speech in and out, and its prompt forbids changing any number or giving medical advice.
+  The call needs the patient's consent and a +91 mobile number, and costs a flat ₹10.
 - **Translate** (typed text) and **Voice** tabs, with the same checks, plus an offline
   phrasebook and history.
 
@@ -139,6 +144,9 @@ Responses are cached in `eval/out/raw.json`, so re-running costs nothing. A new 
   atomically in Firestore, refunding if the upstream call fails. Sarvam handles
   speech-to-text (`saaras:v4`) and translation, and Sarvam Bulbul or ElevenLabs handles
   speech output.
+- **Voice agent:** a Bolna agent (Hindi) is triggered by `POST /api/reminder-call` through
+  Bolna's `/call` API. The verified lines are passed as `user_data` into the agent's
+  prompt.
 - **Deploy:** `./deploy/aws-lambda.sh` (needs `SARVAM_API_KEY`, `ELEVENLABS_API_KEY`
-  and `FIREBASE_SA_JSON`).
+  and `FIREBASE_SA_JSON`; optional `BOLNA_API_KEY` and `BOLNA_AGENT_ID`).
 - **Firestore rules:** [`firestore.rules`](firestore.rules). Balances are server-only.
