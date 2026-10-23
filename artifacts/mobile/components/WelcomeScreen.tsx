@@ -21,9 +21,9 @@ import { useApp } from "@/context/AppContext";
 type Tab = "signin" | "signup";
 
 const FEATURES = [
-  { icon: "globe" as const, label: "Translate" },
   { icon: "mic" as const, label: "Voice" },
   { icon: "message-square" as const, label: "Conversation" },
+  { icon: "check-circle" as const, label: "Numbers checked" },
 ];
 
 function useSpringScale() {
@@ -155,7 +155,7 @@ export function WelcomeScreen() {
       if (err?.message === "EXPO_GO_LIMITATION") {
         Alert.alert(
           "Google Sign-In Unavailable",
-          "Use Email/Password sign-in below, or open the\nReplit web preview tab where Google Sign-In works.",
+          "Google sign-in isn't available here. Please use email sign-in below.",
           [{ text: "OK" }]
         );
       } else {
@@ -197,7 +197,7 @@ export function WelcomeScreen() {
             <Text style={styles.appName}>BhaashAI</Text>
             <Text style={styles.devanagari}>भाषा-AI</Text>
             <Text style={styles.tagline}>
-              Real-time translation across all 22 official Indian languages
+              Voice translation across 22 Indian languages, with every number checked before it's spoken
             </Text>
 
             <View style={styles.chipsRow}>
