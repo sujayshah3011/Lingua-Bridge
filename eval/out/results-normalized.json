@@ -14,6 +14,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -34,6 +35,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -54,6 +56,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -74,6 +77,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -95,6 +99,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "500",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -116,6 +124,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "500",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -137,6 +149,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "500",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -158,6 +174,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "500",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -178,6 +198,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -198,6 +221,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -218,6 +244,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -238,6 +267,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": true
   },
@@ -259,6 +291,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "180",
+    "140"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -280,6 +316,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "180",
+    "140"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -301,6 +341,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "180",
+    "140"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -322,6 +366,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "180",
+    "140"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -342,6 +390,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -362,6 +413,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -382,6 +436,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -402,6 +459,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -423,6 +483,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "15"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -444,6 +507,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "15"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -465,6 +531,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "15"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -486,6 +555,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "15"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -507,6 +579,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10",
+    "8"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -528,6 +604,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10",
+    "8"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -549,6 +629,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10",
+    "8"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -570,6 +654,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10",
+    "8"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -590,6 +678,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "102"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -610,6 +701,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "102"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -630,6 +724,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "102"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -650,6 +747,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "102"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -670,6 +770,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -690,6 +791,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -710,6 +812,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -730,6 +833,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -750,6 +854,9 @@
   "check": {
    "ok": false,
    "missing": [],
+   "verified": [
+    "1,25,000"
+   ],
    "wrongCurrency": true,
    "backTranslated": false
   },
@@ -770,6 +877,9 @@
   "check": {
    "ok": false,
    "missing": [],
+   "verified": [
+    "1,25,000"
+   ],
    "wrongCurrency": true,
    "backTranslated": false
   },
@@ -790,6 +900,9 @@
   "check": {
    "ok": false,
    "missing": [],
+   "verified": [
+    "1,25,000"
+   ],
    "wrongCurrency": true,
    "backTranslated": false
   },
@@ -810,6 +923,9 @@
   "check": {
    "ok": false,
    "missing": [],
+   "verified": [
+    "1,25,000"
+   ],
    "wrongCurrency": true,
    "backTranslated": false
   },
@@ -831,6 +947,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "150",
+    "95"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -852,6 +972,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "150",
+    "95"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -873,6 +997,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "150",
+    "95"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -894,6 +1022,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "150",
+    "95"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -914,6 +1046,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -934,6 +1069,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -954,6 +1092,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -974,6 +1115,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -994,6 +1138,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1014,6 +1161,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1034,6 +1184,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1054,6 +1207,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1074,6 +1230,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "108"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1094,6 +1253,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "108"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1114,6 +1276,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "108"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1134,6 +1299,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "108"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1155,6 +1323,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,450",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1176,6 +1348,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,450",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1197,6 +1373,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,450",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1218,6 +1398,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,450",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1238,6 +1422,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1258,6 +1445,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1278,6 +1468,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1298,6 +1491,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1318,6 +1514,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "9.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1338,6 +1537,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "9.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1358,6 +1560,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "9.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1378,6 +1583,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "9.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1398,6 +1606,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "36"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1418,6 +1629,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "36"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1438,6 +1652,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "36"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1458,6 +1675,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "36"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1480,6 +1700,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3,200",
+    "30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1502,6 +1726,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3,200",
+    "30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1524,6 +1752,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3,200",
+    "30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1546,6 +1778,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3,200",
+    "30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1566,6 +1802,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "750"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1586,6 +1825,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "750"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1606,6 +1848,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "750"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1626,6 +1871,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "750"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1646,6 +1894,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1666,6 +1915,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1686,6 +1936,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1706,6 +1957,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1728,6 +1980,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "98765 43210"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1750,6 +2005,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "98765 43210"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1772,6 +2030,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "98765 43210"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1794,6 +2055,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "98765 43210"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1815,6 +2079,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4,821"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1836,6 +2103,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4,821"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1857,6 +2127,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4,821"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1878,6 +2151,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4,821"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1898,6 +2174,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1918,6 +2195,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1938,6 +2216,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1958,6 +2237,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1978,6 +2258,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "18,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1998,6 +2281,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "18,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2018,6 +2304,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "18,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2038,6 +2327,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "18,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2059,6 +2351,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2080,6 +2376,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2101,6 +2401,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2122,6 +2426,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3",
+    "5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2144,6 +2452,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4 7 1 9"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2166,6 +2477,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4 7 1 9"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2188,6 +2502,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4 7 1 9"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2210,6 +2527,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4 7 1 9"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2231,6 +2551,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "650",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2252,6 +2576,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "650",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2273,6 +2601,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "650",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2294,6 +2626,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "650",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2315,6 +2651,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "7,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2336,6 +2675,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "7,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2357,6 +2699,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "7,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2378,6 +2723,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "7,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2399,6 +2747,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2420,6 +2772,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2441,6 +2797,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2462,6 +2822,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "8",
+    "6"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2483,6 +2847,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "21"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2504,6 +2871,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "21"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2525,6 +2895,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "21"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2546,6 +2919,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "21"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2567,6 +2943,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:45",
+    "4"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2588,6 +2968,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:45",
+    "4"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2609,6 +2993,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:45",
+    "4"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2630,6 +3018,10 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:45",
+    "4"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2651,6 +3043,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "250"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2672,6 +3067,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "250"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2693,6 +3091,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "250"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2714,6 +3115,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "250"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2734,6 +3138,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2754,6 +3159,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2774,6 +3180,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2794,6 +3201,7 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2814,6 +3222,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2834,6 +3245,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2854,6 +3268,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2874,6 +3291,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "4.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2895,6 +3315,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2916,6 +3339,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2937,6 +3363,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -2958,6 +3387,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "3"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },

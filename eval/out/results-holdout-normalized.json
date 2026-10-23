@@ -14,6 +14,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,25,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -34,6 +37,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,25,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -54,6 +60,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,25,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -74,6 +83,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,25,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -94,6 +106,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,75,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -114,6 +129,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,75,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -134,6 +152,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,75,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -154,6 +175,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,75,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -174,6 +198,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -194,6 +221,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -214,6 +244,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -234,6 +267,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -254,6 +290,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -274,6 +313,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -294,6 +336,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -314,6 +359,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1,50,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -334,6 +382,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -354,6 +405,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -374,6 +428,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -394,6 +451,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,500"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -414,6 +474,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "7:15"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -434,6 +497,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "7:15"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -454,6 +520,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "7:15"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -478,6 +547,7 @@
    "missing": [
     "7:15"
    ],
+   "verified": [],
    "wrongCurrency": false,
    "backTranslated": true
   },
@@ -498,6 +568,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "5:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -518,6 +591,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "5:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -538,6 +614,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "5:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -558,6 +637,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "5:45"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -578,6 +660,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -598,6 +683,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -618,6 +706,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -638,6 +729,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "10:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -658,6 +752,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -678,6 +775,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -698,6 +798,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -718,6 +821,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "1:30"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -738,6 +844,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "350"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -758,6 +867,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "350"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -778,6 +890,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "350"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -798,6 +913,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "350"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -818,6 +936,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "125"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -838,6 +959,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "125"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -858,6 +982,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "125"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -878,6 +1005,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "125"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -898,6 +1028,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -918,6 +1051,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -938,6 +1074,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -958,6 +1097,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "12.5"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -978,6 +1120,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,00,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -998,6 +1143,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,00,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1018,6 +1166,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,00,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
@@ -1038,6 +1189,9 @@
   "check": {
    "ok": true,
    "missing": [],
+   "verified": [
+    "2,50,00,000"
+   ],
    "wrongCurrency": false,
    "backTranslated": false
   },
