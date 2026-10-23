@@ -19,6 +19,9 @@
  * M4A container's real MIME types are audio/mp4 and audio/x-m4a only.
  *
  * NEVER change type to 'audio/wav', 'audio/vnd.wave', or bare 'audio/m4a'.
+ *
+ * isMeteringEnabled (hands-free mode) only adds loudness readings to the
+ * recorder's status updates; it does not change the recorded format.
  */
 
 import { Audio } from "expo-av";
@@ -34,11 +37,20 @@ export interface STTResult {
 let _recording: Audio.Recording | null = null;
 let _recordingStartTime: number = 0;
 
+// ─── SILENCE DETECTION (hands-free) ───────────────────────────────────────────
+// Metering is dBFS: 0 is the loudest, -160 is silence. Calibration knobs, tuned on
+// a real phone: speech has to rise above SPEECH_DB before a pause can end the turn,
+// and a pause is SILENCE_MS below SILENCE_DB. Raise SILENCE_DB in a noisy room.
+const SPEECH_DB = -35;
+const SILENCE_DB = -45;
+const SILENCE_MS = 1200;
+
 // ─── START RECORDING ──────────────────────────────────────────────────────────
 // Uses Audio.Recording.createAsync — the ONLY reliable Expo method.
 // It handles permission check, audio mode, prepare, and start atomically.
 // NEVER use `new Audio.Recording() + prepareToRecordAsync` — it fails in Expo Go.
-export const startVoiceRecording = async (): Promise<void> => {
+// onSilence fires once, after the speaker has talked and then paused.
+export const startVoiceRecording = async (onSilence?: () => void): Promise<void> => {
   // Clean up any leftover recording
   if (_recording) {
     try { await _recording.stopAndUnloadAsync(); } catch (_) {}
@@ -55,8 +67,27 @@ export const startVoiceRecording = async (): Promise<void> => {
   });
 
   // createAsync = the single atomic call that always works
+  let heardSpeech = false;
+  let quietSince = 0;
+  let fired = false;
   const { recording } = await Audio.Recording.createAsync(
-    Audio.RecordingOptionsPresets.HIGH_QUALITY
+    { ...Audio.RecordingOptionsPresets.HIGH_QUALITY, isMeteringEnabled: !!onSilence },
+    onSilence
+      ? (status) => {
+          if (fired || !status.isRecording || status.metering === undefined) return;
+          if (status.metering > SPEECH_DB) {
+            heardSpeech = true;
+            quietSince = 0;
+          } else if (heardSpeech && status.metering < SILENCE_DB) {
+            quietSince ||= Date.now();
+            if (Date.now() - quietSince >= SILENCE_MS) {
+              fired = true;
+              onSilence();
+            }
+          }
+        }
+      : undefined,
+    100
   );
 
   _recording = recording;

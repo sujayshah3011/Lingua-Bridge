@@ -81,8 +81,13 @@ function parseNumbers(t: string, strict: boolean): number[] {
   tokens.forEach((w, i) => {
     const next = tokens[i + 1];
     if (/^\d/.test(w)) {
-      if (cur) flush();
-      cur = parseFloat(w);
+      const v = parseFloat(w);
+      // "3 hundred 50" is 350; any other digit after a number starts a new one.
+      if (tokens[i - 1] === "hundred" && canAdd(cur, v)) cur += v;
+      else {
+        if (cur) flush();
+        cur = v;
+      }
       open = curFromDigits = true;
     } else if (w in WORDS) {
       if ((cur && curFromDigits) || !canAdd(cur, WORDS[w]!)) flush();
@@ -174,6 +179,7 @@ export const FOREIGN = /rubl|roubl|dollar|\$|рубл|ரூபிள்|டா�
 export interface NumberCheck {
   ok: boolean;
   missing: string[]; // source labels not found in the translation
+  verified: string[]; // source labels found — shown as ✓ chips in the app
   wrongCurrency: boolean;
   backTranslated: boolean;
 }
@@ -186,11 +192,18 @@ export async function checkNumbers(
   backTranslate: ((text: string) => Promise<string>) | null,
 ): Promise<NumberCheck> {
   const wrongCurrency = RUPEE.test(source) && FOREIGN.test(target);
-  let lost = missing(sourceExpectations(source), [target]);
+  const expected = sourceExpectations(source);
+  let lost = missing(expected, [target]);
   let backTranslated = false;
   if (lost.length && backTranslate) {
     lost = missing(lost, [await backTranslate(target)]);
     backTranslated = true;
   }
-  return { ok: !lost.length && !wrongCurrency, missing: lost.map((e) => e.label), wrongCurrency, backTranslated };
+  return {
+    ok: !lost.length && !wrongCurrency,
+    missing: lost.map((e) => e.label),
+    verified: expected.filter((e) => !lost.includes(e)).map((e) => e.label),
+    wrongCurrency,
+    backTranslated,
+  };
 }

@@ -11,7 +11,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Audio } from "expo-av";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "../constants/colors";
-import { NumberWarning } from "./NumberWarning";
+import { NumberStatus } from "./NumberWarning";
 import type { NumberCheck } from "../services/sarvam";
 
 export interface Message {
@@ -26,6 +26,7 @@ export interface Message {
   // can play the already-paid-for clip again without a new synthesis call.
   audioUri?: string;
   numberCheck?: NumberCheck;
+  normalizedInput?: string;
 }
 
 interface Props {
@@ -90,6 +91,10 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
         <Text style={[styles.original, isA ? styles.textLight : styles.textLight]}>
           {message.original}
         </Text>
+        {/* The server's reading of the numbers, so the speaker can catch a mishearing */}
+        {message.normalizedInput ? (
+          <Text style={styles.readBack}>You said: {message.normalizedInput}</Text>
+        ) : null}
         {/* Translated text */}
         {message.translated ? (
           <View style={styles.translatedRow}>
@@ -113,7 +118,7 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
             ) : null}
           </View>
         ) : null}
-        <NumberWarning check={message.numberCheck} color="#FFE08A" />
+        <NumberStatus check={message.numberCheck} okColor="#C6F6D5" warnColor="#FFE08A" />
         {/* Timestamp */}
         <Text style={[styles.time, isA ? styles.timeA : styles.timeB]}>
           {time}
@@ -159,6 +164,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#FFFFFF",
     lineHeight: 22,
+  },
+  readBack: {
+    fontSize: 12,
+    marginTop: 2,
+    color: "rgba(255,255,255,0.7)",
   },
   textLight: {
     color: "#FFFFFF",

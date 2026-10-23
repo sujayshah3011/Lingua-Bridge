@@ -11,9 +11,9 @@
 
 ## Runtime number check
 
-| Real errors | Caught | Missed | False alarms | Needed a back-translation |
-|---|---|---|---|---|
-| 11 | 11 | 0 | 0/5 | 8/16 |
+| Errors left | Caught | Missed | False alarms | Needed a back-translation | Fixed by falling back to original wording |
+|---|---|---|---|---|---|
+| 11 | 11 | 0 | 0/5 | 8/16 | 0 |
 
 ## Failures
 ### probe-symbol-1 → en-IN — lost [125000]

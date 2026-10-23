@@ -29,7 +29,7 @@ import {
 import { synthesizeSpeech } from "@/services/tts";
 import { VoiceSelector } from "@/components/VoiceSelector";
 import { translateText, type NumberCheck } from "@/services/sarvam";
-import { NumberWarning } from "@/components/NumberWarning";
+import { NumberStatus } from "@/components/NumberWarning";
 
 type RecordingState = "idle" | "recording" | "processing" | "done" | "error";
 
@@ -76,6 +76,8 @@ export default function VoiceScreen() {
   const [translation, setTranslation] = useState("");
   // Only shown inside the translation card, so it never needs clearing on its own.
   const [numberCheck, setNumberCheck] = useState<NumberCheck>();
+  // The server's digit reading of the transcript, when it rewrote number words.
+  const [normalizedInput, setNormalizedInput] = useState<string>();
   const [detectedLang, setDetectedLang] = useState<string | null>(null);
   const [statusText, setStatusText] = useState("");
   const [ttsLoading, setTtsLoading] = useState(false);
@@ -153,10 +155,11 @@ export default function VoiceScreen() {
       incrementUsage("audioSeconds", Math.round(result.durationSeconds));
 
       setTranscript(result.transcript);
+      setNormalizedInput(undefined);
       if (result.languageCode) setDetectedLang(result.languageCode);
       setStatusText("Translating…");
 
-      const { translatedText, detectedSourceLang, credits: newCredits, numberCheck: check } = await translateText({
+      const { translatedText, detectedSourceLang, credits: newCredits, numberCheck: check, normalizedInput: normalized } = await translateText({
         input: result.transcript,
         sourceLanguageCode: result.languageCode ?? voiceSourceLang,
         targetLanguageCode: targetLang,
@@ -167,6 +170,7 @@ export default function VoiceScreen() {
       if (detectedSourceLang) setDetectedLang(detectedSourceLang);
       setTranslation(translatedText || "Translation unavailable.");
       setNumberCheck(check);
+      setNormalizedInput(normalized);
       setStatusText("");
 
       incrementUsage(
@@ -461,6 +465,9 @@ export default function VoiceScreen() {
                 <Text style={[styles.transcriptText, { color: C.textSecondary }]}>
                   {transcript}
                 </Text>
+                {normalizedInput ? (
+                  <Text style={[styles.readBack, { color: C.textMuted }]}>You said: {normalizedInput}</Text>
+                ) : null}
               </View>
             ) : null}
 
@@ -498,7 +505,7 @@ export default function VoiceScreen() {
                 <Text style={[styles.translationText, { color: C.text }]}>
                   {translation}
                 </Text>
-                <NumberWarning check={numberCheck} color={C.amber} />
+                <NumberStatus check={numberCheck} okColor={C.success} warnColor={C.amber} />
               </View>
             ) : null}
           </>
@@ -694,6 +701,10 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_500Medium",
     textTransform: "uppercase",
     letterSpacing: 0.6,
+  },
+  readBack: {
+    fontSize: 13,
+    marginTop: 6,
   },
   transcriptText: {
     fontSize: 16,

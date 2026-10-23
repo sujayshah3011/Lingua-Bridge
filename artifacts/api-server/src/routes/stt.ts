@@ -49,26 +49,20 @@ router.post(
     }
 
     try {
-      const ext = (req.file.originalname ?? "").split(".").pop() || "m4a";
-      const validLang = languageCode && languageCode !== "unknown" ? languageCode : "";
+      // saaras:v4 on /speech-to-text transcribes in the spoken language and keeps
+      // Hindi number words as spoken ("पौने नौ बजे"), which the translate route
+      // then normalizes and checks. The old /speech-to-text-translate call
+      // returned *English* regardless of mode, with the numbers already wrong
+      // ("पौने नौ" -> "9:45") — measured in eval/out/report-stt.md: v2.5 lost a
+      // value in 9.6% of clips, v4 in 0 (its 3 misses there are scorer gaps).
+      const validLang = languageCode && languageCode !== "unknown" ? languageCode : "unknown";
       const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
       const form = new FormData();
       form.append("file", blob, req.file.originalname ?? "recording.m4a");
-      // saaras:v3 only exists on Sarvam's newer /speech-to-text endpoint
-      // (with mode="translate"); this legacy /speech-to-text-translate
-      // endpoint is hard-tied to saaras:v2.5 and errors on any other model
-      // string. A prior commit swapped this to v3 without also switching
-      // endpoints — reverted. Migrating to v3 properly means moving to
-      // POST /speech-to-text with mode="translate", a separate change.
-      form.append("model", "saaras:v2.5");
-      form.append("mode", "transcribe");
-      form.append("with_timestamps", "false");
-      form.append("audio_type", ext);
-      if (validLang) {
-        form.append("language_code", validLang);
-      }
+      form.append("model", "saaras:v4");
+      form.append("language_code", validLang);
 
-      const upstream = await fetch(`${SARVAM_BASE}/speech-to-text-translate`, {
+      const upstream = await fetch(`${SARVAM_BASE}/speech-to-text`, {
         method: "POST",
         headers: { "api-subscription-key": getApiKey() },
         body: form,

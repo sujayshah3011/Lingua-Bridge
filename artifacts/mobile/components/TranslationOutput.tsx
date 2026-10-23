@@ -19,7 +19,7 @@ import Animated, {
 import { tintedShadow } from "@/constants/colors";
 import { getLanguageByCode } from "@/constants/languages";
 import { useTheme } from "@/hooks/useTheme";
-import { NumberWarning } from "@/components/NumberWarning";
+import { NumberStatus } from "@/components/NumberWarning";
 import type { NumberCheck } from "@/services/sarvam";
 
 interface TranslationOutputProps {
@@ -192,7 +192,7 @@ export function TranslationOutput({
             >
               {translatedText}
             </Text>
-            <NumberWarning check={numberCheck} color={theme.amber} />
+            <NumberStatus check={numberCheck} okColor={theme.success} warnColor={theme.amber} />
           </Animated.View>
         ) : (
           <Text style={[styles.placeholder, { color: theme.textMuted }]}>

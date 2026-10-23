@@ -50,3 +50,6 @@ Thumbs.db
 
 # environment variables
 .env
+
+# W0 synthetic audio (regenerable via eval/stt.mjs)
+eval/out/stt/*.wav

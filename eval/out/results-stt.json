@@ -1,0 +1,3396 @@
+[
+ {
+  "id": "clinic-01",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "transcript": "This medicine should be taken twice a day after meals.",
+  "lost": []
+ },
+ {
+  "id": "clinic-01",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "transcript": "यह दवा दिन में 2 बार खाने के बाद लेनी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-01",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "transcript": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-01",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "transcript": "This medicine should be taken twice a day after meals.",
+  "lost": []
+ },
+ {
+  "id": "clinic-01",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "transcript": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-01",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "transcript": "यह दवा दिन में दो बार खाने के बाद लेनी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-02",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "transcript": "Take one tablet of paracetamol 500 milligram every six hours.",
+  "lost": []
+ },
+ {
+  "id": "clinic-02",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "transcript": "पैरासिटामोल पाँच सौ मिलीग्राम की एक गोली हर छह घंटे में लें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-02",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "transcript": "पैरासिटामोल 500 मिलीग्राम की एक गोली हर 6 घंटे में लें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-02",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "transcript": "Take one paracetamol 500 milligram tablet every six hours.",
+  "lost": []
+ },
+ {
+  "id": "clinic-02",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "transcript": "पैरासिटामोल पाँच सौ मिलीग्राम की एक गोली हर छह घंटे में लें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-02",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+  "transcript": "पैरासिटामोल 500 मिलीग्राम की एक गोली हर छह घंटे में लें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-03",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "transcript": "Give the child two and a half spoons of syrup before sleeping at night.",
+  "lost": []
+ },
+ {
+  "id": "clinic-03",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "transcript": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहल गई।",
+  "lost": []
+ },
+ {
+  "id": "clinic-03",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "transcript": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-03",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "transcript": "Give the child two and a half spoons of syrup before sleeping at night.",
+  "lost": []
+ },
+ {
+  "id": "clinic-03",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "transcript": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-03",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "transcript": "बच्चे को ढाई चम्मच सिरप रात को सोने से पहले दें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-04",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "transcript": "Your sugar level is 180. It needs to be brought down to 140.",
+  "lost": []
+ },
+ {
+  "id": "clinic-04",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "transcript": "आपका शुगर लेवल एक सौ अस्सी है, इसे एक सौ चालीस से नीचे लाना है।",
+  "lost": [
+   180
+  ]
+ },
+ {
+  "id": "clinic-04",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "transcript": "आपका शुगर लेवल 180 है। इसे 140 से नीचे लाना है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-04",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "transcript": "Your sugar level is 180. It needs to be brought down from 140.",
+  "lost": []
+ },
+ {
+  "id": "clinic-04",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "transcript": "आपका शुगर लेवल एक सौ अस्सी है, इसे एक सौ चालीस से नीचे लाना है।",
+  "lost": [
+   180
+  ]
+ },
+ {
+  "id": "clinic-04",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "transcript": "आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-05",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "transcript": "Come again at 3:30, we will meet the doctor then.",
+  "lost": []
+ },
+ {
+  "id": "clinic-05",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "transcript": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "lost": []
+ },
+ {
+  "id": "clinic-05",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "transcript": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "lost": []
+ },
+ {
+  "id": "clinic-05",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "transcript": "Come again at 3:30. We will meet the doctor then.",
+  "lost": []
+ },
+ {
+  "id": "clinic-05",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "transcript": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "lost": []
+ },
+ {
+  "id": "clinic-05",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "transcript": "साढ़े तीन बजे दोबारा आइए, डॉक्टर तब मिलेंगे।",
+  "lost": []
+ },
+ {
+  "id": "clinic-06",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "transcript": "The final inspection will be on November 15.",
+  "lost": []
+ },
+ {
+  "id": "clinic-06",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "transcript": "अगली जांच 15 नवंबर को होगी।",
+  "lost": []
+ },
+ {
+  "id": "clinic-06",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "transcript": "अंतिम जांच 15 नवंबर को होगी।",
+  "lost": []
+ },
+ {
+  "id": "clinic-06",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "transcript": "The next investigation will be on November 15.",
+  "lost": []
+ },
+ {
+  "id": "clinic-06",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "transcript": "अगली जांच पंद्रह नवंबर को होगी।",
+  "lost": [
+   15
+  ]
+ },
+ {
+  "id": "clinic-06",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "अगली जांच 15 नवंबर को होगी।",
+  "transcript": "अगली जांच 15 नवंबर को होगी।",
+  "lost": []
+ },
+ {
+  "id": "clinic-07",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "transcript": "10 units of insulin should be administered in the morning and 8 units at night.",
+  "lost": []
+ },
+ {
+  "id": "clinic-07",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "transcript": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-07",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "transcript": "इंसुलिन की दस यूनिट सुबह और आठ यूनिट रात को लगानी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-07",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "transcript": "10 units of insulin should be taken in the morning and 8 units at night.",
+  "lost": []
+ },
+ {
+  "id": "clinic-07",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "transcript": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-07",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "इंसुलिन की 10 यूनिट सुबह और 8 यूनिट रात को लगानी है।",
+  "transcript": "इंसुलिन की दस यूनिट सुबह और आठ यूनिट रात को लगानी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-08",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "transcript": "If the fever goes above 102 degrees, come to the hospital immediately.",
+  "lost": []
+ },
+ {
+  "id": "clinic-08",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "transcript": "बुखार एक सौ दो डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "lost": []
+ },
+ {
+  "id": "clinic-08",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "transcript": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "lost": []
+ },
+ {
+  "id": "clinic-08",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "transcript": "If the fever goes above 102 degrees, come to the hospital immediately.",
+  "lost": []
+ },
+ {
+  "id": "clinic-08",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "transcript": "बुखार एक सौ दो डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "lost": []
+ },
+ {
+  "id": "clinic-08",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "transcript": "बुखार 102 डिग्री से ऊपर जाए तो तुरंत अस्पताल आइए।",
+  "lost": []
+ },
+ {
+  "id": "clinic-09",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "transcript": "This course will run for a full 7 days, don't stop in the middle.",
+  "lost": []
+ },
+ {
+  "id": "clinic-09",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "transcript": "यह कोर्स पूरे 7 दिन चलेगा, बीच में बंद मत करना।",
+  "lost": []
+ },
+ {
+  "id": "clinic-09",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "transcript": "यह कोर्स पूरे सात दिन चलेगा। बीच में बंद मत करना।",
+  "lost": []
+ },
+ {
+  "id": "clinic-09",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "transcript": "This course will run for a full 7 days, don't stop in between.",
+  "lost": []
+ },
+ {
+  "id": "clinic-09",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "transcript": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "lost": []
+ },
+ {
+  "id": "clinic-09",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "यह कोर्स पूरे सात दिन चलेगा, बीच में बंद मत करना।",
+  "transcript": "ये कोर्स पूरे सात दिन चलेगा। बीच में बंद मत करना।",
+  "lost": []
+ },
+ {
+  "id": "clinic-10",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "transcript": "The operation cost will be approximately one and a quarter lakh rupees.",
+  "lost": []
+ },
+ {
+  "id": "clinic-10",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "transcript": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-10",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "transcript": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-10",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "transcript": "The operation cost will be approximately ₹1.25 lakh.",
+  "lost": []
+ },
+ {
+  "id": "clinic-10",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "transcript": "ऑपरेशन का खर्च लगभग सवा लाख रुपए आएगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-10",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "transcript": "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-11",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "transcript": "The patient's blood pressure is 150/95.",
+  "lost": []
+ },
+ {
+  "id": "clinic-11",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "transcript": "मरीज़ का ब्लड प्रेशर एक सौ पचास बटा पचानवे है।",
+  "lost": [
+   95
+  ]
+ },
+ {
+  "id": "clinic-11",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "transcript": "मरीज़ का ब्लड प्रेशर 150/95 है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-11",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "transcript": "The patient's blood pressure is 150/95.",
+  "lost": []
+ },
+ {
+  "id": "clinic-11",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "transcript": "मरीज़ का ब्लड प्रेशर एक सौ पचास बटा पचानवे है।",
+  "lost": [
+   95
+  ]
+ },
+ {
+  "id": "clinic-11",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मरीज़ का ब्लड प्रेशर 150 बटा 95 है।",
+  "transcript": "मरीज़ का ब्लड प्रेशर 150/95 है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-12",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "transcript": "One and a half pills in the morning on an empty stomach.",
+  "lost": []
+ },
+ {
+  "id": "clinic-12",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "transcript": "डेढ़ गोली सुबह खाली पेट ली है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-12",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "transcript": "डेढ़ गोली सुबह खाली पेट ली है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-12",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "transcript": "Take one and a half pills on an empty stomach in the morning.",
+  "lost": []
+ },
+ {
+  "id": "clinic-12",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "transcript": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-12",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "transcript": "डेढ़ गोली सुबह खाली पेट लेनी है।",
+  "lost": []
+ },
+ {
+  "id": "clinic-13",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "transcript": "You have to stay on an empty stomach until 9:45, then there will be a test.",
+  "lost": [
+   8.75
+  ]
+ },
+ {
+  "id": "clinic-13",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "transcript": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-13",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "transcript": "पौने नौ बजे तक खाली पेट रहना है फिर टेस्ट होगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-13",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "transcript": "You have to stay on an empty stomach until quarter to nine, then there will be a test.",
+  "lost": []
+ },
+ {
+  "id": "clinic-13",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "transcript": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-13",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "transcript": "पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।",
+  "lost": []
+ },
+ {
+  "id": "clinic-14",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "transcript": "Call 108 for the ambulance.",
+  "lost": []
+ },
+ {
+  "id": "clinic-14",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "transcript": "एम्बुलेंस के लिए एक सौ आठ पर फ़ोन करें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-14",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "transcript": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-14",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "transcript": "Call 108 for the ambulance.",
+  "lost": []
+ },
+ {
+  "id": "clinic-14",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "transcript": "एम्बुलेंस के लिए एक सौ आठ पर फ़ोन करें।",
+  "lost": []
+ },
+ {
+  "id": "clinic-14",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "transcript": "एम्बुलेंस के लिए 108 पर फ़ोन करें।",
+  "lost": []
+ },
+ {
+  "id": "bank-01",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "transcript": "Your loan's EMI of 12,450 rupees will be deducted on the 5th of every month.",
+  "lost": []
+ },
+ {
+  "id": "bank-01",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "transcript": "आपके लोन की ईएमआई बारह हज़ार चार सौ पचास रुपये हर महीने की पाँच तारीख़ को कटेगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-01",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "transcript": "आपके लोन की ईएमआई 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-01",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "transcript": "Your loan EMI of 12,450 rupees will be deducted on the 5th of every month.",
+  "lost": []
+ },
+ {
+  "id": "bank-01",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "transcript": "आपकी लोन की ईएमआई बारह हज़ार चार सौ पचास रुपये हर महीने की पाँच तारीख़ को कटेगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-01",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "आपकी लोन की EMI 12,450 रुपये हर महीने की 5 तारीख को कटेगी।",
+  "transcript": "आपकी लोन की ईएमआई बारह हज़ार चार सौ पचास रुपये हर महीने की पाँच तारीख को कटेगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-02",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "transcript": "You have been approved for a loan of two and a half lakh rupees.",
+  "lost": []
+ },
+ {
+  "id": "bank-02",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "transcript": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "lost": []
+ },
+ {
+  "id": "bank-02",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "transcript": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "lost": []
+ },
+ {
+  "id": "bank-02",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "transcript": "A loan of ₹2.5 lakh has been approved for you.",
+  "lost": []
+ },
+ {
+  "id": "bank-02",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "transcript": "आपको ₹2.5 लाख का लोन मंजूर हुआ है।",
+  "lost": []
+ },
+ {
+  "id": "bank-02",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "आपको ढाई लाख रुपये का लोन मंज़ूर हुआ है।",
+  "transcript": "आपको ढाई लाख रुपये का लोन मंजूर हुआ है।",
+  "lost": []
+ },
+ {
+  "id": "bank-03",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "transcript": "The interest rate is 9.5% annually.",
+  "lost": []
+ },
+ {
+  "id": "bank-03",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "transcript": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "lost": []
+ },
+ {
+  "id": "bank-03",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "transcript": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "lost": []
+ },
+ {
+  "id": "bank-03",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "transcript": "The interest rate is 9.5% annually.",
+  "lost": []
+ },
+ {
+  "id": "bank-03",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "transcript": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "lost": []
+ },
+ {
+  "id": "bank-03",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "ब्याज दर साढ़े नौ प्रतिशत सालाना है।",
+  "transcript": "ब्याज दर 9.5% सालाना है।",
+  "lost": []
+ },
+ {
+  "id": "bank-04",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "transcript": "The loan period is thirty-six months.",
+  "lost": []
+ },
+ {
+  "id": "bank-04",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "transcript": "लोन की अवधि 36 महीने है।",
+  "lost": []
+ },
+ {
+  "id": "bank-04",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "transcript": "लोन की अवधि 36 महीने है।",
+  "lost": []
+ },
+ {
+  "id": "bank-04",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "transcript": "The loan period is 36 months.",
+  "lost": []
+ },
+ {
+  "id": "bank-04",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "transcript": "लोन की अवधि छत्तीस महीने है।",
+  "lost": [
+   36
+  ]
+ },
+ {
+  "id": "bank-04",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "लोन की अवधि 36 महीने है।",
+  "transcript": "लोन की अवधि 36 महीने है।",
+  "lost": []
+ },
+ {
+  "id": "bank-05",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "transcript": "Three thousand two hundred rupees are outstanding in your account. Deposit them by September 30.",
+  "lost": []
+ },
+ {
+  "id": "bank-05",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "transcript": "आपके खाते में ₹3,200 बकाया हैं, तीस सितंबर तक जमा करें।",
+  "lost": []
+ },
+ {
+  "id": "bank-05",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "transcript": "आपके खाते में 3,200 रुपये बकाया हैं। 30 सितंबर तक जमा करें।",
+  "lost": []
+ },
+ {
+  "id": "bank-05",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "transcript": "Three thousand two hundred rupees are outstanding in your account. Deposit it by September 30.",
+  "lost": []
+ },
+ {
+  "id": "bank-05",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "transcript": "आपके खाते में ₹3,200 बकाया हैं, 30 सितंबर तक जमा करें।",
+  "lost": []
+ },
+ {
+  "id": "bank-05",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "आपके खाते में 3,200 रुपये बकाया हैं, 30 सितंबर तक जमा करें।",
+  "transcript": "आपके खाते में 3,200 रुपये बकाया हैं। 30 सितंबर तक जमा करें।",
+  "lost": []
+ },
+ {
+  "id": "bank-06",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "transcript": "Seven hundred and fifty rupees will be added as a penalty.",
+  "lost": []
+ },
+ {
+  "id": "bank-06",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "transcript": "पेनल्टी के तौर पर सात सौ पचास रुपये और जुड़ेंगे।",
+  "lost": []
+ },
+ {
+  "id": "bank-06",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "transcript": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "lost": []
+ },
+ {
+  "id": "bank-06",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "transcript": "Seven hundred and fifty rupees will be added as a penalty.",
+  "lost": []
+ },
+ {
+  "id": "bank-06",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "transcript": "पेनल्टी के तौर पर सात सौ पचास रुपये और जुड़ेंगे।",
+  "lost": []
+ },
+ {
+  "id": "bank-06",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "transcript": "पेनल्टी के तौर पर 750 रुपये और जुड़ेंगे।",
+  "lost": []
+ },
+ {
+  "id": "bank-07",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "transcript": "The total amount is one crore twenty lakh rupees.",
+  "lost": []
+ },
+ {
+  "id": "bank-07",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "transcript": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "bank-07",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "transcript": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "bank-07",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "transcript": "The total amount is one crore twenty lakh rupees.",
+  "lost": []
+ },
+ {
+  "id": "bank-07",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "transcript": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "bank-07",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "transcript": "कुल रकम एक करोड़ बीस लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "bank-08",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "transcript": "My number is nine eight seven six five four three two one zero. Call on this.",
+  "lost": []
+ },
+ {
+  "id": "bank-08",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "transcript": "मेरा नंबर नौ आठ सात छह पाँच चार तीन दो एक शून्य है, इस पर कॉल करना।",
+  "lost": [
+   {
+    "digits": "9876543210"
+   }
+  ]
+ },
+ {
+  "id": "bank-08",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "transcript": "मेरा नंबर 9876543210 है, इस पर कॉल करना।",
+  "lost": []
+ },
+ {
+  "id": "bank-08",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "transcript": "My number is nine eight seven six five four three two one zero, please call on this.",
+  "lost": []
+ },
+ {
+  "id": "bank-08",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "transcript": "मेरा नंबर नौ आठ सात छह पाँच चार तीन दो एक शून्य है, इस पर कॉल करना।",
+  "lost": [
+   {
+    "digits": "9876543210"
+   }
+  ]
+ },
+ {
+  "id": "bank-08",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मेरा नंबर 98765 43210 है, इस पर कॉल करना।",
+  "transcript": "मेरा नंबर 9876543210 है, इस पर कॉल करना।",
+  "lost": []
+ },
+ {
+  "id": "bank-09",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "transcript": "The last four digits of the base are four eight two one.",
+  "lost": [
+   4821
+  ]
+ },
+ {
+  "id": "bank-09",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "transcript": "आधार के आखिरी चार अंक चार आठ दो एक हैं।",
+  "lost": [
+   4821
+  ]
+ },
+ {
+  "id": "bank-09",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "transcript": "आधार के आखिरी चार अंक 4821 हैं।",
+  "lost": []
+ },
+ {
+  "id": "bank-09",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "transcript": "The last four digits of the base are 4821.",
+  "lost": []
+ },
+ {
+  "id": "bank-09",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "transcript": "आधार के आखिर चार अंक चार आठ दो एक हैं।",
+  "lost": [
+   4821
+  ]
+ },
+ {
+  "id": "bank-09",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "आधार के आखिरी चार अंक 4821 हैं।",
+  "transcript": "आधार के आखिर चार अंक 4821 हैं।",
+  "lost": []
+ },
+ {
+  "id": "bank-10",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "transcript": "An installment of two thousand five hundred rupees will be paid every month.",
+  "lost": []
+ },
+ {
+  "id": "bank-10",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "transcript": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरी होगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-10",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "transcript": "हर महीने 2,500 रुपये की किस्त भरी होगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-10",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "transcript": "An installment of ₹2500 will have to be paid every month.",
+  "lost": []
+ },
+ {
+  "id": "bank-10",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "transcript": "हर महीने ₹2500 की किस्त भरनी होगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-10",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "हर महीने दो हज़ार पाँच सौ रुपये की किस्त भरनी होगी।",
+  "transcript": "हर महीने 2,500 रुपये की किस्त भरनी होगी।",
+  "lost": []
+ },
+ {
+  "id": "bank-11",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "transcript": "The insurance premium is eighteen thousand rupees annually.",
+  "lost": []
+ },
+ {
+  "id": "bank-11",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "transcript": "बीमा का प्रीमियम अट्ठारह हज़ार रुपये सालाना है।",
+  "lost": [
+   18000
+  ]
+ },
+ {
+  "id": "bank-11",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "transcript": "बीमा का प्रीमियम 18,000 रुपये सालाना है।",
+  "lost": []
+ },
+ {
+  "id": "bank-11",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "transcript": "The insurance premium is eighteen thousand rupees annually.",
+  "lost": []
+ },
+ {
+  "id": "bank-11",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "transcript": "बीमा का प्रीमियम अट्ठारह हज़ार रुपये सालाना है।",
+  "lost": [
+   18000
+  ]
+ },
+ {
+  "id": "bank-11",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।",
+  "transcript": "बीमा का प्रीमियम ₹18,000 सालाना है।",
+  "lost": []
+ },
+ {
+  "id": "field-01",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "transcript": "Your parcel will arrive in three to five days.",
+  "lost": []
+ },
+ {
+  "id": "field-01",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "transcript": "आपका पार्सल तीन से पाँच दिन में पहुँच जाएगा।",
+  "lost": []
+ },
+ {
+  "id": "field-01",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "transcript": "आपका पार्सल तीन से पाँच दिन में पहुँच जाएगा।",
+  "lost": []
+ },
+ {
+  "id": "field-01",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "transcript": "Your parcel will arrive in three to five days.",
+  "lost": []
+ },
+ {
+  "id": "field-01",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "transcript": "आपका पार्सल तीन से पाँच दिन में पहुँच जाएगा।",
+  "lost": []
+ },
+ {
+  "id": "field-01",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "आपका पार्सल 3 से 5 दिन में पहुँच जाएगा।",
+  "transcript": "आपका पार्सल तीन से पाँच दिन में पहुँच जाएगा।",
+  "lost": []
+ },
+ {
+  "id": "field-02",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "transcript": "The delivery OTP is four seven one nine.",
+  "lost": []
+ },
+ {
+  "id": "field-02",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "transcript": "डिलीवरी का ओटीपी चार सात एक नौ है।",
+  "lost": []
+ },
+ {
+  "id": "field-02",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "transcript": "डिलीवरी का ओटीपी 4719 है।",
+  "lost": []
+ },
+ {
+  "id": "field-02",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "transcript": "The delivery OTP is four seven one nine.",
+  "lost": []
+ },
+ {
+  "id": "field-02",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "transcript": "डिलीवरी का ओटीपी चार सात एक नौ है।",
+  "lost": []
+ },
+ {
+  "id": "field-02",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "डिलीवरी का OTP 4 7 1 9 है।",
+  "transcript": "डिलीवरी का ओटीपी 4719 है।",
+  "lost": []
+ },
+ {
+  "id": "field-03",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "transcript": "Labor will be 650 rupees daily. There is six days of work in a week.",
+  "lost": []
+ },
+ {
+  "id": "field-03",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "transcript": "मजदूरी ₹650 रोज़ मिलेगी, हफ़्ते में 6 दिन काम है।",
+  "lost": []
+ },
+ {
+  "id": "field-03",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "transcript": "मज़दूरी 650 रुपये रोज़ मिलेगी। हफ़्ते में 6 दिन काम है।",
+  "lost": []
+ },
+ {
+  "id": "field-03",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "transcript": "Labor will be 650 rupees daily, with six days of work in a week.",
+  "lost": []
+ },
+ {
+  "id": "field-03",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "transcript": "मजदूरी छह सौ पचास रुपये रोज़ मिलेगी, हफ़्ते में छह दिन काम है।",
+  "lost": []
+ },
+ {
+  "id": "field-03",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मज़दूरी 650 रुपये रोज़ मिलेगी, हफ्ते में 6 दिन काम है।",
+  "transcript": "मजदूरी 650 रुपये रोज़ मिलेगी। हफ़्ते में 6 दिन काम है।",
+  "lost": []
+ },
+ {
+  "id": "field-04",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "transcript": "The rent is seven and a half thousand per month, and an advance of two months will have to be paid.",
+  "lost": []
+ },
+ {
+  "id": "field-04",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "transcript": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "lost": []
+ },
+ {
+  "id": "field-04",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "transcript": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "lost": []
+ },
+ {
+  "id": "field-04",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "transcript": "The rent is seven and a half thousand per month, and an advance of two months will have to be paid.",
+  "lost": []
+ },
+ {
+  "id": "field-04",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "transcript": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "lost": []
+ },
+ {
+  "id": "field-04",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "किराया साढ़े सात हज़ार महीना है और दो महीने का एडवांस देना होगा।",
+  "transcript": "किराया 7,500 महीना है और दो महीने का एडवांस देना होगा।",
+  "lost": []
+ },
+ {
+  "id": "field-05",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "transcript": "We need to reach the site at 8 AM. We will be free at 6 PM.",
+  "lost": []
+ },
+ {
+  "id": "field-05",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "transcript": "सुबह आठ बजे साइट पर पहुँचना है, शाम छह बजे छुट्टी होगी।",
+  "lost": []
+ },
+ {
+  "id": "field-05",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "transcript": "सुबह 8 बजे साइट पर पहुंचना है। शाम 6 बजे छुट्टी होगी।",
+  "lost": []
+ },
+ {
+  "id": "field-05",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "transcript": "We need to reach the site by 8 AM, and we will be free by 6 PM.",
+  "lost": []
+ },
+ {
+  "id": "field-05",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "transcript": "सुबह आठ बजे साइट पर पहुँचना है, शाम छह बजे छुट्टी होगी।",
+  "lost": []
+ },
+ {
+  "id": "field-05",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "सुबह 8 बजे साइट पर पहुँचना है, शाम 6 बजे छुट्टी होगी।",
+  "transcript": "सुबह 8 बजे साइट पर पहुंचना है, शाम 6 बजे छुट्टी होगी।",
+  "lost": []
+ },
+ {
+  "id": "field-06",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "transcript": "The cylinder booking was on October 21st.",
+  "lost": []
+ },
+ {
+  "id": "field-06",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "transcript": "सिलेंडर की बुकिंग इक्कीस अक्टूबर को हुई थी।",
+  "lost": [
+   21
+  ]
+ },
+ {
+  "id": "field-06",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "transcript": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "lost": []
+ },
+ {
+  "id": "field-06",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "transcript": "The cylinder booking was on October 21st.",
+  "lost": []
+ },
+ {
+  "id": "field-06",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "transcript": "सिलेंडर की बुकिंग इक्कीस अक्टूबर को हुई थी।",
+  "lost": [
+   21
+  ]
+ },
+ {
+  "id": "field-06",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "transcript": "सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।",
+  "lost": []
+ },
+ {
+  "id": "field-07",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "transcript": "The train will depart from platform number four at 10:45.",
+  "lost": []
+ },
+ {
+  "id": "field-07",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "transcript": "ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।",
+  "lost": [
+   10.75
+  ]
+ },
+ {
+  "id": "field-07",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "transcript": "ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।",
+  "lost": [
+   10.75
+  ]
+ },
+ {
+  "id": "field-07",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "transcript": "The train will depart from platform number four at 10:45.",
+  "lost": []
+ },
+ {
+  "id": "field-07",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "transcript": "ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।",
+  "lost": [
+   10.75
+  ]
+ },
+ {
+  "id": "field-07",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।",
+  "transcript": "ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।",
+  "lost": [
+   10.75
+  ]
+ },
+ {
+  "id": "field-08",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "transcript": "Give 250 grams of lentils and 2 kilograms of rice.",
+  "lost": []
+ },
+ {
+  "id": "field-08",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "transcript": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "field-08",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "transcript": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "field-08",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "transcript": "Give 250 grams of lentils and 2 kilograms of rice.",
+  "lost": []
+ },
+ {
+  "id": "field-08",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "transcript": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "field-08",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "transcript": "ढाई सौ ग्राम दाल और दो किलो चावल दे दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "field-09",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "transcript": "Three hundred fifty rupees have to be returned.",
+  "lost": []
+ },
+ {
+  "id": "field-09",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "transcript": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "lost": []
+ },
+ {
+  "id": "field-09",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "transcript": "₹350 छुट्टे वापस करने हैं।",
+  "lost": []
+ },
+ {
+  "id": "field-09",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "transcript": "Three hundred fifty rupees have to be returned.",
+  "lost": []
+ },
+ {
+  "id": "field-09",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "transcript": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "lost": []
+ },
+ {
+  "id": "field-09",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "transcript": "तीन सौ पचास रुपये छुट्टे वापस करने हैं।",
+  "lost": []
+ },
+ {
+  "id": "field-10",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "transcript": "The child is four and a half years old.",
+  "lost": []
+ },
+ {
+  "id": "field-10",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "transcript": "बच्चे की उम्र साढ़े चार साल है।",
+  "lost": []
+ },
+ {
+  "id": "field-10",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "transcript": "बच्चे की उम्र साढ़े चार साल है।",
+  "lost": []
+ },
+ {
+  "id": "field-10",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "transcript": "The child is four and a half years old.",
+  "lost": []
+ },
+ {
+  "id": "field-10",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "transcript": "बच्चे की उम्र साढ़े चार साल है।",
+  "lost": []
+ },
+ {
+  "id": "field-10",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "बच्चे की उम्र साढ़े चार साल है।",
+  "transcript": "बच्चे की उम्र 4.5 साल है।",
+  "lost": []
+ },
+ {
+  "id": "field-11",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "transcript": "My salary is eighteen thousand. I haven't received my salary for three months yet.",
+  "lost": []
+ },
+ {
+  "id": "field-11",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "transcript": "मेरी तनख्वाह अठारह हज़ार है, अभी तक तीन महीने की नहीं मिली।",
+  "lost": []
+ },
+ {
+  "id": "field-11",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "transcript": "मेरी तनख्वाह 18,000 है, अभी तक तीन महीने की नहीं मिली।",
+  "lost": []
+ },
+ {
+  "id": "field-11",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "transcript": "My salary is eighteen thousand. I haven't received my three-month salary yet.",
+  "lost": []
+ },
+ {
+  "id": "field-11",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "transcript": "मेरी तनख्वाह अठारह हज़ार है, अभी तक तीन महीने की नहीं मिली।",
+  "lost": []
+ },
+ {
+  "id": "field-11",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मेरी तनख्वाह अठारह हज़ार है, अभी तक 3 महीने की नहीं मिली।",
+  "transcript": "मेरी तनख्वाह 18,000 है, अभी तक तीन महीने की नहीं मिली।",
+  "lost": []
+ },
+ {
+  "id": "hold-01",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "transcript": "A bill of ₹2.25 lakh has been made.",
+  "lost": []
+ },
+ {
+  "id": "hold-01",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "transcript": "सवा दो लाख रुपए का बिल बना है।",
+  "lost": []
+ },
+ {
+  "id": "hold-01",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "transcript": "सवा दो लाख रुपये का बिल बना है।",
+  "lost": []
+ },
+ {
+  "id": "hold-01",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "transcript": "A bill of ₹2.25 lakh has been made.",
+  "lost": []
+ },
+ {
+  "id": "hold-01",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "transcript": "सवा दो लाख रुपए का बिल बना है।",
+  "lost": []
+ },
+ {
+  "id": "hold-01",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "सवा दो लाख रुपये का बिल बना है।",
+  "transcript": "सवा दो लाख रुपये का बिल बना है।",
+  "lost": []
+ },
+ {
+  "id": "hold-02",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "transcript": "A loan of ₹3.25 lakh is still pending.",
+  "lost": [
+   275000
+  ]
+ },
+ {
+  "id": "hold-02",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "transcript": "पौने 3 लाख का लोन अभी बाकी है।",
+  "lost": []
+ },
+ {
+  "id": "hold-02",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "transcript": "पौने तीन लाख का लोन अभी बाकी है।",
+  "lost": []
+ },
+ {
+  "id": "hold-02",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "transcript": "A loan of ₹3.75 lakh is still pending.",
+  "lost": [
+   275000
+  ]
+ },
+ {
+  "id": "hold-02",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "transcript": "पौने तीन लाख का लोन अभी बाकी है।",
+  "lost": []
+ },
+ {
+  "id": "hold-02",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पौने तीन लाख का लोन अभी बाकी है।",
+  "transcript": "पौने तीन लाख का लोन अभी बाकी है।",
+  "lost": []
+ },
+ {
+  "id": "hold-03",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "transcript": "You will receive a salary of twelve and a half thousand rupees per month.",
+  "lost": []
+ },
+ {
+  "id": "hold-03",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "transcript": "साढ़े बारह हज़ार रुपये मई की सैलरी मिलेगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-03",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "transcript": "साढ़े बारह हज़ार रुपये मई की सैलरी मिलेगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-03",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "transcript": "You will receive a monthly salary of ₹12,500.",
+  "lost": []
+ },
+ {
+  "id": "hold-03",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "transcript": "₹12,500 महीने की सैलरी मिलेगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-03",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "transcript": "साढ़े बारह हज़ार रुपये महीने की सैलरी मिलेगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-04",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "transcript": "₹1.5 lakh will have to be deposited in advance.",
+  "lost": []
+ },
+ {
+  "id": "hold-04",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "transcript": "₹1.5 लाख एडवांस जमा करने होंगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-04",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "transcript": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-04",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "transcript": "₹1.5 lakh will have to be deposited in advance.",
+  "lost": []
+ },
+ {
+  "id": "hold-04",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "transcript": "₹1.5 लाख एडवांस जमा करने होंगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-04",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "transcript": "डेढ़ लाख रुपये एडवांस जमा करने होंगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-05",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "transcript": "Medicines worth ₹2500 are written.",
+  "lost": []
+ },
+ {
+  "id": "hold-05",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "transcript": "₹2500 की दवाइयाँ लिखी हैं।",
+  "lost": []
+ },
+ {
+  "id": "hold-05",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "transcript": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "lost": []
+ },
+ {
+  "id": "hold-05",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "transcript": "Medicines worth ₹2500 are written.",
+  "lost": []
+ },
+ {
+  "id": "hold-05",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "transcript": "₹2500 की दवाइयां लिखी हैं।",
+  "lost": []
+ },
+ {
+  "id": "hold-05",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "transcript": "ढाई हज़ार रुपये की दवाइयाँ लिखी हैं।",
+  "lost": []
+ },
+ {
+  "id": "hold-06",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "transcript": "At 7:15, the patient will be taken to the operation theater.",
+  "lost": []
+ },
+ {
+  "id": "hold-06",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "transcript": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-06",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "transcript": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-06",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "transcript": "At 7:15, the patient will be taken to the operation theater.",
+  "lost": []
+ },
+ {
+  "id": "hold-06",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "transcript": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-06",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "transcript": "सवा सात बजे मरीज़ को ऑपरेशन थिएटर में ले जाएँगे।",
+  "lost": []
+ },
+ {
+  "id": "hold-07",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "transcript": "The report will be available by quarter to six.",
+  "lost": []
+ },
+ {
+  "id": "hold-07",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "transcript": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-07",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "transcript": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-07",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "transcript": "The report will be available by quarter to six.",
+  "lost": []
+ },
+ {
+  "id": "hold-07",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "transcript": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-07",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "transcript": "पौने छह बजे तक रिपोर्ट मिल जाएगी।",
+  "lost": []
+ },
+ {
+  "id": "hold-08",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "transcript": "Come when the bank opens at 10:30.",
+  "lost": []
+ },
+ {
+  "id": "hold-08",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "transcript": "10:30 बजे बैंक खुलेगा तब आइए।",
+  "lost": []
+ },
+ {
+  "id": "hold-08",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "transcript": "साढ़े दस बजे बैंक खुलेगा तब आइए।",
+  "lost": []
+ },
+ {
+  "id": "hold-08",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "transcript": "Come when the bank opens at 10:30.",
+  "lost": []
+ },
+ {
+  "id": "hold-08",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "transcript": "10:30 बजे बैंक खुलेगा तब आइए।",
+  "lost": []
+ },
+ {
+  "id": "hold-08",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "साढ़े दस बजे बैंक खुलेगा, तब आइए।",
+  "transcript": "साढ़े दस बजे बैंक खुलेगा तब आइए।",
+  "lost": []
+ },
+ {
+  "id": "hold-09",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "transcript": "Come after lunch at 1:30.",
+  "lost": []
+ },
+ {
+  "id": "hold-09",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "transcript": "डेढ़ बजे लंच के बाद आना।",
+  "lost": []
+ },
+ {
+  "id": "hold-09",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "transcript": "डेढ़ बजे लंच के बाद आना।",
+  "lost": []
+ },
+ {
+  "id": "hold-09",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "transcript": "Come after lunch at 1:30.",
+  "lost": []
+ },
+ {
+  "id": "hold-09",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "transcript": "डेढ़ बजे लंच के बाद आना।",
+  "lost": []
+ },
+ {
+  "id": "hold-09",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "डेढ़ बजे लंच के बाद आना।",
+  "transcript": "डेढ़ बजे लंच के बाद आना।",
+  "lost": []
+ },
+ {
+  "id": "hold-10",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "transcript": "Give the patient 350 ml of water.",
+  "lost": []
+ },
+ {
+  "id": "hold-10",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "transcript": "मरीज़ को साढ़े तीन सौ एम एल पानी पिलाएँ।",
+  "lost": []
+ },
+ {
+  "id": "hold-10",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "transcript": "मरीज़ को 350 ml पानी पिलाएं।",
+  "lost": []
+ },
+ {
+  "id": "hold-10",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "transcript": "Give the patient 350 ml of water.",
+  "lost": []
+ },
+ {
+  "id": "hold-10",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "transcript": "मरीज़ को साढ़े तीन सौ एम एल पानी पिलाएँ।",
+  "lost": []
+ },
+ {
+  "id": "hold-10",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मरीज़ को साढ़े तीन सौ ml पानी पिलाएँ।",
+  "transcript": "मरीज़ को 350 एमएल पानी पिलाएं।",
+  "lost": []
+ },
+ {
+  "id": "hold-11",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "transcript": "Please recharge for one hundred and twenty-five rupees.",
+  "lost": []
+ },
+ {
+  "id": "hold-11",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "transcript": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "hold-11",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "transcript": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "hold-11",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "transcript": "Please get a recharge of ₹125.",
+  "lost": []
+ },
+ {
+  "id": "hold-11",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "transcript": "₹125 का रिचार्ज करवा दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "hold-11",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "transcript": "सवा सौ रुपये का रिचार्ज करवा दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "hold-12",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "transcript": "The baby's weight is twelve and a half kilograms.",
+  "lost": []
+ },
+ {
+  "id": "hold-12",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "transcript": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "lost": []
+ },
+ {
+  "id": "hold-12",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "transcript": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "lost": []
+ },
+ {
+  "id": "hold-12",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "transcript": "The baby's weight is 12.5 kg.",
+  "lost": []
+ },
+ {
+  "id": "hold-12",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "transcript": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "lost": []
+ },
+ {
+  "id": "hold-12",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "बच्चे का वज़न साढ़े बारह किलो है।",
+  "transcript": "बच्चे का वज़न 12.5 किलो है।",
+  "lost": []
+ },
+ {
+  "id": "hold-13",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "transcript": "This is a project of ₹2.5 crore.",
+  "lost": []
+ },
+ {
+  "id": "hold-13",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "transcript": "यह ढाई करोड़ रुपए का प्रोजेक्ट है।",
+  "lost": []
+ },
+ {
+  "id": "hold-13",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "transcript": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "lost": []
+ },
+ {
+  "id": "hold-13",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "transcript": "This is a ₹2.5 crore project.",
+  "lost": []
+ },
+ {
+  "id": "hold-13",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "transcript": "यह ढाई करोड़ रुपए का प्रोजेक्ट है।",
+  "lost": []
+ },
+ {
+  "id": "hold-13",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "transcript": "यह ढाई करोड़ रुपये का प्रोजेक्ट है।",
+  "lost": []
+ },
+ {
+  "id": "val-01",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "transcript": "The patient will need an injection at 8:15.",
+  "lost": []
+ },
+ {
+  "id": "val-01",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "transcript": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-01",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "transcript": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-01",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "transcript": "The patient will need an injection at 8:15.",
+  "lost": []
+ },
+ {
+  "id": "val-01",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "transcript": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-01",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "transcript": "मरीज़ को सवा आठ बजे इंजेक्शन लगेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-02",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "transcript": "The medicine shop closes at 11:30.",
+  "lost": []
+ },
+ {
+  "id": "val-02",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "transcript": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "lost": []
+ },
+ {
+  "id": "val-02",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "transcript": "दवा की दुकान 11:30 बजे बंद होती है।",
+  "lost": []
+ },
+ {
+  "id": "val-02",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "transcript": "The pharmacy closes at 11:30 AM.",
+  "lost": []
+ },
+ {
+  "id": "val-02",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "transcript": "दवा की दुकान 11:30 बजे बंद होती है।",
+  "lost": []
+ },
+ {
+  "id": "val-02",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "दवा की दुकान साढ़े ग्यारह बजे बंद होती है।",
+  "transcript": "दवा की दुकान 11:30 बजे बंद होती है।",
+  "lost": []
+ },
+ {
+  "id": "val-03",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "transcript": "Submit the form by quarter to twelve.",
+  "lost": []
+ },
+ {
+  "id": "val-03",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "transcript": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "val-03",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "transcript": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "val-03",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "transcript": "Submit the form by quarter to twelve.",
+  "lost": []
+ },
+ {
+  "id": "val-03",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "transcript": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "val-03",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "transcript": "पौने बारह बजे तक फॉर्म जमा कर दीजिए।",
+  "lost": []
+ },
+ {
+  "id": "val-04",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "transcript": "The doctor will sit only after 1:30.",
+  "lost": []
+ },
+ {
+  "id": "val-04",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "transcript": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "lost": []
+ },
+ {
+  "id": "val-04",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "transcript": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "lost": []
+ },
+ {
+  "id": "val-04",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "transcript": "The doctor will sit only after 1:30 PM.",
+  "lost": []
+ },
+ {
+  "id": "val-04",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "transcript": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "lost": []
+ },
+ {
+  "id": "val-04",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "transcript": "डेढ़ बजे के बाद ही डॉक्टर बैठेंगे।",
+  "lost": []
+ },
+ {
+  "id": "val-05",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "transcript": "The 2:30 bus has to be caught.",
+  "lost": []
+ },
+ {
+  "id": "val-05",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "transcript": "ढाई बजे की बस पकड़नी है।",
+  "lost": []
+ },
+ {
+  "id": "val-05",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "transcript": "ढाई बजे की बस पकड़नी है।",
+  "lost": []
+ },
+ {
+  "id": "val-05",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "transcript": "I need to catch the 2:30 bus.",
+  "lost": []
+ },
+ {
+  "id": "val-05",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "transcript": "ढाई बजे की बस पकड़नी है।",
+  "lost": []
+ },
+ {
+  "id": "val-05",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "ढाई बजे की बस पकड़नी है।",
+  "transcript": "ढाई बजे की बस पकड़नी है।",
+  "lost": []
+ },
+ {
+  "id": "val-06",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "transcript": "The total cost of the glass is ₹3.5 lakh.",
+  "lost": []
+ },
+ {
+  "id": "val-06",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "transcript": "गिलाज का कुल खर्च ₹3.5 लाख है।",
+  "lost": []
+ },
+ {
+  "id": "val-06",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "transcript": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "val-06",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "transcript": "The total cost of the material is three and a half lakh rupees.",
+  "lost": []
+ },
+ {
+  "id": "val-06",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "transcript": "इनाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "val-06",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "इलाज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "transcript": "इनज का कुल खर्च साढ़े तीन लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "val-07",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "transcript": "Five thousand five hundred rupees have been deducted from your account.",
+  "lost": [
+   5250
+  ]
+ },
+ {
+  "id": "val-07",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "transcript": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "lost": []
+ },
+ {
+  "id": "val-07",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "transcript": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "lost": []
+ },
+ {
+  "id": "val-07",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "transcript": "₹5,25,000 have been deducted from your account.",
+  "lost": [
+   5250
+  ]
+ },
+ {
+  "id": "val-07",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "transcript": "आपके खाते से ₹5,25,000 कटे हैं।",
+  "lost": [
+   5250
+  ]
+ },
+ {
+  "id": "val-07",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "transcript": "आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।",
+  "lost": []
+ },
+ {
+  "id": "val-08",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "transcript": "A home loan of almost four lakh rupees is left.",
+  "lost": [
+   375000
+  ]
+ },
+ {
+  "id": "val-08",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "transcript": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "lost": []
+ },
+ {
+  "id": "val-08",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "transcript": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "lost": []
+ },
+ {
+  "id": "val-08",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "transcript": "A home loan of ₹4.75 lakh is left.",
+  "lost": [
+   375000
+  ]
+ },
+ {
+  "id": "val-08",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "transcript": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "lost": []
+ },
+ {
+  "id": "val-08",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "transcript": "पौने चार लाख रुपये का घर का लोन बचा है।",
+  "lost": []
+ },
+ {
+  "id": "val-09",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "transcript": "The car costs six and a half lakh rupees.",
+  "lost": []
+ },
+ {
+  "id": "val-09",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "transcript": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "val-09",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "transcript": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "val-09",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "transcript": "The car costs six and a half lakh rupees.",
+  "lost": []
+ },
+ {
+  "id": "val-09",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "transcript": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "val-09",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "transcript": "गाड़ी की कीमत साढ़े छह लाख रुपये है।",
+  "lost": []
+ },
+ {
+  "id": "val-10",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "transcript": "The government has approved 1.5 crore rupees.",
+  "lost": []
+ },
+ {
+  "id": "val-10",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "transcript": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "lost": []
+ },
+ {
+  "id": "val-10",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "transcript": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "lost": []
+ },
+ {
+  "id": "val-10",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "transcript": "The government has approved ₹1.5 crore.",
+  "lost": []
+ },
+ {
+  "id": "val-10",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "transcript": "सरकार ने डेढ़ करोड़ रुपए मंज़ूर किए हैं।",
+  "lost": []
+ },
+ {
+  "id": "val-10",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "सरकार ने डेढ़ करोड़ रुपये मंज़ूर किए हैं।",
+  "transcript": "सरकार ने डेढ़ करोड़ रुपये मंजूर किए हैं।",
+  "lost": []
+ },
+ {
+  "id": "val-11",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "transcript": "Save two and a half thousand rupees every month.",
+  "lost": []
+ },
+ {
+  "id": "val-11",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "transcript": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "lost": []
+ },
+ {
+  "id": "val-11",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "transcript": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "lost": []
+ },
+ {
+  "id": "val-11",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "transcript": "Save two and a half thousand rupees every month.",
+  "lost": []
+ },
+ {
+  "id": "val-11",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "transcript": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "lost": []
+ },
+ {
+  "id": "val-11",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "transcript": "हर महीने ढाई हज़ार रुपये बचाइए।",
+  "lost": []
+ },
+ {
+  "id": "val-12",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "transcript": "Give the child a quarter teaspoon of the medicine.",
+  "lost": [
+   1.25
+  ]
+ },
+ {
+  "id": "val-12",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "transcript": "बच्चे को सवा चम्मच दवा दें।",
+  "lost": []
+ },
+ {
+  "id": "val-12",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "transcript": "बच्चे को 1.25 चम्मच दवा दें।",
+  "lost": []
+ },
+ {
+  "id": "val-12",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "transcript": "Give the child one and a quarter spoons of medicine.",
+  "lost": []
+ },
+ {
+  "id": "val-12",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "transcript": "बच्चे को सवा चम्मच दवा दें।",
+  "lost": []
+ },
+ {
+  "id": "val-12",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "बच्चे को सवा चम्मच दवा दें।",
+  "transcript": "बच्चे को सवा चम्मच दवा दें।",
+  "lost": []
+ },
+ {
+  "id": "val-13",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "transcript": "Drink 2.75 liters of water daily.",
+  "lost": [
+   1.75
+  ]
+ },
+ {
+  "id": "val-13",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "transcript": "पौने दो लीटर पानी रोज़ पीना है।",
+  "lost": []
+ },
+ {
+  "id": "val-13",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "transcript": "पौने दो लीटर पानी रोज़ पीना है।",
+  "lost": []
+ },
+ {
+  "id": "val-13",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "transcript": "Drink 2.75 liters of water daily.",
+  "lost": [
+   1.75
+  ]
+ },
+ {
+  "id": "val-13",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "transcript": "पौने दो लीटर पानी रोज़ पीना है।",
+  "lost": []
+ },
+ {
+  "id": "val-13",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "पौने दो लीटर पानी रोज़ पीना है।",
+  "transcript": "पौने दो लीटर पानी रोज़ पीना है।",
+  "lost": []
+ },
+ {
+  "id": "val-14",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "transcript": "A bill of five hundred and fifty rupees has arrived.",
+  "lost": []
+ },
+ {
+  "id": "val-14",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "transcript": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "lost": []
+ },
+ {
+  "id": "val-14",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "transcript": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "lost": []
+ },
+ {
+  "id": "val-14",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "transcript": "A bill of ₹550 has arrived.",
+  "lost": []
+ },
+ {
+  "id": "val-14",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "transcript": "₹550 का बिल आया है।",
+  "lost": []
+ },
+ {
+  "id": "val-14",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "साढ़े पाँच सौ रुपये का बिल आया है।",
+  "transcript": "साढ़े ₹550 का बिल आया है।",
+  "lost": []
+ },
+ {
+  "id": "val-15",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "transcript": "My fee is four thousand five hundred rupees. It needs to be paid by the tenth.",
+  "lost": [
+   10
+  ]
+ },
+ {
+  "id": "val-15",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "transcript": "मेरी फ़ीस चार हज़ार पाँच सौ रुपये है, दस तारीख़ तक भरनी है।",
+  "lost": []
+ },
+ {
+  "id": "val-15",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "transcript": "मेरी फीस 4,500 रुपये है। 10 तारीख तक भरनी है।",
+  "lost": []
+ },
+ {
+  "id": "val-15",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "transcript": "My fee is four thousand five hundred rupees. It needs to be paid by the tenth.",
+  "lost": [
+   10
+  ]
+ },
+ {
+  "id": "val-15",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "transcript": "मेरी फ़ीस चार हज़ार पाँच सौ रुपये है, दस तारीख़ तक भरनी है।",
+  "lost": []
+ },
+ {
+  "id": "val-15",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।",
+  "transcript": "मेरी फीस 4500 रुपये है, 10 तारीख तक भरनी है।",
+  "lost": []
+ },
+ {
+  "id": "val-16",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "transcript": "Call helpline number 18001801551",
+  "lost": []
+ },
+ {
+  "id": "val-16",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "transcript": "हेल्पलाइन नंबर एक आठ शून्य शून्य एक आठ शून्य एक पाँच पाँच एक पर कॉल करें।",
+  "lost": [
+   {
+    "digits": "18001801551"
+   }
+  ]
+ },
+ {
+  "id": "val-16",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "transcript": "हेल्पलाइन नंबर 18001801551 पर कॉल करें।",
+  "lost": []
+ },
+ {
+  "id": "val-16",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "transcript": "Call helpline number one eight zero zero one eight zero one five five one.",
+  "lost": []
+ },
+ {
+  "id": "val-16",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "transcript": "हेल्पलाइन नंबर एक आठ शून्य शून्य एक आठ शून्य एक पाँच पाँच एक पर कॉल करें।",
+  "lost": [
+   {
+    "digits": "18001801551"
+   }
+  ]
+ },
+ {
+  "id": "val-16",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।",
+  "transcript": "हेल्पलाइन नंबर 18001801551 पर कॉल करें।",
+  "lost": []
+ },
+ {
+  "id": "val-17",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "transcript": "The operation will be on December 12th at 9 AM.",
+  "lost": []
+ },
+ {
+  "id": "val-17",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "transcript": "ऑपरेशन बारह दिसंबर को सुबह नौ बजे होगा।",
+  "lost": []
+ },
+ {
+  "id": "val-17",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "transcript": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "lost": []
+ },
+ {
+  "id": "val-17",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "transcript": "The operation will be on December 12th at 9:00 AM.",
+  "lost": []
+ },
+ {
+  "id": "val-17",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "transcript": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "lost": []
+ },
+ {
+  "id": "val-17",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "transcript": "ऑपरेशन 12 दिसंबर को सुबह 9 बजे होगा।",
+  "lost": []
+ },
+ {
+  "id": "val-18",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "transcript": "I will arrive in forty-five minutes.",
+  "lost": []
+ },
+ {
+  "id": "val-18",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "transcript": "मैं पैंतालीस मिनट में पहुँच जाऊँगा।",
+  "lost": [
+   45
+  ]
+ },
+ {
+  "id": "val-18",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "transcript": "मैं पैंतालीस मिनट में पहुँच जाऊँगा।",
+  "lost": [
+   45
+  ]
+ },
+ {
+  "id": "val-18",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "transcript": "I will arrive in forty-five minutes.",
+  "lost": []
+ },
+ {
+  "id": "val-18",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "transcript": "मैं पैंतालीस मिनट में पहुँच जाऊँगा।",
+  "lost": [
+   45
+  ]
+ },
+ {
+  "id": "val-18",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "transcript": "मैं 45 मिनट में पहुँच जाऊँगा।",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "The price is fifty rupees per kilogram.",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "दाम पचास रुपये किलो है।",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "दाम ₹50 किलो है।",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "The price is ₹50 per kilogram.",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "दाम ₹50 किलो है।",
+  "lost": []
+ },
+ {
+  "id": "val-19",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "दाम पचास रुपये किलो है।",
+  "transcript": "दाम ₹50 किलो है।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "neha",
+  "model": "v2.5 (current app)",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "The laborer will get seven hundred rupees daily and two meals.",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "neha",
+  "model": "v3 transcribe",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मजदूर को सात सौ रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "neha",
+  "model": "v4",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मजदूर को 700 रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "aditya",
+  "model": "v2.5 (current app)",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "The laborers will get seven hundred rupees daily and twice a day.",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "aditya",
+  "model": "v3 transcribe",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मजदूरों को सात सौ रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
+ },
+ {
+  "id": "val-20",
+  "speaker": "aditya",
+  "model": "v4",
+  "hi": "मज़दूरों को 700 रुपये रोज़ और 2 बार खाना मिलेगा।",
+  "transcript": "मज़दूरों को 700 रुपये रोज़ और दो बार खाना मिलेगा।",
+  "lost": []
+ }
+]
