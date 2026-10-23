@@ -1,313 +1,101 @@
+/**
+ * Usage — balance, what each action costs, and recent credit activity.
+ * (Route stays /topup: the credit pill on every screen opens it.)
+ * In-app payments aren't built; pilot accounts run on the welcome credit.
+ */
+
 import { Feather } from "@expo/vector-icons";
-import React, { useState } from "react";
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useApp } from "@/context/AppContext";
 import { useTheme } from "@/hooks/useTheme";
-import { USER_PRICE } from "@/constants/pricing";
+import { USER_PRICE, WELCOME_CREDIT_INR } from "@/constants/pricing";
+import { SpendRow, useSpendLog } from "@/components/SpendLog";
+import { WarmStateCard } from "@/components/ui/WarmStateCard";
 
-interface Package {
-  id: string;
-  price: number;
-  bonus: number;
-  popular: boolean;
-}
-
-const PACKAGES: Package[] = [
-  { id: "p99",  price: 99,  bonus: 0,   popular: false },
-  { id: "p299", price: 299, bonus: 30,  popular: false },
-  { id: "p599", price: 599, bonus: 90,  popular: true  },
-  { id: "p999", price: 999, bonus: 200, popular: false },
+// Same figures the server charges (artifacts/api-server/src/lib/pricing.ts and
+// routes/reminder.ts), shown per typical unit.
+const COSTS: { icon: keyof typeof Feather.glyphMap; label: string; price: string }[] = [
+  { icon: "mic", label: "Speech recognition", price: `₹${(USER_PRICE.stt.perSecond * 10).toFixed(2)} per 10 s` },
+  { icon: "globe", label: "Translation + number check", price: `₹${(USER_PRICE.translate.perChar * 100).toFixed(2)} per 100 chars` },
+  { icon: "volume-2", label: "Voice output", price: `₹${(USER_PRICE.tts.perChar * 100).toFixed(2)} per 100 chars` },
+  { icon: "phone-call", label: "Reminder call", price: "₹10 per call" },
 ];
 
-function formatAmount(n: number): string {
-  return Math.abs(n) < 0.01
-    ? Math.abs(n).toFixed(4)
-    : Math.abs(n).toFixed(2);
-}
-
-export default function TopUpScreen() {
+export default function UsageScreen() {
+  const { credits, user } = useApp();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const { user } = useApp();
-  const [selected, setSelected] = useState<string>("p599");
+  const { items, loading } = useSpendLog(user?.uid);
 
-  const selectedPkg = PACKAGES.find((p) => p.id === selected) ?? PACKAGES[2];
-  const credits = selectedPkg.price + selectedPkg.bonus;
+  const header = (
+    <View style={styles.headerBlock}>
+      <View style={[styles.balanceCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        <Text style={[styles.caption, { color: theme.textMuted }]}>BALANCE</Text>
+        <Text style={[styles.balance, { color: theme.text }]}>₹{credits.toFixed(2)}</Text>
+        <Text style={[styles.pilot, { color: theme.sage }]}>₹{WELCOME_CREDIT_INR} free pilot credit on sign-up</Text>
+      </View>
 
-  const translateChars = Math.floor(credits / USER_PRICE.translate.perChar);
-  const voiceMinutes = Math.floor(credits / USER_PRICE.stt.perSecond / 60);
-  const ttsChars = Math.floor(credits / USER_PRICE.tts.perChar);
+      <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        <Text style={[styles.cardTitle, { color: theme.text }]}>What things cost</Text>
+        {COSTS.map((c) => (
+          <View key={c.label} style={styles.costRow}>
+            <Feather name={c.icon} size={16} color={theme.primary} />
+            <Text style={[styles.costLabel, { color: theme.textSecondary }]}>{c.label}</Text>
+            <Text style={[styles.costPrice, { color: theme.text }]}>{c.price}</Text>
+          </View>
+        ))}
+        <Text style={[styles.note, { color: theme.textMuted }]}>
+          A typical clinic conversation turn costs under ₹1. Failed requests are refunded automatically.
+        </Text>
+      </View>
 
-  const handleBuy = () => {
-    Alert.alert(
-      "Coming Soon",
-      "In-app purchases will be available in the next update. Contact us to manually top up your balance.",
-      [{ text: "OK" }]
-    );
-  };
+      <View style={[styles.card, { backgroundColor: theme.cream, borderColor: theme.primary + "30" }]}>
+        <Text style={[styles.cardTitle, { color: theme.text }]}>For clinics</Text>
+        <Text style={[styles.note, { color: theme.textSecondary, marginTop: 0 }]}>
+          Per-consultation pricing for clinics and hospitals. In-app payments aren't available yet.
+          Contact us to add credit or set up your clinic.
+        </Text>
+      </View>
+
+      <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>RECENT ACTIVITY</Text>
+    </View>
+  );
 
   return (
-    <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <ScrollView
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: insets.bottom + 24 },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={[styles.sectionLabel, { color: theme.textMuted }]}>
-          SELECT PACKAGE
-        </Text>
-
-        {PACKAGES.map((pkg) => {
-          const total = pkg.price + pkg.bonus;
-          const isActive = selected === pkg.id;
-          return (
-            <Pressable
-              key={pkg.id}
-              onPress={() => setSelected(pkg.id)}
-              style={[
-                styles.pkgCard,
-                {
-                  backgroundColor: isActive
-                    ? theme.primary + "10"
-                    : theme.surface,
-                  borderColor: isActive ? theme.primary : theme.border,
-                },
-              ]}
-            >
-              {pkg.popular && (
-                <View style={[styles.popularBadge, { backgroundColor: theme.primary }]}>
-                  <Text style={styles.popularText}>Most Popular</Text>
-                </View>
-              )}
-              <View style={styles.pkgRow}>
-                <View
-                  style={[
-                    styles.radioOuter,
-                    { borderColor: isActive ? theme.primary : theme.border },
-                  ]}
-                >
-                  {isActive && (
-                    <View
-                      style={[styles.radioInner, { backgroundColor: theme.primary }]}
-                    />
-                  )}
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.pkgTitle, { color: theme.text }]}>
-                    ₹{pkg.price}
-                  </Text>
-                  {pkg.bonus > 0 && (
-                    <Text style={[styles.pkgBonus, { color: theme.primary }]}>
-                      +₹{pkg.bonus} bonus ({Math.round((pkg.bonus / pkg.price) * 100)}%)
-                    </Text>
-                  )}
-                </View>
-                <View style={styles.pkgCredits}>
-                  <Text style={[styles.pkgCreditsAmt, { color: isActive ? theme.primary : theme.text }]}>
-                    ₹{total}
-                  </Text>
-                  <Text style={[styles.pkgCreditsLabel, { color: theme.textMuted }]}>
-                    credits
-                  </Text>
-                </View>
-              </View>
-            </Pressable>
-          );
-        })}
-
-        <View style={[styles.whatCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <Text style={[styles.whatTitle, { color: theme.text }]}>
-            What can you do with ₹{credits}?
-          </Text>
-          <View style={styles.whatRow}>
-            <Feather name="globe" size={15} color={theme.primary} />
-            <Text style={[styles.whatText, { color: theme.textSecondary }]}>
-              Translate{" "}
-              <Text style={{ fontFamily: "Inter_600SemiBold", color: theme.text }}>
-                {translateChars.toLocaleString()} chars
-              </Text>
-            </Text>
-          </View>
-          <View style={styles.whatRow}>
-            <Feather name="mic" size={15} color={theme.primary} />
-            <Text style={[styles.whatText, { color: theme.textSecondary }]}>
-              Voice input for{" "}
-              <Text style={{ fontFamily: "Inter_600SemiBold", color: theme.text }}>
-                {voiceMinutes} minutes
-              </Text>
-            </Text>
-          </View>
-          <View style={styles.whatRow}>
-            <Feather name="volume-2" size={15} color={theme.primary} />
-            <Text style={[styles.whatText, { color: theme.textSecondary }]}>
-              Speak{" "}
-              <Text style={{ fontFamily: "Inter_600SemiBold", color: theme.text }}>
-                {ttsChars.toLocaleString()} chars
-              </Text>
-            </Text>
-          </View>
-        </View>
-
-        <Pressable
-          onPress={handleBuy}
-          style={({ pressed }) => [
-            styles.buyBtn,
-            { backgroundColor: theme.primary, opacity: pressed ? 0.85 : 1 },
-          ]}
-        >
-          <Feather name="credit-card" size={18} color="#fff" />
-          <Text style={styles.buyBtnText}>
-            Get ₹{selectedPkg.price + selectedPkg.bonus} credits for ₹{selectedPkg.price}
-          </Text>
-        </Pressable>
-
-        <Text style={[styles.note, { color: theme.textMuted }]}>
-          Credits never expire. In-app payments are coming soon — for now,
-          reach out to us to top up manually.
-        </Text>
-      </ScrollView>
-    </View>
+    <FlatList
+      style={{ backgroundColor: theme.background }}
+      data={items}
+      keyExtractor={(t) => t.id}
+      renderItem={({ item }) => <SpendRow item={item} />}
+      ListHeaderComponent={header}
+      ListEmptyComponent={
+        loading ? (
+          <WarmStateCard icon="clock" title="Loading activity..." loading />
+        ) : (
+          <WarmStateCard icon="clock" title="No activity yet" subtitle="Every charge and refund will appear here." />
+        )
+      }
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 24 }]}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  title: {
-    fontSize: 18,
-    fontFamily: "Inter_700Bold",
-  },
-  content: {
-    padding: 16,
-    gap: 12,
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontFamily: "Inter_600SemiBold",
-    letterSpacing: 0.8,
-    marginBottom: 4,
-    marginLeft: 4,
-  },
-  pkgCard: {
-    borderRadius: 14,
-    borderWidth: 1.5,
-    padding: 16,
-    overflow: "hidden",
-  },
-  popularBadge: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderBottomLeftRadius: 10,
-  },
-  popularText: {
-    fontSize: 10,
-    fontFamily: "Inter_600SemiBold",
-    color: "#fff",
-    letterSpacing: 0.4,
-  },
-  pkgRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  pkgTitle: {
-    fontSize: 18,
-    fontFamily: "Inter_700Bold",
-  },
-  pkgBonus: {
-    fontSize: 12,
-    fontFamily: "Inter_500Medium",
-    marginTop: 2,
-  },
-  pkgCredits: {
-    alignItems: "flex-end",
-  },
-  pkgCreditsAmt: {
-    fontSize: 20,
-    fontFamily: "Inter_700Bold",
-  },
-  pkgCreditsLabel: {
-    fontSize: 11,
-    fontFamily: "Inter_400Regular",
-  },
-  whatCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 16,
-    gap: 10,
-    marginTop: 4,
-  },
-  whatTitle: {
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-    marginBottom: 4,
-  },
-  whatRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  whatText: {
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-  },
-  buyBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    paddingVertical: 16,
-    borderRadius: 24,
-    marginTop: 8,
-    shadowColor: "#FF6B00",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 14,
-    elevation: 6,
-  },
-  buyBtnText: {
-    fontSize: 16,
-    fontFamily: "Inter_700Bold",
-    color: "#fff",
-  },
-  note: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-    textAlign: "center",
-    lineHeight: 17,
-  },
+  content: { padding: 16, gap: 8 },
+  headerBlock: { gap: 12, marginBottom: 4 },
+  balanceCard: { borderWidth: 1, borderRadius: 16, padding: 18 },
+  caption: { fontSize: 11, fontFamily: "Inter_600SemiBold", letterSpacing: 0.6 },
+  balance: { fontSize: 34, fontFamily: "Inter_700Bold", marginTop: 4 },
+  pilot: { fontSize: 13, fontFamily: "Inter_500Medium", marginTop: 4 },
+  card: { borderWidth: 1, borderRadius: 16, padding: 16, gap: 10 },
+  cardTitle: { fontSize: 16, fontFamily: "Inter_600SemiBold" },
+  costRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  costLabel: { flex: 1, fontSize: 14, fontFamily: "Inter_400Regular" },
+  costPrice: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
+  note: { fontSize: 12, lineHeight: 17, fontFamily: "Inter_400Regular", marginTop: 2 },
+  sectionLabel: { fontSize: 11, fontFamily: "Inter_600SemiBold", letterSpacing: 0.6, marginTop: 4 },
 });

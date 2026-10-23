@@ -28,7 +28,7 @@ const TABS: { name: string; label: string; icon: TabIcon }[] = [
   { name: "translate", label: "Translate", icon: { ios: "globe", feather: "globe" } },
   { name: "voice", label: "Voice", icon: { ios: "mic", feather: "mic" } },
   { name: "phrasebook", label: "Phrases", icon: { ios: "book", feather: "book-open" } },
-  { name: "history", label: "History", icon: { ios: "clock", feather: "clock" } },
+  { name: "history", label: "Records", icon: { ios: "doc.text", feather: "file-text" } },
   { name: "settings", label: "Settings", icon: { ios: "gearshape", feather: "settings" } },
 ];
 
@@ -39,21 +39,21 @@ function NativeTabLayout() {
         <Icon sf={{ default: "person.2", selected: "person.2.fill" }} />
         <Label>Clinic</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="translate">
-        <Icon sf={{ default: "globe", selected: "globe.fill" }} />
-        <Label>Translate</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="voice">
-        <Icon sf={{ default: "mic", selected: "mic.fill" }} />
-        <Label>Voice</Label>
+      <NativeTabs.Trigger name="history">
+        <Icon sf={{ default: "doc.text", selected: "doc.text.fill" }} />
+        <Label>Records</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="phrasebook">
         <Icon sf={{ default: "book", selected: "book.fill" }} />
         <Label>Phrases</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="history">
-        <Icon sf={{ default: "clock", selected: "clock.fill" }} />
-        <Label>History</Label>
+      <NativeTabs.Trigger name="translate">
+        <Icon sf={{ default: "globe", selected: "globe.fill" }} />
+        <Label>Translate</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="voice" hidden>
+        <Icon sf={{ default: "mic", selected: "mic.fill" }} />
+        <Label>Voice</Label>
       </NativeTabs.Trigger>
       {/* Settings is reached from the gear on the Translate header. */}
       <NativeTabs.Trigger name="settings" hidden>
@@ -181,44 +181,23 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="translate"
+        name="history"
         options={{
-          title: "Translate",
+          title: "Records",
           tabBarIcon: ({ color, focused }) =>
             isIOS ? (
               <SymbolView
-                name={focused ? "globe.fill" : "globe"}
+                name={focused ? "doc.text.fill" : "doc.text"}
                 tintColor={color}
                 size={24}
                 weight={focused ? "bold" : "regular"}
               />
             ) : focused ? (
               <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
-                <Feather name="globe" size={22} color={color} />
+                <Feather name="file-text" size={22} color={color} />
               </View>
             ) : (
-              <Feather name="globe" size={22} color={color} />
-            ),
-        }}
-      />
-      <Tabs.Screen
-        name="voice"
-        options={{
-          title: "Voice",
-          tabBarIcon: ({ color, focused }) =>
-            isIOS ? (
-              <SymbolView
-                name={focused ? "mic.fill" : "mic"}
-                tintColor={color}
-                size={24}
-                weight={focused ? "bold" : "regular"}
-              />
-            ) : focused ? (
-              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
-                <Feather name="mic" size={22} color={color} />
-              </View>
-            ) : (
-              <Feather name="mic" size={22} color={color} />
+              <Feather name="file-text" size={22} color={color} />
             ),
         }}
       />
@@ -244,23 +223,46 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="history"
+        name="translate"
         options={{
-          title: "History",
+          title: "Translate",
           tabBarIcon: ({ color, focused }) =>
             isIOS ? (
               <SymbolView
-                name={focused ? "clock.fill" : "clock"}
+                name={focused ? "globe.fill" : "globe"}
                 tintColor={color}
                 size={24}
                 weight={focused ? "bold" : "regular"}
               />
             ) : focused ? (
               <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
-                <Feather name="clock" size={22} color={color} />
+                <Feather name="globe" size={22} color={color} />
               </View>
             ) : (
-              <Feather name="clock" size={22} color={color} />
+              <Feather name="globe" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="voice"
+        options={{
+          // Folded into the Clinic tab, which does voice both ways.
+          href: null,
+          title: "Voice",
+          tabBarIcon: ({ color, focused }) =>
+            isIOS ? (
+              <SymbolView
+                name={focused ? "mic.fill" : "mic"}
+                tintColor={color}
+                size={24}
+                weight={focused ? "bold" : "regular"}
+              />
+            ) : focused ? (
+              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
+                <Feather name="mic" size={22} color={color} />
+              </View>
+            ) : (
+              <Feather name="mic" size={22} color={color} />
             ),
         }}
       />

@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
 import { router, usePathname } from "expo-router";
@@ -30,6 +31,9 @@ import {
 } from "@/services/stt";
 import { synthesizeSpeech } from "@/services/tts";
 import { translateText } from "@/services/sarvam";
+import { saveConsultation } from "@/services/consultations";
+
+const CHECK_HINT_KEY = "bhaashai_hint_checks_seen";
 
 type Speaker = "A" | "B";
 
@@ -75,6 +79,13 @@ export default function ConversationScreen() {
   // the other side's mic opens by itself. Refs, because playback ends long after
   // the callbacks that started it were created.
   const [handsFree, setHandsFree] = useState(false);
+  // Each session is saved to Records as it happens; "New" starts another.
+  const sessionIdRef = useRef(`${Date.now()}`);
+  // One-time explanation of the ✓ chips, shown when the first one appears.
+  const [hintSeen, setHintSeen] = useState(true);
+  useEffect(() => {
+    AsyncStorage.getItem(CHECK_HINT_KEY).then((v) => setHintSeen(v === "1")).catch(() => {});
+  }, []);
   const handsFreeRef = useRef(false);
   handsFreeRef.current = handsFree;
 
@@ -127,10 +138,10 @@ export default function ConversationScreen() {
       if (credits < 0.05) {
         Alert.alert(
           "Not Enough Credits",
-          "Your balance is too low to record. Add credits to continue.",
+          "Your balance is too low to record. See Usage for how to add credit.",
           [
             { text: "Cancel", style: "cancel" },
-            { text: "Add Credits", onPress: () => router.push("/topup") },
+            { text: "View usage", onPress: () => router.push("/topup") },
           ]
         );
         return;
@@ -315,6 +326,28 @@ export default function ConversationScreen() {
     [translateAndSpeak, setActiveRecorderBoth]
   );
 
+  useEffect(() => {
+    if (!messages.length) return;
+    saveConsultation({
+      id: sessionIdRef.current,
+      startedAt: messages[0]!.timestamp,
+      langA,
+      langB,
+      messages,
+    }).catch(() => {});
+  }, [messages, langA, langB]);
+
+  const startNew = () => {
+    setMessages([]);
+    sessionIdRef.current = `${Date.now()}`;
+  };
+  const dismissHint = () => {
+    setHintSeen(true);
+    AsyncStorage.setItem(CHECK_HINT_KEY, "1").catch(() => {});
+  };
+  const canSummarize = messages.some(hasNumbers);
+  const showHint = !hintSeen && messages.some((m) => m.numberCheck?.verified?.length);
+
   // Rendered both as the Clinic tab and as a pushed screen (Voice tab button).
   // As a tab there's nothing to go back to, and the bar floats over the bottom.
   const inTab = usePathname() === "/";
@@ -363,30 +396,45 @@ export default function ConversationScreen() {
               ₹{credits.toFixed(2)}
             </Text>
           </Pressable>
-          <Pressable
-            onPress={() => setHandsFree((v) => !v)}
-            accessibilityLabel={handsFree ? "Hands-free on" : "Hands-free off"}
-            accessibilityState={{ selected: handsFree }}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-          >
-            <Feather name="headphones" size={20} color={handsFree ? C.primary : C.textMuted} />
-          </Pressable>
-          <Pressable
-            onPress={() => setShowSummary(true)}
-            disabled={!messages.some(hasNumbers)}
-            accessibilityLabel="What we agreed"
-            style={({ pressed }) => ({ opacity: !messages.some(hasNumbers) ? 0.3 : pressed ? 0.5 : 1 })}
-          >
-            <Feather name="clipboard" size={20} color={C.primary} />
-          </Pressable>
-          <Pressable
-            onPress={() => setMessages([])}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-          >
-            <Feather name="trash-2" size={20} color={C.textMuted} />
-          </Pressable>
         </View>
       </View>
+
+      <View style={styles.actionRow}>
+        {[
+          { key: "summary", icon: "clipboard", label: "Summary", onPress: () => setShowSummary(true), disabled: !canSummarize, active: false },
+          { key: "hands", icon: "headphones", label: handsFree ? "Hands-free on" : "Hands-free", onPress: () => setHandsFree((v) => !v), disabled: false, active: handsFree },
+          { key: "new", icon: "plus", label: "New", onPress: startNew, disabled: !messages.length, active: false },
+        ].map((a) => (
+          <Pressable
+            key={a.key}
+            onPress={a.onPress}
+            disabled={a.disabled}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: a.disabled, selected: a.active }}
+            style={({ pressed }) => [
+              styles.actionPill,
+              {
+                borderColor: a.active ? C.primary : C.border,
+                backgroundColor: a.active ? C.primary + "15" : C.surface,
+                opacity: a.disabled ? 0.4 : pressed ? 0.6 : 1,
+              },
+            ]}
+          >
+            <Feather name={a.icon as keyof typeof Feather.glyphMap} size={15} color={a.active || a.key === "summary" ? C.primary : C.textSecondary} />
+            <Text style={[styles.actionText, { color: a.active || a.key === "summary" ? C.primary : C.textSecondary }]}>{a.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {showHint && (
+        <Pressable onPress={dismissHint} style={[styles.hint, { backgroundColor: C.sage + "20", borderColor: C.sage + "60" }]}>
+          <Feather name="check-circle" size={14} color={C.sage} />
+          <Text style={[styles.hintText, { color: C.text }]}>
+            ✓ means that number was checked in both languages. Amber means please confirm it out loud.
+          </Text>
+          <Feather name="x" size={14} color={C.textMuted} />
+        </Pressable>
+      )}
 
       {credits > 0 && credits < 5 && (
         <Pressable
@@ -395,7 +443,7 @@ export default function ConversationScreen() {
         >
           <Feather name="alert-triangle" size={13} color="#9A3412" />
           <Text style={styles.lowBannerText}>
-            Low balance ₹{credits.toFixed(2)} — Tap to add credits
+            Low balance ₹{credits.toFixed(2)} — tap for usage
           </Text>
         </Pressable>
       )}
@@ -554,6 +602,28 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: "Inter_600SemiBold",
   },
+  actionRow: { flexDirection: "row", gap: 8, paddingHorizontal: 12, paddingTop: 8 },
+  actionPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  actionText: { fontSize: 13, fontWeight: "600" },
+  hint: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginHorizontal: 12,
+    marginTop: 8,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 12,
+  },
+  hintText: { flex: 1, fontSize: 12, lineHeight: 17 },
   phraseRow: { gap: 8, paddingHorizontal: 12, paddingVertical: 6 },
   phraseChip: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
   phraseText: { fontSize: 13 },

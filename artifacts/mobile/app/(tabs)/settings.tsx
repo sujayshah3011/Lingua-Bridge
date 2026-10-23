@@ -290,7 +290,7 @@ export default function SettingsScreen() {
             style={[styles.addCreditsBtn, { backgroundColor: theme.primary }]}
           >
             <Feather name="plus-circle" size={15} color="#fff" />
-            <Text style={styles.addCreditsBtnText}>Add Credits</Text>
+            <Text style={styles.addCreditsBtnText}>View usage</Text>
           </Pressable>
         </View>
 

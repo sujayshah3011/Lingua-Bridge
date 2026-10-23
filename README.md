@@ -70,25 +70,30 @@ real words.
 
 ## In the app
 
-- **Conversation (two people, one phone):** Hindi ↔ Tamil by default, any of 22
-  Indian languages.
-  - Every verified number gets a green **✓ chip** (`✓ 8:45`).
-  - The speaker sees **"You said: 8:45"**, so a mishearing can be caught.
-  - A turn whose numbers couldn't be verified is shown with a warning and **not
+Four tabs, all built around the clinic conversation:
+
+- **Clinic** (the app opens here): two people, one phone, Hindi ↔ Tamil by default and any
+  of 22 Indian languages.
+  - Every verified number gets a green **✓ chip** (`✓ 8:45`), and the speaker sees
+    **"You said: 8:45"**, so a mishearing can be caught.
+  - A turn whose numbers couldn't be verified is shown with a warning and **isn't
     auto-spoken**.
-- **"What we agreed":** a bilingual summary of every turn that had a number, shareable
-  on WhatsApp. It's the record a patient takes home.
-- **Clinic quick phrases:** tap-to-say sentences that run the same translate → check →
-  speak path as speech.
-- **Hands-free:** a pause ends your turn, and after a verified translation is spoken
-  the other person's mic opens.
-- **Reminder call ([Bolna](https://www.bolna.ai)):** from "What we agreed", book a call
-  to the patient for tomorrow at 10:00 or right away. A Bolna voice agent phones them in
-  Hindi and reads back **only the verified lines, word for word**. The agent uses Sarvam
-  speech in and out, and its prompt forbids changing any number or giving medical advice.
-  The call needs the patient's consent and a +91 mobile number, and costs a flat ₹10.
-- **Translate** (typed text) and **Voice** tabs, with the same checks, plus an offline
-  phrasebook and history.
+  - Labelled **Summary · Hands-free · New** buttons. Clinic quick phrases run the same
+    path as speech.
+  - **Hands-free:** a pause ends your turn, and after a verified translation is spoken the
+    other person's mic opens.
+- **What we agreed** (Summary): a bilingual record of every turn that had a number,
+  shareable on WhatsApp.
+  - **Reminder call ([Bolna](https://www.bolna.ai)):** book a call to the patient for
+    tomorrow at 10:00 or right away. A Bolna voice agent phones them in Hindi and reads
+    back **only the verified lines, word for word**. It needs the patient's consent and a
+    +91 mobile number, and costs a flat ₹10.
+- **Records:** every clinic conversation is saved on the phone as it happens. Tap one to
+  reopen "What we agreed", share it, or book the call later.
+- **Phrases:** ready-made clinic sentences (fasting, medicines, appointments, costs,
+  emergency), translated live with the same number check, and playable aloud.
+- **Translate:** typed text with the same checks. **Usage** (the credit pill) shows the
+  balance, what each action costs, and every charge and refund.
 
 ## Results
 

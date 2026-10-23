@@ -419,13 +419,13 @@ export default function TranslateScreen() {
             <Feather name="alert-circle" size={48} color="#DC2626" />
             <Text style={styles.zeroTitle}>No credits left</Text>
             <Text style={styles.zeroSub}>
-              Add credits to continue translating.
+              Your credit has run out. See Usage for how to add more.
             </Text>
             <Pressable
               onPress={() => router.push("/topup")}
               style={styles.zeroBtn}
             >
-              <Text style={styles.zeroBtnText}>Add Credits</Text>
+              <Text style={styles.zeroBtnText}>View usage</Text>
             </Pressable>
           </View>
         </View>
