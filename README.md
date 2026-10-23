@@ -6,6 +6,9 @@ Speak Hindi, the other person hears Tamil, Telugu, Bengali or English, and back.
 built for conversations where a wrong number does harm: a clinic telling a patient when to
 fast, a loan officer quoting an EMI, a contractor agreeing a daily wage.
 
+**Try it (Android):** [download the APK](https://expo.dev/artifacts/eas/3m6HRDToBRAXHVoIC_uKEl2bArHXrh2o6aS_U2fspMQ.apk) and sign up with any email to get ₹100 of
+free credit.
+
 ## The problem we measured
 
 Translation models handle Indian *words* well and Indian *numbers* badly. We sent
@@ -47,6 +50,41 @@ If both fail, the app **doesn't speak the translation**. It shows *"Couldn't con
 in the translation. Please confirm with the speaker."* and the speaker can replay it once
 confirmed.
 
+### Speech recognition, measured too
+
+The numbers have to survive speech recognition before translation even starts. We spoke
+all 69 test sentences with Sarvam's text-to-speech (one female and one male voice) and
+transcribed them three ways ([`eval/stt.mjs`](eval/stt.mjs),
+[report](eval/out/report-stt.md)):
+
+| Speech-to-text | Clips that lost a number |
+|---|---|
+| `saaras:v2.5` via `/speech-to-text-translate` (our original call) | 13 of 138 |
+| `saaras:v3`, transcribe mode | 19 of 138 (spells digits out as words) |
+| **`saaras:v4`** (what the app uses now) | **1 of 138** (a duration, left as words by design) |
+
+The original call didn't transcribe at all: it returned **English**, with the numbers
+already wrong. For example, `पौने नौ बजे` came back as "9:45" and `पौने दो लीटर` as "2.75
+liters". v4 writes the Hindi down as spoken, so the normalizer and the check see the
+real words.
+
+## In the app
+
+- **Conversation (two people, one phone):** Hindi ↔ Tamil by default, any of 22
+  Indian languages.
+  - Every verified number gets a green **✓ chip** (`✓ 8:45`).
+  - The speaker sees **"You said: 8:45"**, so a mishearing can be caught.
+  - A turn whose numbers couldn't be verified is shown with a warning and **not
+    auto-spoken**.
+- **"What we agreed":** a bilingual summary of every turn that had a number, shareable
+  on WhatsApp. It's the record a patient takes home.
+- **Clinic quick phrases:** tap-to-say sentences that run the same translate → check →
+  speak path as speech.
+- **Hands-free:** a pause ends your turn, and after a verified translation is spoken
+  the other person's mic opens.
+- **Translate** (typed text) and **Voice** tabs, with the same checks, plus an offline
+  phrasebook and history.
+
 ## Results
 
 | Set | Translations | Model alone | With BhaashAI | Errors left that were flagged |
@@ -66,10 +104,12 @@ After that, 0 remained, but the set is no longer unseen.
 Across all sets, the check raised **0 false alarms** on correct translations. Every
 sentence, translation and back-translation is in [`eval/out/`](eval/out/).
 
-**Limits:** 69 sentences that we wrote ourselves, Hindi as the source language, and text
-rather than audio (speech recognition is a separate source of error). Numbers spelled
-out as words in the source (`सात दिन`) are left to the model. It had no errors on them
-here, but the check can't see them.
+**Limits:**
+- **The sentences:** 69 that we wrote ourselves, with Hindi as the source language.
+- **The audio:** speech recognition was measured on synthetic speech, which is cleaner
+  than a phone mic in a noisy clinic.
+- **Numbers spelled out as words:** in the source (`सात दिन`), these are left to the
+  model. It had no errors on them here, but the check can't see them.
 
 ## Reproduce
 
@@ -82,6 +122,13 @@ SARVAM_API_KEY=... CASES=validation.json NORMALIZE=1 node --experimental-strip-t
 Responses are cached in `eval/out/raw.json`, so re-running costs nothing. A new set of
 20 sentences costs about ₹25 of Sarvam credit.
 
+## Try it
+
+1. Install the [Android APK](https://expo.dev/artifacts/eas/3m6HRDToBRAXHVoIC_uKEl2bArHXrh2o6aS_U2fspMQ.apk). You may need to allow installs from your browser.
+2. Sign up with any email to get ₹100 of free credit.
+3. Open **Voice → Conversation**. Tap the clinic phrases, or speak, and watch for the ✓ chips.
+   Then open the clipboard icon for "What we agreed".
+
 ## Architecture
 
 - **App** ([`artifacts/mobile`](artifacts/mobile)): Expo / React Native. Text, voice and
@@ -90,7 +137,8 @@ Responses are cached in `eval/out/raw.json`, so re-running costs nothing. A new 
 - **API** ([`artifacts/api-server`](artifacts/api-server)): Express on AWS Lambda
   (Mumbai), behind a Function URL. It verifies Firebase tokens and charges credits
   atomically in Firestore, refunding if the upstream call fails. Sarvam handles
-  speech-to-text and translation, and Sarvam Bulbul or ElevenLabs handles speech output.
+  speech-to-text (`saaras:v4`) and translation, and Sarvam Bulbul or ElevenLabs handles
+  speech output.
 - **Deploy:** `./deploy/aws-lambda.sh` (needs `SARVAM_API_KEY`, `ELEVENLABS_API_KEY`
   and `FIREBASE_SA_JSON`).
 - **Firestore rules:** [`firestore.rules`](firestore.rules). Balances are server-only.
