@@ -11,6 +11,8 @@ const NUMS = nfcKeys({
   नौ: 9, दस: 10, ग्यारह: 11, बारह: 12, तेरह: 13, चौदह: 14, पंद्रह: 15, पन्द्रह: 15,
   सोलह: 16, सत्रह: 17, अठारह: 18, उन्नीस: 19, बीस: 20, तीस: 30, चालीस: 40, पचास: 50,
   साठ: 60, सत्तर: 70, अस्सी: 80, नब्बे: 90,
+  // Minute words speech recognition produces for clock times.
+  पच्चीस: 25, पैंतीस: 35, पैंतालीस: 45, पचपन: 55,
 });
 const SCALES = nfcKeys({ सौ: 100, हज़ार: 1e3, हजार: 1e3, लाख: 1e5, करोड़: 1e7, करोड: 1e7 });
 const OFFSETS = nfcKeys({ सवा: 0.25, साढ़े: 0.5, पौने: -0.25 });
@@ -32,8 +34,31 @@ const PHRASE = new RegExp(
   "gu",
 );
 
+// Clock times spoken as words, which saaras:v4 sometimes writes out: "दस बजकर
+// पैंतालीस मिनट" → "10:45", "नौ बजे" → "9 बजे". Only times — converting every
+// number word would also rewrite idioms like "एक दिन" (someday).
+const WORD = `(?<![\\p{L}\\p{M}])(${alt(NUMS)})${END}`;
+const CLOCK_MINUTES = new RegExp(`${WORD}\\s+बजकर\\s+(\\d{1,2}|${alt(NUMS)})${END}\\s+मिनट${END}`, "gu");
+const CLOCK_HOUR = new RegExp(`${WORD}(?=\\s+बजे${END})`, "gu");
+const isHour = (h: number | undefined) => h !== undefined && h >= 1 && h <= 12;
+
+function normalizeClockWords(text: string): string {
+  return text
+    .replace(CLOCK_MINUTES, (match, h: string, m: string) => {
+      const minutes = /^\d/.test(m) ? Number(m) : NUMS[m];
+      return isHour(NUMS[h]) && minutes !== undefined && minutes < 60
+        ? `${NUMS[h]}:${String(minutes).padStart(2, "0")}`
+        : match;
+    })
+    .replace(CLOCK_HOUR, (match, h: string) => (isHour(NUMS[h]) ? String(NUMS[h]) : match));
+}
+
 export function normalizeHindiNumbers(text: string): string {
-  return text.normalize("NFC").replace(PHRASE, (match, prefix: string, num?: string, scale?: string, baje = "") => {
+  return normalizeClockWords(normalizeFractions(text.normalize("NFC")));
+}
+
+function normalizeFractions(text: string): string {
+  return text.replace(PHRASE, (match, prefix: string, num?: string, scale?: string, baje = "") => {
     let value: number;
     if (prefix in FIXED) {
       if (num) return match;

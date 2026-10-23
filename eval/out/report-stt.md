@@ -3,8 +3,8 @@
 | STT | Clips | Lost a value | Failure rate |
 |---|---|---|---|
 | v2.5 (current app) | 138 | 13 | 9.4% |
-| v3 transcribe | 138 | 21 | 15.2% |
-| v4 | 138 | 3 | 2.2% |
+| v3 transcribe | 138 | 19 | 13.8% |
+| v4 | 138 | 1 | 0.7% |
 
 A clip fails if an expected value is missing from the transcript (after the server's own
 Hindi number normalization). Speech is synthetic (Sarvam bulbul:v3, 16 kHz).
@@ -58,18 +58,6 @@ Hindi number normalization). Speech is synthetic (Sarvam bulbul:v3, 16 kHz).
 - **v3 transcribe** field-06 (aditya) lost [21]
   - said: सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।
   - heard: सिलेंडर की बुकिंग इक्कीस अक्टूबर को हुई थी।
-- **v3 transcribe** field-07 (neha) lost [10.75]
-  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
-  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
-- **v4** field-07 (neha) lost [10.75]
-  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
-  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
-- **v3 transcribe** field-07 (aditya) lost [10.75]
-  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
-  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
-- **v4** field-07 (aditya) lost [10.75]
-  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
-  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
 - **v2.5 (current app)** hold-02 (neha) lost [275000]
   - said: पौने तीन लाख का लोन अभी बाकी है।
   - heard: A loan of ₹3.25 lakh is still pending.
