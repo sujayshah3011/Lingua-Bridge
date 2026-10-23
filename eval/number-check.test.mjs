@@ -29,6 +29,8 @@ has("BP is 150/95", 150, 95);
 has("EMI of ₹12,450 on the 5th", 12450, 5);
 has("The workers would be paid Rs. 700 and two meals a day.", 700, 2);
 has("2 lakh twenty five thousand", 225000);
+has("3 hundred 50 rupees", 350);
+has("तीन 3 सौ 50 रुपये", 350);
 has("அடுத்த சோதனை ௧௫ நவம்பர்", 15);
 has("next check-up on 15 November", 15, "november");
 has("call me on 98765 43210", { digits: "9876543210" });
@@ -61,15 +63,15 @@ eq(sourceExpectations("ट्रेन 10:45 पर छूटेगी").map((e)
 // The full check, with a stubbed back-translation.
 const back = (text) => async () => text;
 eq(await checkNumbers("7:15 बजे ले जाएँगे", "7:15 மணிக்கு", back("unused")),
-  { ok: true, missing: [], wrongCurrency: false, backTranslated: false });
+  { ok: true, missing: [], verified: ["7:15"], wrongCurrency: false, backTranslated: false });
 eq(await checkNumbers("7:15 बजे ले जाएँगे", "সাড়ে সাতটায় নিয়ে যাওয়া হয়", back("At 7:30 a.m.")),
-  { ok: false, missing: ["7:15"], wrongCurrency: false, backTranslated: true });
+  { ok: false, missing: ["7:15"], verified: [], wrongCurrency: false, backTranslated: true });
 eq(await checkNumbers("ढाई चम्मच", "இரண்டரை தேக்கரண்டி", back("two and a half teaspoons")),
-  { ok: true, missing: [], wrongCurrency: false, backTranslated: false });
+  { ok: true, missing: [], verified: [], wrongCurrency: false, backTranslated: false });
 eq(await checkNumbers("2.5 चम्मच", "இரண்டரை தேக்கரண்டி", back("two and a half teaspoons")),
-  { ok: true, missing: [], wrongCurrency: false, backTranslated: true });
+  { ok: true, missing: [], verified: ["2.5"], wrongCurrency: false, backTranslated: true });
 eq(await checkNumbers("लगभग 1 लाख 25 हज़ार रुपये आएगा", "about 125 thousand rubles", null),
-  { ok: false, missing: [], wrongCurrency: true, backTranslated: false });
+  { ok: false, missing: [], verified: ["1,25,000"], wrongCurrency: true, backTranslated: false });
 eq(await checkNumbers("यह 2 करोड़ 50 लाख रुपये का है", "It is a ₹250 million project.", null),
-  { ok: false, missing: ["2,50,00,000"], wrongCurrency: false, backTranslated: false });
+  { ok: false, missing: ["2,50,00,000"], verified: [], wrongCurrency: false, backTranslated: false });
 console.log("number-check self-check passed");

@@ -92,7 +92,9 @@ router.post("/translate", requireAuth, async (req: Request, res: Response) => {
     } catch (err) {
       req.log.error({ err }, "number check errored");
     }
-    res.status(upstream.status).json({ ...data, number_check, credits: balanceAfter });
+    // normalized_input lets the app read the numbers back to the speaker ("You said: 8:45").
+    const normalized_input = input !== rawInput ? input : undefined;
+    res.status(upstream.status).json({ ...data, number_check, normalized_input, credits: balanceAfter });
   } catch (err) {
     await refundUser(uid, cost, "translate");
     const details = err instanceof Error ? err.message : String(err);
