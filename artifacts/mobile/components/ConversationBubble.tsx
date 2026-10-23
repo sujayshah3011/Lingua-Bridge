@@ -31,10 +31,16 @@ export interface Message {
 
 interface Props {
   message: Message;
+  // Whose half of the screen this is. The other person's turns show the
+  // translation (the reader's language) large and their original small.
+  viewer?: "A" | "B";
 }
 
-const ConversationBubble: React.FC<Props> = ({ message }) => {
+const ConversationBubble: React.FC<Props> = ({ message, viewer }) => {
   const isA = message.speaker === "A";
+  const own = !viewer || message.speaker === viewer;
+  const main = own ? message.original : message.translated;
+  const secondary = own ? message.translated : message.original;
   const time = new Date(message.timestamp).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -77,9 +83,9 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
 
   return (
     <View
-      style={[styles.row, isA ? styles.rowA : styles.rowB]}
+      style={[styles.row, own ? styles.rowA : styles.rowB]}
       accessible
-      accessibilityLabel={`${isA ? "Speaker A" : "Speaker B"}: ${message.original}. Translation: ${message.translated}`}
+      accessibilityLabel={`${own ? "You said" : "They said"}: ${main}. ${own ? "Translation" : "Original"}: ${secondary}`}
     >
       <View
         style={[
@@ -88,11 +94,11 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
         ]}
       >
         {/* Original transcript */}
-        <Text style={[styles.original, isA ? styles.textLight : styles.textLight]}>
-          {message.original}
+        <Text style={[styles.original, styles.textLight]}>
+          {main}
         </Text>
         {/* The server's reading of the numbers, so the speaker can catch a mishearing */}
-        {message.normalizedInput ? (
+        {own && message.normalizedInput ? (
           <Text style={styles.readBack}>You said: {message.normalizedInput}</Text>
         ) : null}
         {/* Translated text */}
@@ -101,7 +107,7 @@ const ConversationBubble: React.FC<Props> = ({ message }) => {
             <Text
               style={[styles.translated, isA ? styles.translatedA : styles.translatedB]}
             >
-              {message.translated}
+              {secondary}
             </Text>
             {message.audioUri ? (
               <Pressable

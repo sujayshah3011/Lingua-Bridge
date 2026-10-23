@@ -45,6 +45,11 @@ function useSpringScale() {
   return { scale, pressIn, pressOut };
 }
 
+function childLayout(style: unknown) {
+  const { flexDirection, alignItems, justifyContent, gap } = StyleSheet.flatten(style as any) ?? {};
+  return { flexDirection, alignItems, justifyContent, gap };
+}
+
 function SpringPressable({
   children,
   style,
@@ -62,13 +67,11 @@ function SpringPressable({
       style={style as any}
       {...props}
     >
-      {/* style is applied on both layers: the outer Pressable needs it to
-          participate correctly in a parent flex row (e.g. flex: 1 to split
-          width with a sibling tab), while the inner Animated.View needs it
-          too so its own children (icon + label, etc.) still lay out per
-          flexDirection/alignItems as authored. Only the transform belongs
-          on the inner view alone. */}
-      <Animated.View style={[style as any, { transform: [{ scale }] }]}>
+      {/* The outer Pressable carries the whole style (size, background,
+          shadow). The inner view takes only what lays out its children, plus
+          the spring transform. Giving it the whole style too drew the
+          background and shadow twice, a box inside the pill (seen on a device). */}
+      <Animated.View style={[childLayout(style), { transform: [{ scale }] }]}>
         {children}
       </Animated.View>
     </Pressable>
