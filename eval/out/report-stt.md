@@ -1,0 +1,123 @@
+# Speech recognition vs numbers — 69 Hindi cases × 2 synthetic voices
+
+| STT | Clips | Lost a value | Failure rate |
+|---|---|---|---|
+| v2.5 (current app) | 135 | 13 | 9.6% |
+| v3 transcribe | 135 | 21 | 15.6% |
+| v4 | 134 | 3 | 2.2% |
+
+A clip fails if an expected value is missing from the transcript (after the server's own
+Hindi number normalization). Speech is synthetic (Sarvam bulbul:v3, 16 kHz).
+
+## Failures
+- **v3 transcribe** clinic-04 (neha) lost [180]
+  - said: आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।
+  - heard: आपका शुगर लेवल एक सौ अस्सी है, इसे एक सौ चालीस से नीचे लाना है।
+- **v3 transcribe** clinic-04 (aditya) lost [180]
+  - said: आपका शुगर लेवल 180 है, इसे 140 से नीचे लाना है।
+  - heard: आपका शुगर लेवल एक सौ अस्सी है, इसे एक सौ चालीस से नीचे लाना है।
+- **v3 transcribe** clinic-06 (aditya) lost [15]
+  - said: अगली जांच 15 नवंबर को होगी।
+  - heard: अगली जांच पंद्रह नवंबर को होगी।
+- **v3 transcribe** clinic-11 (neha) lost [95]
+  - said: मरीज़ का ब्लड प्रेशर 150 बटा 95 है।
+  - heard: मरीज़ का ब्लड प्रेशर एक सौ पचास बटा पचानवे है।
+- **v3 transcribe** clinic-11 (aditya) lost [95]
+  - said: मरीज़ का ब्लड प्रेशर 150 बटा 95 है।
+  - heard: मरीज़ का ब्लड प्रेशर एक सौ पचास बटा पचानवे है।
+- **v2.5 (current app)** clinic-13 (neha) lost [8.75]
+  - said: पौने नौ बजे तक खाली पेट रहना है, फिर टेस्ट होगा।
+  - heard: You have to stay on an empty stomach until 9:45, then there will be a test.
+- **v3 transcribe** bank-04 (aditya) lost [36]
+  - said: लोन की अवधि 36 महीने है।
+  - heard: लोन की अवधि छत्तीस महीने है।
+- **v3 transcribe** bank-08 (neha) lost [{"digits":"9876543210"}]
+  - said: मेरा नंबर 98765 43210 है, इस पर कॉल करना।
+  - heard: मेरा नंबर नौ आठ सात छह पाँच चार तीन दो एक शून्य है, इस पर कॉल करना।
+- **v3 transcribe** bank-08 (aditya) lost [{"digits":"9876543210"}]
+  - said: मेरा नंबर 98765 43210 है, इस पर कॉल करना।
+  - heard: मेरा नंबर नौ आठ सात छह पाँच चार तीन दो एक शून्य है, इस पर कॉल करना।
+- **v2.5 (current app)** bank-09 (neha) lost [4821]
+  - said: आधार के आखिरी चार अंक 4821 हैं।
+  - heard: The last four digits of the base are four eight two one.
+- **v3 transcribe** bank-09 (neha) lost [4821]
+  - said: आधार के आखिरी चार अंक 4821 हैं।
+  - heard: आधार के आखिरी चार अंक चार आठ दो एक हैं।
+- **v3 transcribe** bank-09 (aditya) lost [4821]
+  - said: आधार के आखिरी चार अंक 4821 हैं।
+  - heard: आधार के आखिर चार अंक चार आठ दो एक हैं।
+- **v3 transcribe** bank-11 (neha) lost [18000]
+  - said: बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।
+  - heard: बीमा का प्रीमियम अट्ठारह हज़ार रुपये सालाना है।
+- **v3 transcribe** bank-11 (aditya) lost [18000]
+  - said: बीमा का प्रीमियम 18 हज़ार रुपये सालाना है।
+  - heard: बीमा का प्रीमियम अट्ठारह हज़ार रुपये सालाना है।
+- **v3 transcribe** field-06 (neha) lost [21]
+  - said: सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।
+  - heard: सिलेंडर की बुकिंग इक्कीस अक्टूबर को हुई थी।
+- **v3 transcribe** field-06 (aditya) lost [21]
+  - said: सिलेंडर की बुकिंग 21 अक्टूबर को हुई थी।
+  - heard: सिलेंडर की बुकिंग इक्कीस अक्टूबर को हुई थी।
+- **v3 transcribe** field-07 (neha) lost [10.75]
+  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
+  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
+- **v4** field-07 (neha) lost [10.75]
+  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
+  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
+- **v3 transcribe** field-07 (aditya) lost [10.75]
+  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
+  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
+- **v4** field-07 (aditya) lost [10.75]
+  - said: ट्रेन प्लेटफ़ॉर्म नंबर 4 से 10:45 पर छूटेगी।
+  - heard: ट्रेन प्लेटफॉर्म नंबर चार से दस बजकर पैंतालीस मिनट पर छूटेगी।
+- **v2.5 (current app)** hold-02 (neha) lost [275000]
+  - said: पौने तीन लाख का लोन अभी बाकी है।
+  - heard: A loan of ₹3.25 lakh is still pending.
+- **v2.5 (current app)** hold-02 (aditya) lost [275000]
+  - said: पौने तीन लाख का लोन अभी बाकी है।
+  - heard: A loan of ₹3.75 lakh is still pending.
+- **v2.5 (current app)** val-07 (neha) lost [5250]
+  - said: आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।
+  - heard: Five thousand five hundred rupees have been deducted from your account.
+- **v2.5 (current app)** val-07 (aditya) lost [5250]
+  - said: आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।
+  - heard: ₹5,25,000 have been deducted from your account.
+- **v3 transcribe** val-07 (aditya) lost [5250]
+  - said: आपके खाते से सवा पाँच हज़ार रुपये कटे हैं।
+  - heard: आपके खाते से ₹5,25,000 कटे हैं।
+- **v2.5 (current app)** val-08 (neha) lost [375000]
+  - said: पौने चार लाख रुपये का घर का लोन बचा है।
+  - heard: A home loan of almost four lakh rupees is left.
+- **v2.5 (current app)** val-08 (aditya) lost [375000]
+  - said: पौने चार लाख रुपये का घर का लोन बचा है।
+  - heard: A home loan of ₹4.75 lakh is left.
+- **v2.5 (current app)** val-12 (neha) lost [1.25]
+  - said: बच्चे को सवा चम्मच दवा दें।
+  - heard: Give the child a quarter teaspoon of the medicine.
+- **v2.5 (current app)** val-13 (neha) lost [1.75]
+  - said: पौने दो लीटर पानी रोज़ पीना है।
+  - heard: Drink 2.75 liters of water daily.
+- **v2.5 (current app)** val-13 (aditya) lost [1.75]
+  - said: पौने दो लीटर पानी रोज़ पीना है।
+  - heard: Drink 2.75 liters of water daily.
+- **v2.5 (current app)** val-15 (neha) lost [10]
+  - said: मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।
+  - heard: My fee is four thousand five hundred rupees. It needs to be paid by the tenth.
+- **v2.5 (current app)** val-15 (aditya) lost [10]
+  - said: मेरी फ़ीस 4,500 रुपये है, 10 तारीख तक भरनी है।
+  - heard: My fee is four thousand five hundred rupees. It needs to be paid by the tenth.
+- **v3 transcribe** val-16 (neha) lost [{"digits":"18001801551"}]
+  - said: हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।
+  - heard: हेल्पलाइन नंबर एक आठ शून्य शून्य एक आठ शून्य एक पाँच पाँच एक पर कॉल करें।
+- **v3 transcribe** val-16 (aditya) lost [{"digits":"18001801551"}]
+  - said: हेल्पलाइन नंबर 1800 180 1551 पर कॉल करें।
+  - heard: हेल्पलाइन नंबर एक आठ शून्य शून्य एक आठ शून्य एक पाँच पाँच एक पर कॉल करें।
+- **v3 transcribe** val-18 (neha) lost [45]
+  - said: मैं 45 मिनट में पहुँच जाऊँगा।
+  - heard: मैं पैंतालीस मिनट में पहुँच जाऊँगा।
+- **v4** val-18 (neha) lost [45]
+  - said: मैं 45 मिनट में पहुँच जाऊँगा।
+  - heard: मैं पैंतालीस मिनट में पहुँच जाऊँगा।
+- **v3 transcribe** val-18 (aditya) lost [45]
+  - said: मैं 45 मिनट में पहुँच जाऊँगा।
+  - heard: मैं पैंतालीस मिनट में पहुँच जाऊँगा।
