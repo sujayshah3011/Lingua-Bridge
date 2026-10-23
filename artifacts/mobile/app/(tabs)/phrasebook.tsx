@@ -1,330 +1,248 @@
 /**
- * Phrasebook Tab — Offline-first phrase reference.
- *
- * Displays pre-loaded phrases across 6 categories.
- * User can switch display language via a picker.
- * Phrases saved from History (starred) also appear here.
- * All data is local — no API call needed.
+ * Clinic phrases — ready-made Hindi sentences a clinic says every day. Each one
+ * is translated live through the same path as the Clinic tab (translate → number
+ * check), so it shows ✓ chips or a warning, and can be played aloud.
  */
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Clipboard from "expo-clipboard";
-import * as Haptics from "expo-haptics";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  FlatList,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
+import React, { useState } from "react";
+import { ActivityIndicator, Alert, FlatList, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useApp } from "@/context/AppContext";
-import { Colors } from "@/constants/colors";
-import { LANGUAGES } from "@/constants/languages";
-import {
-  Phrase,
-  PhraseCategory,
-  PHRASE_CATEGORIES,
-  PHRASES,
-  getPhrasesByCategory,
-} from "@/data/phrases";
 import { LanguagePickerModal } from "@/components/LanguagePickerModal";
+import { NumberStatus } from "@/components/NumberWarning";
+import { LANGUAGES } from "@/constants/languages";
+import { useApp } from "@/context/AppContext";
+import { useTheme } from "@/hooks/useTheme";
+import { translateText, type NumberCheck } from "@/services/sarvam";
+import { speakText } from "@/services/tts";
 
-const STARRED_KEY = "bhaashai_starred_phrases";
+// Every phrase carries the kind of number the eval showed models get wrong.
+const CATEGORIES: { name: string; phrases: string[] }[] = [
+  {
+    name: "Fasting & tests",
+    phrases: [
+      "पौने नौ बजे तक खाली पेट रहना है।",
+      "खून की जांच सुबह 8 बजे होगी।",
+      "टेस्ट से 12 घंटे पहले कुछ मत खाइए।",
+      "रिपोर्ट साढ़े पाँच बजे तक मिल जाएगी।",
+    ],
+  },
+  {
+    name: "Medicines",
+    phrases: [
+      "दवा दिन में दो बार खाने के बाद लेनी है।",
+      "पैरासिटामोल 500 mg की एक गोली हर 6 घंटे में लें।",
+      "बच्चे को ढाई चम्मच सिरप रात को दें।",
+      "यह दवा पूरे 7 दिन तक लेनी है।",
+    ],
+  },
+  {
+    name: "Appointments",
+    phrases: [
+      "अगली जांच 15 नवंबर को होगी।",
+      "सवा दस बजे डॉक्टर से मिलना है।",
+      "टांके 10 दिन बाद खुलेंगे।",
+    ],
+  },
+  {
+    name: "Costs",
+    phrases: [
+      "ऑपरेशन का खर्च लगभग सवा लाख रुपये आएगा।",
+      "आज 2,500 रुपये जमा करने होंगे।",
+      "बाकी डेढ़ हज़ार रुपये छुट्टी के समय देने हैं।",
+    ],
+  },
+  {
+    name: "Emergency",
+    phrases: [
+      "दर्द बढ़े तो तुरंत 108 पर फ़ोन करें।",
+      "बुखार 102 डिग्री से ऊपर जाए तो अस्पताल आइए।",
+      "साँस लेने में तकलीफ़ हो तो तुरंत आइए।",
+    ],
+  },
+];
 
-export default function PhrasebookScreen() {
-  const { targetLang, isDark } = useApp();
-  const C = isDark ? Colors.dark : Colors.light;
+interface Result {
+  text: string;
+  check?: NumberCheck;
+}
 
-  const [activeCategory, setActiveCategory] = useState<PhraseCategory>("Greetings");
-  const [displayLang, setDisplayLang] = useState(targetLang);
-  const [showLangPicker, setShowLangPicker] = useState(false);
-  const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+export default function ClinicPhrasesScreen() {
+  const { setCredits, voiceGender, ttsProvider } = useApp();
+  const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+  const [category, setCategory] = useState(CATEGORIES[0]!.name);
+  const [targetLang, setTargetLang] = useState("ta-IN");
+  const [showPicker, setShowPicker] = useState(false);
+  const [open, setOpen] = useState<string | null>(null);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [speaking, setSpeaking] = useState<string | null>(null);
+  // Translations already fetched, per phrase and target language.
+  const [results, setResults] = useState<Record<string, Result>>({});
 
-  // Load starred phrases from storage
-  useEffect(() => {
-    AsyncStorage.getItem(STARRED_KEY).then((raw) => {
-      if (raw) setStarredIds(new Set(JSON.parse(raw)));
-    });
-  }, []);
+  const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
+  const targetLabel = LANGUAGES.find((l) => l.code === targetLang)?.name ?? targetLang;
+  const phrases = CATEGORIES.find((c) => c.name === category)!.phrases;
+  const keyOf = (p: string) => `${targetLang}|${p}`;
 
-  const persistStarred = useCallback((ids: Set<string>) => {
-    AsyncStorage.setItem(STARRED_KEY, JSON.stringify([...ids]));
-  }, []);
+  const toggle = async (phrase: string) => {
+    if (open === phrase) return setOpen(null);
+    setOpen(phrase);
+    if (results[keyOf(phrase)]) return;
+    setLoading(phrase);
+    try {
+      const r = await translateText({ input: phrase, sourceLanguageCode: "hi-IN", targetLanguageCode: targetLang, formalMode: true });
+      if (typeof r.credits === "number") setCredits(r.credits);
+      setResults((prev) => ({ ...prev, [keyOf(phrase)]: { text: r.translatedText, check: r.numberCheck } }));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      Alert.alert("Translation failed", msg === "INSUFFICIENT_CREDITS" ? "No credits remaining." : msg || "Please try again.");
+      setOpen(null);
+    } finally {
+      setLoading(null);
+    }
+  };
 
-  const toggleStar = useCallback(
-    (phraseId: string) => {
-      setStarredIds((prev) => {
-        const next = new Set(prev);
-        if (next.has(phraseId)) next.delete(phraseId);
-        else next.add(phraseId);
-        persistStarred(next);
-        if (Platform.OS !== "web") Haptics.selectionAsync();
-        return next;
-      });
-    },
-    [persistStarred]
-  );
+  const play = async (phrase: string, r: Result) => {
+    setSpeaking(phrase);
+    try {
+      await speakText(r.text, targetLang, voiceGender, ttsProvider);
+    } catch (err) {
+      Alert.alert("Playback failed", err instanceof Error ? err.message : "Please try again.");
+    } finally {
+      setSpeaking(null);
+    }
+  };
 
-  const copyPhrase = useCallback(async (text: string, id: string) => {
-    await Clipboard.setStringAsync(text);
-    setCopiedId(id);
-    if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setTimeout(() => setCopiedId(null), 1500);
-  }, []);
-
-  const displayLangLabel =
-    LANGUAGES.find((l) => l.code === displayLang)?.name ?? displayLang;
-
-  const phrases = useMemo(
-    () => getPhrasesByCategory(activeCategory),
-    [activeCategory]
-  );
-
-  const renderPhrase = useCallback(
-    ({ item }: { item: Phrase }) => {
-      const translation = item.translations[displayLang] ?? null;
-      const isStarred = starredIds.has(item.id);
-      const isCopied = copiedId === item.id;
-
-      return (
-        <View
-          style={[
-            styles.phraseCard,
-            { backgroundColor: C.surface, borderColor: C.border },
-          ]}
-          accessible
-          accessibilityLabel={`${item.english}. ${translation ?? "Translation not available in selected language."}`}
-        >
-          {/* English */}
-          <Text style={[styles.phraseEnglish, { color: C.text }]}>
-            {item.english}
-          </Text>
-          {/* Translation */}
-          {translation ? (
-            <Text style={[styles.phraseTranslation, { color: C.primary }]}>
-              {translation}
-            </Text>
-          ) : (
-            <Text style={[styles.noTranslation, { color: C.textMuted }]}>
-              Not available in {displayLangLabel}
-            </Text>
-          )}
-          {/* Actions */}
-          <View style={styles.phraseActions}>
-            {translation && (
-              <Pressable
-                onPress={() => copyPhrase(translation, item.id)}
-                accessibilityRole="button"
-                accessibilityLabel={isCopied ? "Copied" : "Copy translation"}
-                style={({ pressed }) => [
-                  styles.actionBtn,
-                  { opacity: pressed ? 0.5 : 1 },
-                ]}
-              >
-                <Feather
-                  name={isCopied ? "check" : "copy"}
-                  size={15}
-                  color={isCopied ? C.success : C.textMuted}
-                />
-              </Pressable>
-            )}
+  const renderPhrase = ({ item }: { item: string }) => {
+    const r = results[keyOf(item)];
+    const isOpen = open === item;
+    const unverified = r?.check?.ok === false;
+    return (
+      <Pressable
+        onPress={() => toggle(item)}
+        style={[styles.card, { backgroundColor: theme.surface, borderColor: isOpen ? theme.primary + "60" : theme.border }]}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: isOpen }}
+      >
+        <Text style={[styles.phrase, { color: theme.text }]}>{item}</Text>
+        {isOpen && loading === item && <ActivityIndicator style={styles.spinner} color={theme.primary} />}
+        {isOpen && r && (
+          <View style={styles.result}>
+            <Text style={[styles.translation, { color: theme.primary }]}>{r.text}</Text>
+            <NumberStatus check={r.check} okColor={theme.success} warnColor={theme.amber} />
             <Pressable
-              onPress={() => toggleStar(item.id)}
-              accessibilityRole="button"
-              accessibilityLabel={isStarred ? "Remove from favourites" : "Add to favourites"}
-              style={({ pressed }) => [
-                styles.actionBtn,
-                { opacity: pressed ? 0.5 : 1 },
-              ]}
+              onPress={() => play(item, r)}
+              disabled={speaking !== null}
+              style={({ pressed }) => [styles.playBtn, { borderColor: theme.border, opacity: pressed || speaking ? 0.6 : 1 }]}
             >
-              <Feather
-                name={isStarred ? "star" : "star"}
-                size={15}
-                color={isStarred ? "#F59E0B" : C.textMuted}
-              />
+              {speaking === item ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <Feather name="volume-2" size={16} color={theme.primary} />
+              )}
+              <Text style={[styles.playText, { color: theme.primary }]}>
+                {unverified ? "Play anyway" : "Play"}
+              </Text>
             </Pressable>
           </View>
-        </View>
-      );
-    },
-    [
-      displayLang,
-      displayLangLabel,
-      starredIds,
-      copiedId,
-      C,
-      copyPhrase,
-      toggleStar,
-    ]
-  );
+        )}
+      </Pressable>
+    );
+  };
 
   return (
-    <SafeAreaView
-      style={[styles.safe, { backgroundColor: C.background }]}
-      edges={["top", "left", "right"]}
-    >
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: C.sage + "30" }]}>
-        <Text style={[styles.headerTitle, { color: C.text }]}>Phrasebook</Text>
+    <View style={[styles.root, { backgroundColor: theme.background }]}>
+      <View style={[styles.header, { paddingTop: topPad + 8, borderBottomColor: theme.border }]}>
+        <Text style={[styles.title, { color: theme.text }]}>Clinic phrases</Text>
         <Pressable
-          onPress={() => setShowLangPicker(true)}
-          style={[styles.langPill, { backgroundColor: C.surface, borderColor: C.border }]}
-          accessibilityRole="button"
-          accessibilityLabel={`Display language: ${displayLangLabel}`}
+          onPress={() => setShowPicker(true)}
+          style={[styles.langPill, { borderColor: theme.primary + "50", backgroundColor: theme.primary + "10" }]}
         >
-          <Feather name="globe" size={14} color={C.primary} />
-          <Text style={[styles.langPillText, { color: C.text }]}>
-            {displayLangLabel}
-          </Text>
-          <Feather name="chevron-down" size={12} color={C.textMuted} />
+          <Text style={[styles.langText, { color: theme.primary }]}>→ {targetLabel}</Text>
+          <Feather name="chevron-down" size={14} color={theme.primary} />
         </Pressable>
       </View>
 
-      {/* Category tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={[styles.catScroll, { borderBottomColor: C.border }]}
-        contentContainerStyle={styles.catContent}
-      >
-        {PHRASE_CATEGORIES.map((cat) => {
-          const active = cat === activeCategory;
-          return (
-            <Pressable
-              key={cat}
-              onPress={() => setActiveCategory(cat)}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
-              style={[
-                styles.catBtn,
-                active
-                  ? { backgroundColor: C.primary }
-                  : { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1 },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.catText,
-                  { color: active ? "#FFFFFF" : C.textSecondary },
-                ]}
-              >
-                {cat}
-              </Text>
-            </Pressable>
-          );
-        })}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs} style={styles.tabsWrap}>
+        {CATEGORIES.map((c) => (
+          <Pressable
+            key={c.name}
+            onPress={() => setCategory(c.name)}
+            style={[
+              styles.tab,
+              { backgroundColor: category === c.name ? theme.primary : theme.surface, borderColor: category === c.name ? theme.primary : theme.border },
+            ]}
+          >
+            <Text style={[styles.tabText, { color: category === c.name ? "#FFFFFF" : theme.textSecondary }]}>{c.name}</Text>
+          </Pressable>
+        ))}
       </ScrollView>
 
-      {/* Phrases list */}
       <FlatList
         data={phrases}
-        keyExtractor={(p) => p.id}
+        keyExtractor={(p) => p}
         renderItem={renderPhrase}
-        contentContainerStyle={styles.list}
+        extraData={[open, results, loading, speaking, targetLang]}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 84 }]}
+        ListFooterComponent={
+          <Text style={[styles.footnote, { color: theme.textMuted }]}>
+            Tap a phrase to translate it live. Numbers marked ✓ were checked in both languages.
+          </Text>
+        }
         showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       />
 
-      {/* Language picker */}
       <LanguagePickerModal
-        visible={showLangPicker}
-        onClose={() => setShowLangPicker(false)}
+        visible={showPicker}
+        onClose={() => setShowPicker(false)}
         onSelect={(lang) => {
-          setDisplayLang(lang.code);
-          setShowLangPicker(false);
+          setTargetLang(lang.code);
+          setShowPicker(false);
+          setOpen(null);
         }}
         mode="target"
-        selectedCode={displayLang}
+        selectedCode={targetLang}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  root: { flex: 1 },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingBottom: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  headerTitle: {
-    fontSize: 22,
-    fontFamily: "Inter_700Bold",
-  },
-  langPill: {
+  title: { fontSize: 26, fontFamily: "Inter_700Bold" },
+  langPill: { flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
+  langText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
+  tabsWrap: { flexGrow: 0 },
+  tabs: { gap: 8, paddingHorizontal: 16, paddingVertical: 12 },
+  tab: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 14, paddingVertical: 7 },
+  tabText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
+  list: { paddingHorizontal: 16, gap: 10 },
+  card: { borderWidth: 1, borderRadius: 14, padding: 14 },
+  phrase: { fontSize: 16, lineHeight: 23, fontFamily: "Inter_600SemiBold" },
+  spinner: { marginTop: 10, alignSelf: "flex-start" },
+  result: { marginTop: 10 },
+  translation: { fontSize: 15, lineHeight: 22, fontFamily: "Inter_500Medium" },
+  playBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 20,
+    alignSelf: "flex-start",
     borderWidth: 1,
-  },
-  langPillText: {
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
-  },
-  catScroll: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    maxHeight: 56,
-  },
-  catContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
-    alignItems: "center",
-  },
-  catBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: 20,
-  },
-  catText: {
-    fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-  },
-  list: {
-    padding: 16,
-    paddingBottom: 120,
-  },
-  phraseCard: {
     borderRadius: 14,
-    borderWidth: 1,
-    padding: 14,
-    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginTop: 10,
   },
-  phraseEnglish: {
-    fontSize: 15,
-    fontFamily: "Inter_600SemiBold",
-    lineHeight: 22,
-  },
-  phraseTranslation: {
-    fontSize: 17,
-    fontFamily: "Inter_500Medium",
-    lineHeight: 25,
-  },
-  noTranslation: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    fontStyle: "italic",
-  },
-  phraseActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 12,
-    marginTop: 4,
-  },
-  actionBtn: {
-    padding: 4,
-  },
+  playText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
+  footnote: { fontSize: 12, lineHeight: 17, textAlign: "center", marginTop: 8 },
 });

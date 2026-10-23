@@ -1,252 +1,132 @@
+/**
+ * Records — every Clinic conversation, saved on this phone as it happens
+ * (services/consultations.ts). Tap one to reopen "What we agreed": share it or
+ * book the reminder call. Credit activity lives on the Usage screen.
+ */
+
 import { Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { Alert, FlatList, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AgreedSummary, hasNumbers } from "@/components/AgreedSummary";
+import { VerifiedNumbers } from "@/components/NumberWarning";
 import { WarmStateCard } from "@/components/ui/WarmStateCard";
-import { useApp } from "@/context/AppContext";
+import { LANGUAGES } from "@/constants/languages";
 import { useTheme } from "@/hooks/useTheme";
-import { db } from "@/services/firebase";
+import { Consultation, deleteConsultation, loadConsultations } from "@/services/consultations";
 
-interface Transaction {
-  id: string;
-  type: "translate" | "tts" | "stt" | "transliterate" | "topup";
-  userCharged: number;
-  chars?: number | null;
-  seconds?: number | null;
-  sourceLang?: string | null;
-  targetLang?: string | null;
-  note?: string;
-  timestamp: { seconds: number } | null;
+const langName = (code: string) => LANGUAGES.find((l) => l.code === code)?.name ?? code;
+
+function when(ts: number): string {
+  const d = new Date(ts);
+  const time = d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+  const days = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(ts).setHours(0, 0, 0, 0)) / 86400000);
+  if (days === 0) return `Today, ${time}`;
+  if (days === 1) return `Yesterday, ${time}`;
+  return `${d.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}, ${time}`;
 }
 
-function relativeTime(ts: { seconds: number } | null): string {
-  if (!ts) return "";
-  const diffMs = Date.now() - ts.seconds * 1000;
-  const diffSec = Math.floor(diffMs / 1000);
-  if (diffSec < 60) return `${diffSec}s ago`;
-  const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} min ago`;
-  const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
-  const diffDay = Math.floor(diffHr / 24);
-  if (diffDay === 1) return "Yesterday";
-  return `${diffDay} days ago`;
-}
-
-function displayAmount(amt: number): string {
-  const abs = Math.abs(amt);
-  return abs < 0.01 ? abs.toFixed(4) : abs.toFixed(2);
-}
-
-const TYPE_META: Record<string, { icon: string; label: string }> = {
-  translate:     { icon: "globe",      label: "Translation"  },
-  tts:           { icon: "volume-2",   label: "Voice Output" },
-  stt:           { icon: "mic",        label: "Voice Input"  },
-  transliterate: { icon: "type",       label: "Transliteration" },
-  topup:         { icon: "plus-circle", label: "Credits Added" },
-};
-
-export default function HistoryScreen() {
-  const { user } = useApp();
+export default function RecordsScreen() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-
+  const [records, setRecords] = useState<Consultation[]>([]);
+  const [open, setOpen] = useState<Consultation | null>(null);
   const topPad = Platform.OS === "web" ? insets.top + 67 : insets.top;
 
-  useEffect(() => {
-    if (!user?.uid) {
-      setLoading(false);
-      return;
-    }
+  // Reload every time the tab is shown: Clinic saves while you talk.
+  useFocusEffect(
+    useCallback(() => {
+      loadConsultations().then(setRecords);
+    }, [])
+  );
 
-    const q = query(
-      collection(db, "transactions"),
-      where("uid", "==", user.uid),
-      orderBy("timestamp", "desc"),
-      limit(50)
-    );
-
-    const unsub = onSnapshot(
-      q,
-      (snap) => {
-        const items: Transaction[] = snap.docs.map((d) => ({
-          id: d.id,
-          ...(d.data() as Omit<Transaction, "id">),
-        }));
-        setTransactions(items);
-        setLoading(false);
+  const confirmDelete = (c: Consultation) =>
+    Alert.alert("Delete this record?", "It's only stored on this phone and can't be recovered.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => deleteConsultation(c.id).then(() => setRecords((r) => r.filter((x) => x.id !== c.id))),
       },
-      () => setLoading(false)
-    );
+    ]);
 
-    return unsub;
-  }, [user?.uid]);
-
-  const renderItem = ({ item }: { item: Transaction }) => {
-    const isTopup = item.type === "topup";
-    const meta = TYPE_META[item.type] ?? TYPE_META.translate;
-    const amtColor = isTopup ? "#16A34A" : "#DC2626";
-    const prefix = isTopup ? "+" : "-";
-    const amt = displayAmount(item.userCharged);
-
+  const renderItem = ({ item }: { item: Consultation }) => {
+    const numbered = item.messages.filter(hasNumbers);
+    const verified = numbered.flatMap((m) => m.numberCheck?.verified ?? []);
+    const toConfirm = numbered.filter((m) => m.numberCheck?.ok === false).length;
     return (
-      <View
-        style={[
-          styles.row,
-          { backgroundColor: theme.surface, borderColor: theme.border },
+      <Pressable
+        onPress={() => setOpen(item)}
+        onLongPress={() => confirmDelete(item)}
+        style={({ pressed }) => [
+          styles.card,
+          { backgroundColor: theme.surface, borderColor: theme.border, opacity: pressed ? 0.7 : 1 },
         ]}
+        accessibilityHint="Opens what was agreed. Long-press to delete."
       >
-        <View style={[styles.iconWrap, { backgroundColor: amtColor + "14" }]}>
-          <Feather
-            name={meta.icon as keyof typeof Feather.glyphMap}
-            size={18}
-            color={amtColor}
-          />
+        <View style={styles.cardTop}>
+          <Text style={[styles.when, { color: theme.textMuted }]}>{when(item.startedAt)}</Text>
+          <View style={[styles.langPill, { backgroundColor: theme.primary + "12" }]}>
+            <Text style={[styles.langText, { color: theme.primary }]}>
+              {langName(item.langA)} ↔ {langName(item.langB)}
+            </Text>
+          </View>
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.rowLabel, { color: theme.text }]}>
-            {item.note ?? meta.label}
-          </Text>
-          <Text style={[styles.rowSub, { color: theme.textMuted }]}>
-            {item.chars != null
-              ? `${item.chars.toLocaleString()} chars`
-              : item.seconds != null
-              ? `${item.seconds.toFixed(1)}s`
-              : ""}
-            {item.chars != null || item.seconds != null ? " · " : ""}
-            {relativeTime(item.timestamp)}
-          </Text>
-        </View>
-        <Text style={[styles.rowAmt, { color: amtColor }]}>
-          {prefix}₹{amt}
+        <Text style={[styles.first, { color: theme.text }]} numberOfLines={2}>
+          {item.messages[0]?.original}
         </Text>
-      </View>
+        <Text style={[styles.meta, { color: theme.textMuted }]}>
+          {item.messages.length} {item.messages.length === 1 ? "turn" : "turns"}
+          {toConfirm ? `  ·  ${toConfirm} to confirm` : ""}
+        </Text>
+        <VerifiedNumbers check={verified.length ? { ok: true, missing: [], verified: verified.slice(0, 6), wrongCurrency: false, backTranslated: false } : undefined} color={theme.success} />
+      </Pressable>
     );
   };
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
-      <View
-        style={[
-          styles.header,
-          {
-            paddingTop: topPad + 8,
-            borderBottomColor: theme.border,
-            backgroundColor: theme.background,
-          },
-        ]}
-      >
-        <Text style={[styles.title, { color: theme.text }]}>History</Text>
-        <Pressable
-          onPress={() => router.push("/topup")}
-          style={[styles.addBtn, { backgroundColor: theme.primary + "15", borderColor: theme.primary + "40" }]}
-        >
-          <Feather name="plus" size={14} color={theme.primary} />
-          <Text style={[styles.addBtnText, { color: theme.primary }]}>Add Credits</Text>
-        </Pressable>
+      <View style={[styles.header, { paddingTop: topPad + 8, borderBottomColor: theme.border }]}>
+        <Text style={[styles.title, { color: theme.text }]}>Records</Text>
+        <Text style={[styles.subtitle, { color: theme.textMuted }]}>Every clinic conversation, saved on this phone</Text>
       </View>
-
-      {loading && transactions.length === 0 ? (
-        <WarmStateCard icon="clock" title="Loading history..." loading />
-      ) : (
-        <FlatList
-          data={transactions}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={[
-            styles.list,
-            {
-              paddingBottom:
-                Platform.OS === "web"
-                  ? insets.bottom + 34 + 84
-                  : insets.bottom + 84,
-            },
-          ]}
-          ListEmptyComponent={
-            <WarmStateCard
-              icon="clock"
-              title="No transactions yet"
-              subtitle="Your credit activity — translations, voice inputs, and top-ups — will appear here."
-            />
-          }
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      <FlatList
+        data={records}
+        keyExtractor={(c) => c.id}
+        renderItem={renderItem}
+        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 84 }]}
+        ListEmptyComponent={
+          <WarmStateCard
+            icon="message-square"
+            title="No conversations yet"
+            subtitle="Your clinic conversations will appear here, with every checked number."
+          />
+        }
+        showsVerticalScrollIndicator={false}
+      />
+      <AgreedSummary
+        visible={!!open}
+        onClose={() => setOpen(null)}
+        messages={open?.messages ?? []}
+        patientLang={open?.langA ?? ""}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 4,
-  },
-  title: {
-    fontSize: 28,
-    fontFamily: "Inter_700Bold",
-  },
-  addBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  addBtnText: {
-    fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-  },
-  list: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    gap: 8,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    padding: 14,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  iconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rowLabel: {
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-    marginBottom: 2,
-  },
-  rowSub: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-  },
-  rowAmt: {
-    fontSize: 15,
-    fontFamily: "Inter_700Bold",
-  },
+  header: { paddingHorizontal: 20, paddingBottom: 14, borderBottomWidth: StyleSheet.hairlineWidth, marginBottom: 4 },
+  title: { fontSize: 28, fontFamily: "Inter_700Bold" },
+  subtitle: { fontSize: 13, fontFamily: "Inter_400Regular", marginTop: 2 },
+  list: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
+  card: { borderWidth: 1, borderRadius: 14, padding: 14 },
+  cardTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 },
+  when: { fontSize: 12, fontFamily: "Inter_500Medium" },
+  langPill: { borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 },
+  langText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
+  first: { fontSize: 15, lineHeight: 21, fontFamily: "Inter_600SemiBold" },
+  meta: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 4 },
 });

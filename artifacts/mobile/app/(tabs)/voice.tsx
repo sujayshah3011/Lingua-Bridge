@@ -100,10 +100,10 @@ export default function VoiceScreen() {
     if (credits < 0.05) {
       Alert.alert(
         "Not Enough Credits",
-        "Your balance is too low to record voice. Please add credits in Settings.",
+        "Your balance is too low to record voice. See Usage for how to add credit.",
         [
           { text: "Cancel", style: "cancel" },
-          { text: "Add Credits", onPress: () => router.push("/topup") },
+          { text: "View usage", onPress: () => router.push("/topup") },
         ]
       );
       return;
@@ -269,7 +269,7 @@ export default function VoiceScreen() {
         "Your ₹ balance is empty.",
         [
           { text: "Cancel", style: "cancel" },
-          { text: "Add Credits", onPress: () => router.push("/topup") },
+          { text: "View usage", onPress: () => router.push("/topup") },
         ]
       );
       return;
@@ -369,7 +369,7 @@ export default function VoiceScreen() {
         >
           <Feather name="alert-triangle" size={13} color="#9A3412" />
           <Text style={styles.lowBannerText}>
-            Low balance ₹{credits.toFixed(2)} — Tap to add credits
+            Low balance ₹{credits.toFixed(2)} — tap for usage
           </Text>
         </Pressable>
       )}
@@ -518,13 +518,13 @@ export default function VoiceScreen() {
             <Feather name="alert-circle" size={48} color="#DC2626" />
             <Text style={styles.zeroTitle}>No credits left</Text>
             <Text style={styles.zeroSub}>
-              Add credits to continue using voice translation.
+              Your credit has run out. See Usage for how to add more.
             </Text>
             <Pressable
               onPress={() => router.push("/topup")}
               style={styles.zeroBtn}
             >
-              <Text style={styles.zeroBtnText}>Add Credits</Text>
+              <Text style={styles.zeroBtnText}>View usage</Text>
             </Pressable>
           </View>
         </View>

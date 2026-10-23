@@ -74,7 +74,7 @@ function RootLayoutNav() {
       <Stack.Screen
         name="topup"
         options={{
-          title: "Add Credits",
+          title: "Usage",
           presentation: "modal",
           gestureEnabled: true,
         }}
