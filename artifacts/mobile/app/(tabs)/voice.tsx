@@ -347,7 +347,7 @@ export default function VoiceScreen() {
             </Text>
           </Pressable>
           <Pressable
-            onPress={() => router.push("/conversation")}
+            onPress={() => router.navigate("/")}
             accessibilityRole="button"
             style={({ pressed }) => [
               styles.convBtn,

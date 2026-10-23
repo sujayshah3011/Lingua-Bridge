@@ -24,7 +24,8 @@ interface TabIcon {
 }
 
 const TABS: { name: string; label: string; icon: TabIcon }[] = [
-  { name: "index", label: "Translate", icon: { ios: "globe", feather: "globe" } },
+  { name: "index", label: "Clinic", icon: { ios: "person.2", feather: "users" } },
+  { name: "translate", label: "Translate", icon: { ios: "globe", feather: "globe" } },
   { name: "voice", label: "Voice", icon: { ios: "mic", feather: "mic" } },
   { name: "phrasebook", label: "Phrases", icon: { ios: "book", feather: "book-open" } },
   { name: "history", label: "History", icon: { ios: "clock", feather: "clock" } },
@@ -35,6 +36,10 @@ function NativeTabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
+        <Icon sf={{ default: "person.2", selected: "person.2.fill" }} />
+        <Label>Clinic</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="translate">
         <Icon sf={{ default: "globe", selected: "globe.fill" }} />
         <Label>Translate</Label>
       </NativeTabs.Trigger>
@@ -50,7 +55,8 @@ function NativeTabLayout() {
         <Icon sf={{ default: "clock", selected: "clock.fill" }} />
         <Label>History</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings">
+      {/* Settings is reached from the gear on the Translate header. */}
+      <NativeTabs.Trigger name="settings" hidden>
         <Icon sf={{ default: "gearshape", selected: "gearshape.fill" }} />
         <Label>Settings</Label>
       </NativeTabs.Trigger>
@@ -156,6 +162,27 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          title: "Clinic",
+          tabBarIcon: ({ color, focused }) =>
+            isIOS ? (
+              <SymbolView
+                name={focused ? "person.2.fill" : "person.2"}
+                tintColor={color}
+                size={24}
+                weight={focused ? "bold" : "regular"}
+              />
+            ) : focused ? (
+              <View style={[styles.activePill, { backgroundColor: activeTint + "15" }]}>
+                <Feather name="users" size={22} color={color} />
+              </View>
+            ) : (
+              <Feather name="users" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="translate"
+        options={{
           title: "Translate",
           tabBarIcon: ({ color, focused }) =>
             isIOS ? (
@@ -240,6 +267,8 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
+          // Reached from the gear on the Translate header; keeps the bar at 5 tabs.
+          href: null,
           title: "Settings",
           tabBarIcon: ({ color, focused }) =>
             isIOS ? (

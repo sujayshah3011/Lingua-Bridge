@@ -1,6 +1,6 @@
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import {
@@ -13,7 +13,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 
 import { useApp } from "@/context/AppContext";
@@ -315,6 +315,11 @@ export default function ConversationScreen() {
     [translateAndSpeak, setActiveRecorderBoth]
   );
 
+  // Rendered both as the Clinic tab and as a pushed screen (Voice tab button).
+  // As a tab there's nothing to go back to, and the bar floats over the bottom.
+  const inTab = usePathname() === "/";
+  const insets = useSafeAreaInsets();
+
   const langALabel = LANGUAGES.find((l) => l.code === langA)?.name ?? langA;
   const langBLabel = LANGUAGES.find((l) => l.code === langB)?.name ?? langB;
 
@@ -326,17 +331,26 @@ export default function ConversationScreen() {
 
   return (
     <SafeAreaView
-      style={[styles.safe, { backgroundColor: C.background }]}
-      edges={["top", "left", "right", "bottom"]}
+      style={[
+        styles.safe,
+        { backgroundColor: C.background },
+        // 64 matches the classic tab bar height in (tabs)/_layout.tsx.
+        inTab && Platform.OS !== "ios" && { paddingBottom: insets.bottom + 64 },
+      ]}
+      edges={inTab ? ["top", "left", "right"] : ["top", "left", "right", "bottom"]}
     >
       <View style={[styles.navBar, { borderBottomColor: C.border }]}>
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-        >
-          <Feather name="arrow-left" size={22} color={C.text} />
-        </Pressable>
-        <Text style={[styles.navTitle, { color: C.text }]}>Conversation</Text>
+        {inTab ? (
+          <Feather name="users" size={20} color={C.primary} />
+        ) : (
+          <Pressable
+            onPress={() => router.back()}
+            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+          >
+            <Feather name="arrow-left" size={22} color={C.text} />
+          </Pressable>
+        )}
+        <Text style={[styles.navTitle, { color: C.text }]}>{inTab ? "Clinic" : "Conversation"}</Text>
         <View style={styles.navRight}>
           <Pressable
             onPress={() => router.push("/topup")}
