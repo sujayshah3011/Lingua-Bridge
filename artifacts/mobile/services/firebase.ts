@@ -1,6 +1,8 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import * as FirebaseAuth from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { Platform } from "react-native";
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -14,13 +16,25 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// firebase@12 removed getReactNativePersistence from firebase/auth entirely
-// (confirmed absent from the installed bundle, not just a stale type) — the
-// old initializeAuth(...) call here silently threw on every single app
-// launch and fell back to this same getAuth(app) call anyway, so behavior
-// is unchanged; this just removes the guaranteed throw+catch and the dead
-// import that broke typecheck. getAuth() defaults to local persistence on
-// React Native without extra configuration in current SDK versions.
-export const auth = getAuth(app);
+// On React Native, plain getAuth() keeps the session in memory only, so every
+// app restart signed the user out (seen on a device). The session has to be
+// persisted to AsyncStorage. Metro resolves "firebase/auth" to its React Native
+// build, which exports getReactNativePersistence; TypeScript reads the browser
+// typings, which don't list it — hence the cast.
+const { getReactNativePersistence } = FirebaseAuth as unknown as {
+  getReactNativePersistence: (storage: typeof AsyncStorage) => FirebaseAuth.Persistence;
+};
+
+function createAuth(): FirebaseAuth.Auth {
+  if (Platform.OS === "web") return FirebaseAuth.getAuth(app);
+  try {
+    return FirebaseAuth.initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
+  } catch {
+    // Already initialized (e.g. a fast refresh in development).
+    return FirebaseAuth.getAuth(app);
+  }
+}
+
+export const auth = createAuth();
 export const db = getFirestore(app);
 export default app;
