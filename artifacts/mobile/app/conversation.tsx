@@ -95,7 +95,10 @@ export default function ConversationScreen() {
   const [activeRecorder, setActiveRecorder] = useState<Speaker | null>(null);
 
   const soundRef = useRef<Audio.Sound | null>(null);
+  // Each half follows the newest turn (the bottom one was left showing an old
+  // scroll position, cutting off the ✓ chip; seen on a device).
   const scrollRef = useRef<ScrollView>(null);
+  const scrollRefA = useRef<ScrollView>(null);
   const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // recordAndTranslate's setTimeout and stopSpeaker both need the CURRENT
   // active recorder at the moment they run, not whatever it was when their
@@ -130,7 +133,6 @@ export default function ConversationScreen() {
 
   const addMessage = useCallback((msg: Message) => {
     setMessages((prev) => [...prev, msg]);
-    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
   }, []);
 
   const recordAndTranslate = useCallback(
@@ -479,7 +481,11 @@ export default function ConversationScreen() {
               <Feather name="chevron-down" size={12} color={C.textMuted} />
             </Pressable>
 
-            <ScrollView style={styles.bubbleFeed} ref={scrollRef}>
+            <ScrollView
+              style={styles.bubbleFeed}
+              ref={scrollRef}
+              onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+            >
               {recent.map((msg) => (
                 <ConversationBubble key={msg.id} message={msg} viewer="B" />
               ))}
@@ -522,7 +528,11 @@ export default function ConversationScreen() {
               <Feather name="chevron-down" size={12} color={C.textMuted} />
             </Pressable>
 
-            <ScrollView style={styles.bubbleFeed}>
+            <ScrollView
+              style={styles.bubbleFeed}
+              ref={scrollRefA}
+              onContentSizeChange={() => scrollRefA.current?.scrollToEnd({ animated: true })}
+            >
               {recent.map((msg) => (
                 <ConversationBubble key={msg.id} message={msg} viewer="A" />
               ))}

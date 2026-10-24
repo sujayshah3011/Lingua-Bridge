@@ -45,7 +45,9 @@ export default function SettingsScreen() {
 
   const totalUsed = totalDebited;
   const totalEver = totalUsed + credits;
-  const progressPct = totalEver > 0 ? Math.min(totalUsed / totalEver, 1) : 0;
+  // Share remaining: the bar sits under "Remaining" in the balance colour, so it
+  // read as nearly empty when it drew the share used (seen on a device).
+  const progressPct = totalEver > 0 ? Math.min(credits / totalEver, 1) : 0;
 
   const themeOptions: { label: string; value: ThemeOption; icon: string }[] = [
     { label: "System", value: "system", icon: "monitor" },
