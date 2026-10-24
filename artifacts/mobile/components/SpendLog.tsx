@@ -96,7 +96,10 @@ export function SpendRow({ item }: { item: Transaction }) {
         <Feather name={meta.icon} size={18} color={color} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={[styles.label, { color: theme.text }]}>{item.note ?? meta.label}</Text>
+        {/* Refunds carry a server-side note ("Upstream call failed after charge"); show "Refund · …" instead. */}
+        <Text style={[styles.label, { color: theme.text }]}>
+          {item.type.startsWith("refund_") ? meta.label : item.note ?? meta.label}
+        </Text>
         <Text style={[styles.sub, { color: theme.textMuted }]}>
           {detail}
           {relativeTime(item.timestamp)}
