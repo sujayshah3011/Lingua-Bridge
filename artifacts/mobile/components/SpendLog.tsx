@@ -70,7 +70,12 @@ export function useSpendLog(uid: string | undefined) {
         setItems(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Transaction, "id">) })));
         setLoading(false);
       },
-      () => setLoading(false)
+      (err) => {
+        // Needs the composite index in firestore.indexes.json; without it the
+        // query fails and the list looked empty with no clue why.
+        console.warn("[SpendLog] query failed:", err.message);
+        setLoading(false);
+      }
     );
   }, [uid]);
 
