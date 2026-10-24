@@ -6,7 +6,7 @@ Speak Hindi, the other person hears Tamil, Telugu, Bengali or English, and back.
 built for conversations where a wrong number does harm: a clinic telling a patient when to
 fast, a loan officer quoting an EMI, a contractor agreeing a daily wage.
 
-**Try it (Android):** [download the APK](https://expo.dev/artifacts/eas/hxPdAQCZ29JhqMy3exw7_BM3LZRt5HHSkg2C06cMTqA.apk) and sign up with any email to get ₹100 of
+**Try it (Android):** [download the APK](https://expo.dev/artifacts/eas/SFF9Y40umdD_OyylJ9ZF8rifNWZUI36knjiGh8A0v10.apk) and sign up with any email to get ₹100 of
 free credit.
 
 ## The problem we measured
@@ -134,7 +134,7 @@ Responses are cached in `eval/out/raw.json`, so re-running costs nothing. A new 
 
 ## Try it
 
-1. Install the [Android APK](https://expo.dev/artifacts/eas/hxPdAQCZ29JhqMy3exw7_BM3LZRt5HHSkg2C06cMTqA.apk). You may need to allow installs from your browser.
+1. Install the [Android APK](https://expo.dev/artifacts/eas/SFF9Y40umdD_OyylJ9ZF8rifNWZUI36knjiGh8A0v10.apk). You may need to allow installs from your browser.
 2. Sign up with any email to get ₹100 of free credit.
 3. The app opens on the **Clinic** tab. Tap the clinic phrases, or speak, and watch for the ✓ chips.
    Then open the clipboard icon for "What we agreed".
